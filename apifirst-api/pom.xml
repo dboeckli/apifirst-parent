@@ -29,7 +29,7 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>https://api.redocly.com/registry/bundle/spring-framework-guru/API%20First%20With%20Spring%20Boot%20-%20Development/v1/openapi.yaml?branch=development</inputSpec>
+                            <inputSpec>https://dboeckli.redocly.app/_spec/openapi/openapi.yaml</inputSpec>
                             <generatorName>java</generatorName>
                             <configOptions>
                                 <sourceFolder>src/gen/java/main</sourceFolder>
