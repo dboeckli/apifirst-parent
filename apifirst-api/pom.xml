@@ -12,6 +12,9 @@
 
     <artifactId>apifirst-api</artifactId>
 
+    <name>apifirst-server</name>
+    <description>apifirst-server</description>
+
     <dependencies>
         <dependency>
             <groupId>org.openapitools</groupId>

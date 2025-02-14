@@ -13,19 +13,6 @@
 
     <name>apifirst-server</name>
     <description>apifirst-server</description>
-    <url/>
-    <licenses>
-        <license/>
-    </licenses>
-    <developers>
-        <developer/>
-    </developers>
-    <scm>
-        <connection/>
-        <developerConnection/>
-        <tag/>
-        <url/>
-    </scm>
 
     <dependencies>
         <dependency>
