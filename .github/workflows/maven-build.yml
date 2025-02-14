@@ -196,10 +196,6 @@ jobs:
         if: always()
         with:
           files: |
-            ./target/surefire-reports/TEST-*.xml
-            ./target/failsafe-reports/TEST-*.xml
-            target/surefire-reports/TEST-*.xml
-            target/failsafe-reports/TEST-*.xml
             **/target/surefire-reports/TEST-*.xml
             **/target/failsafe-reports/TEST-*.xml
       
