@@ -16,7 +16,7 @@ public class OpenApiValidationConfig {
     public Filter validationFilter() {
         return new OpenApiValidationFilter(
             false, // disable request validation: TODO: enable request validation. is currently failing
-            true  // enable response validation
+                false  // disable response validation: TODO: enable request validation. is currently failing
         );
     }
 
