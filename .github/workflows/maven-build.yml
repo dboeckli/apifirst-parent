@@ -233,7 +233,7 @@ jobs:
                   -Dsonar.sourceEncoding=UTF-8 \
                   -Dsonar.organization=${ORGANIZATION} \
                   -Dsonar.projectKey="${ORGANIZATION}_${ARTIFACT_ID}" \
-                  -Dsonar.branch.name=main
+                  -Dsonar.branch.name=master
           else
             mvn -B versions:set -e -DnewVersion="$BRANCH_MVN_VERSION"
             mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
@@ -244,6 +244,6 @@ jobs:
                   -Dsonar.organization=${ORGANIZATION} \
                   -Dsonar.projectKey="${ORGANIZATION}_${ARTIFACT_ID}" \
                   -Dsonar.branch.name=${BRANCH_NAME} \
-                  -Dsonar.branch.target=main
+                  -Dsonar.branch.target=master
           fi 
         
