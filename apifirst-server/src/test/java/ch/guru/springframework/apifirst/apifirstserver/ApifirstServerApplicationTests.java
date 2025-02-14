@@ -1,6 +1,7 @@
 package ch.guru.springframework.apifirst.apifirstserver;
 
 import ch.guru.springframework.apifirst.apifirstserver.repositories.CustomerRepository;
+import ch.guru.springframework.apifirst.apifirstserver.repositories.ProductRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,9 @@ class ApifirstServerApplicationTests {
     
     @Autowired
     CustomerRepository customerRepository;
+    
+    @Autowired
+    ProductRepository productRepository;
 
     @Test
     void contextLoads() {
@@ -29,6 +33,7 @@ class ApifirstServerApplicationTests {
     @Test
     void testDataLoad() {
         assertThat(customerRepository.count()).isPositive();
+        assertThat(productRepository.count()).isPositive();
     }
 
 }
