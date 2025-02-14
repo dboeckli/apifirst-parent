@@ -12,7 +12,7 @@
     </parent>
 
     <groupId>ch.guru.springframework.apifirst</groupId>
-    <artifactId>apifirst-sb-server</artifactId>
+    <artifactId>apifirst-parent</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
@@ -29,7 +29,7 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <repo.name>apifirst-sb-server</repo.name>
+        <repo.name>apifirst-parent</repo.name>
 
         <google.findbugs.version>3.0.2</google.findbugs.version>
         <jackson-databind-nullable.version>0.2.6</jackson-databind-nullable.version>
