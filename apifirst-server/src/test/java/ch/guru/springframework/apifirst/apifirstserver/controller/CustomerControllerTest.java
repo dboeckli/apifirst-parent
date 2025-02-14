@@ -2,6 +2,7 @@ package ch.guru.springframework.apifirst.apifirstserver.controller;
 
 import ch.guru.springframework.apifirst.apifirstserver.repositories.CustomerRepository;
 import ch.guru.springframework.apifirst.model.Customer;
+import jakarta.servlet.Filter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +25,17 @@ class CustomerControllerTest {
 
     @Autowired
     WebApplicationContext wac;
+    
+    @Autowired
+    Filter validationFilter;
 
     public MockMvc mockMvc;
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+        mockMvc = MockMvcBuilders.webAppContextSetup(wac)
+                .addFilter(validationFilter)
+                .build();
     }
 
     @Test
