@@ -158,7 +158,7 @@
                             <goal>report</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>target/jacoco-reports</outputDirectory>
+                            <outputDirectory>../target/jacoco-reports</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>
