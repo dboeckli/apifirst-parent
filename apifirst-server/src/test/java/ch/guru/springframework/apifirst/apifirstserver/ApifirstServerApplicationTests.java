@@ -1,6 +1,7 @@
 package ch.guru.springframework.apifirst.apifirstserver;
 
 import ch.guru.springframework.apifirst.apifirstserver.repositories.CustomerRepository;
+import ch.guru.springframework.apifirst.apifirstserver.repositories.OrderRepository;
 import ch.guru.springframework.apifirst.apifirstserver.repositories.ProductRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -24,6 +25,9 @@ class ApifirstServerApplicationTests {
     @Autowired
     ProductRepository productRepository;
 
+    @Autowired
+    OrderRepository orderRepository;
+
     @Test
     void contextLoads() {
         assertNotNull(applicationContext, "Application context should not be null");
@@ -34,6 +38,7 @@ class ApifirstServerApplicationTests {
     void testDataLoad() {
         assertThat(customerRepository.count()).isPositive();
         assertThat(productRepository.count()).isPositive();
+        assertThat(orderRepository.count()).isPositive();
     }
 
 }
