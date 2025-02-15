@@ -49,8 +49,7 @@ public class OrderServiceImpl implements OrderService {
                         .equals(orderCreate.getSelectPaymentMethod()))
                     .findFirst().orElseThrow())
                 .build())
-            .orderStatus(Order.OrderStatusEnum.NEW)
-            .shipmentInfo("none");
+            .orderStatus(Order.OrderStatusEnum.NEW);
 
         List<OrderLine> orderLines = new ArrayList<>();
 
