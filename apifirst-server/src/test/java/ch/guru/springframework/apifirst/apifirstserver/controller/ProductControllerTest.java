@@ -1,10 +1,10 @@
 package ch.guru.springframework.apifirst.apifirstserver.controller;
 
 import ch.guru.springframework.apifirst.apifirstserver.repositories.ProductRepository;
-import ch.guru.springframework.apifirst.model.Category;
-import ch.guru.springframework.apifirst.model.Dimensions;
-import ch.guru.springframework.apifirst.model.Image;
-import ch.guru.springframework.apifirst.model.Product;
+import ch.guru.springframework.apifirst.model.CategoryDto;
+import ch.guru.springframework.apifirst.model.DimensionsDto;
+import ch.guru.springframework.apifirst.model.ImageDto;
+import ch.guru.springframework.apifirst.model.ProductDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.Filter;
 import lombok.extern.slf4j.Slf4j;
@@ -61,7 +61,7 @@ class ProductControllerTest {
 
     @Test
     void testGetProductById() throws Exception {
-        Product testProduct = productRepository.findAll().iterator().next();
+        ProductDto testProduct = productRepository.findAll().iterator().next();
 
         mockMvc.perform(get(ProductController.PRODUCT_BASE_URL + "/{prodcutId}", testProduct.getId())
                 .accept(MediaType.APPLICATION_JSON))
@@ -71,19 +71,19 @@ class ProductControllerTest {
 
     @Test
     void testCreateProduct() throws Exception {
-        Product newProduct = Product.builder()
+        ProductDto newProduct = ProductDto.builder()
                 .description("New Product")
                 .cost("5.00")
                 .price("8.95")
-                .categories(Arrays.asList(Category.builder()
+                .categories(Arrays.asList(CategoryDto.builder()
                         .category("New Category")
                         .description("New Category Description")
                         .build()))
-                .images(Arrays.asList(Image.builder()
+                .images(Arrays.asList(ImageDto.builder()
                         .url("http://example.com/image.jpg")
                         .altText("Image Alt Text")
                         .build()))
-                .dimensions(Dimensions.builder()
+                .dimensions(DimensionsDto.builder()
                         .length(10)
                         .width(10)
                         .height(10)

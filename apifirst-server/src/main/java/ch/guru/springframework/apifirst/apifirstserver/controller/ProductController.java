@@ -1,7 +1,7 @@
 package ch.guru.springframework.apifirst.apifirstserver.controller;
 
 import ch.guru.springframework.apifirst.apifirstserver.service.ProductService;
-import ch.guru.springframework.apifirst.model.Product;
+import ch.guru.springframework.apifirst.model.ProductDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,13 +22,13 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping
-    public ResponseEntity<List<Product>> listProducts() {
+    public ResponseEntity<List<ProductDto>> listProducts() {
         return ResponseEntity.ok(productService.listProducts());
     }
 
     @PostMapping
-    public ResponseEntity<Void> saveNewProduct(@RequestBody Product product){
-        Product savedProduct = productService.saveNewProduct(product);
+    public ResponseEntity<Void> saveNewProduct(@RequestBody ProductDto product){
+        ProductDto savedProduct = productService.saveNewProduct(product);
 
         // we are returning the location in the header location field of the HTTP response.
         UriComponents uriComponents = UriComponentsBuilder.fromPath(PRODUCT_BASE_URL + "/{product_id}")
@@ -39,7 +39,7 @@ public class ProductController {
     
 
     @GetMapping("/{productId}")
-    public ResponseEntity<Product> geProductById(@PathVariable("productId") UUID productId) {
+    public ResponseEntity<ProductDto> geProductById(@PathVariable("productId") UUID productId) {
         return ResponseEntity.ok(productService.getProductById(productId));
     }
     

@@ -66,7 +66,7 @@ class OrderControllerTest {
 
     @Test
     void testGetOrderById() throws Exception {
-        Order testOrder = orderRepository.findAll().iterator().next();
+        OrderDto testOrder = orderRepository.findAll().iterator().next();
 
         mockMvc.perform(get(OrderController.ORDER_BASE_URL + "/{orderId}", testOrder.getId())
                 .accept(MediaType.APPLICATION_JSON))
@@ -76,13 +76,13 @@ class OrderControllerTest {
 
     @Test
     void testCreateOrder() throws Exception {
-        Customer testCustomer = customerRepository.findAll().iterator().next();
-        Product testProduct = productRepository.findAll().iterator().next();
+        CustomerDto testCustomer = customerRepository.findAll().iterator().next();
+        ProductDto testProduct = productRepository.findAll().iterator().next();
 
-        OrderCreate orderCreate = OrderCreate.builder()
+        OrderCreateDto orderCreate = OrderCreateDto.builder()
             .customerId(testCustomer.getId())
             .selectPaymentMethodId(testCustomer.getPaymentMethods().getFirst().getId())
-            .orderLines(Arrays.asList(OrderLineCreate.builder()
+            .orderLines(Arrays.asList(OrderLineCreateDto.builder()
                 .productId(testProduct.getId())
                 .orderQuantity(1)
                 .build()))

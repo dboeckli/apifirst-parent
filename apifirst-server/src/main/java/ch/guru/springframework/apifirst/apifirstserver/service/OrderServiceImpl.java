@@ -23,21 +23,21 @@ public class OrderServiceImpl implements OrderService {
     private final ProductRepository productRepository;
     
     @Override
-    public List<Order> listOrders() {
+    public List<OrderDto> listOrders() {
         return StreamSupport.stream(orderRepository.findAll().spliterator(), false).toList();
     }
 
     @Override
-    public Order getOrderById(UUID orderId) {
+    public OrderDto getOrderById(UUID orderId) {
         return orderRepository.findById(orderId).orElseThrow();
     }
 
     @Override
-    public Order saveNewOrder(OrderCreate orderCreate) {
-        Customer orderCustomer = customerRepository.findById(orderCreate.getCustomerId()).orElseThrow();
+    public OrderDto saveNewOrder(OrderCreateDto orderCreate) {
+        CustomerDto orderCustomer = customerRepository.findById(orderCreate.getCustomerId()).orElseThrow();
 
-        Order.OrderBuilder orderBuilder = Order.builder()
-            .customer(OrderCustomer.builder()
+        OrderDto.OrderDtoBuilder orderBuilder = OrderDto.builder()
+            .customer(OrderCustomerDto.builder()
                 .id(orderCustomer.getId())
                 .name(orderCustomer.getName())
                 .email(orderCustomer.getEmail())
@@ -49,16 +49,16 @@ public class OrderServiceImpl implements OrderService {
                         .equals(orderCreate.getSelectPaymentMethodId()))
                     .findFirst().orElseThrow())
                 .build())
-            .orderStatus(Order.OrderStatusEnum.NEW);
+            .orderStatus(OrderDto.OrderStatusEnum.NEW);
 
-        List<OrderLine> orderLines = new ArrayList<>();
+        List<OrderLineDto> orderLines = new ArrayList<>();
 
         orderCreate.getOrderLines()
             .forEach(orderLineCreate -> {
-                Product product = productRepository.findById(orderLineCreate.getProductId()).orElseThrow();
+                ProductDto product = productRepository.findById(orderLineCreate.getProductId()).orElseThrow();
 
-                orderLines.add(OrderLine.builder()
-                    .product(OrderProduct.builder()
+                orderLines.add(OrderLineDto.builder()
+                    .product(OrderProductDto.builder()
                         .id(product.getId())
                         .description(product.getDescription())
                         .price(product.getPrice())
