@@ -1,7 +1,7 @@
 package ch.guru.springframework.apifirst.apifirstserver.repositories;
 
 import ch.guru.springframework.apifirst.model.Category;
-import ch.guru.springframework.apifirst.model.Dimentions;
+import ch.guru.springframework.apifirst.model.Dimensions;
 import ch.guru.springframework.apifirst.model.Image;
 import ch.guru.springframework.apifirst.model.Product;
 import org.springframework.stereotype.Repository;
@@ -59,11 +59,11 @@ public class ProductRepositoryImpl implements ProductRepository {
                 .collect(Collectors.toList()));
         }
 
-        if (entity.getDimentions() != null) {
-            builder.dimentions(Dimentions.builder()
-                .length(entity.getDimentions().getLength())
-                .width(entity.getDimentions().getWidth())
-                .height(entity.getDimentions().getHeight())
+        if (entity.getDimensions() != null) {
+            builder.dimensions(Dimensions.builder()
+                .length(entity.getDimensions().getLength())
+                .width(entity.getDimensions().getWidth())
+                .height(entity.getDimensions().getHeight())
                 .build());
         }
 

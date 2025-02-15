@@ -2,7 +2,7 @@ package ch.guru.springframework.apifirst.apifirstserver.controller;
 
 import ch.guru.springframework.apifirst.apifirstserver.repositories.ProductRepository;
 import ch.guru.springframework.apifirst.model.Category;
-import ch.guru.springframework.apifirst.model.Dimentions;
+import ch.guru.springframework.apifirst.model.Dimensions;
 import ch.guru.springframework.apifirst.model.Image;
 import ch.guru.springframework.apifirst.model.Product;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -83,7 +83,7 @@ class ProductControllerTest {
                         .url("http://example.com/image.jpg")
                         .altText("Image Alt Text")
                         .build()))
-                .dimentions(Dimentions.builder()
+                .dimensions(Dimensions.builder()
                         .length(10)
                         .width(10)
                         .height(10)
