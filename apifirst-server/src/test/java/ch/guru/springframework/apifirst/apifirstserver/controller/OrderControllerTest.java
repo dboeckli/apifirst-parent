@@ -106,9 +106,9 @@ class OrderControllerTest {
         log.info("Extracted path: {}", path);
 
         // Perform GET request using the extracted path
-        // TODO: FIXME
         mockMvc.perform(get(path)
                 .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
     }
+
 }
