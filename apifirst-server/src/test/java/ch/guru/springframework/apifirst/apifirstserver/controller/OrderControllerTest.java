@@ -81,7 +81,7 @@ class OrderControllerTest {
 
         OrderCreate orderCreate = OrderCreate.builder()
             .customerId(testCustomer.getId())
-            .selectPaymentMethod(testCustomer.getPaymentMethods().getFirst().getId())
+            .selectPaymentMethodId(testCustomer.getPaymentMethods().getFirst().getId())
             .orderLines(Arrays.asList(OrderLineCreate.builder()
                 .productId(testProduct.getId())
                 .orderQuantity(1)
