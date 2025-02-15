@@ -1,15 +1,15 @@
 package ch.guru.springframework.apifirst.apifirstserver.service;
 
-import ch.guru.springframework.apifirst.model.Product;
+import ch.guru.springframework.apifirst.model.ProductDto;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface ProductService {
     
-    List<Product> listProducts();
+    List<ProductDto> listProducts();
 
-    Product getProductById(UUID productId);
+    ProductDto getProductById(UUID productId);
 
-    Product saveNewProduct(Product product);
+    ProductDto saveNewProduct(ProductDto product);
 }

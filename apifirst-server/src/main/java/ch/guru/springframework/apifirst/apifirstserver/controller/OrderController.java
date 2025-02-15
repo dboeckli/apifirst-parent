@@ -1,8 +1,8 @@
 package ch.guru.springframework.apifirst.apifirstserver.controller;
 
 import ch.guru.springframework.apifirst.apifirstserver.service.OrderService;
-import ch.guru.springframework.apifirst.model.Order;
-import ch.guru.springframework.apifirst.model.OrderCreate;
+import ch.guru.springframework.apifirst.model.OrderCreateDto;
+import ch.guru.springframework.apifirst.model.OrderDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,13 +23,13 @@ public class OrderController {
     private final OrderService orderService;
 
     @GetMapping
-    public ResponseEntity<List<Order>> listOrders() {
+    public ResponseEntity<List<OrderDto>> listOrders() {
         return ResponseEntity.ok(orderService.listOrders());
     }
 
     @PostMapping
-    public ResponseEntity<Void> saveNewOrder(@RequestBody OrderCreate orderCreate){
-        Order savedOrder = orderService.saveNewOrder(orderCreate);
+    public ResponseEntity<Void> saveNewOrder(@RequestBody OrderCreateDto orderCreate){
+        OrderDto savedOrder = orderService.saveNewOrder(orderCreate);
 
         // we are returning the location in the header location field of the HTTP response.
         UriComponents uriComponents = UriComponentsBuilder.fromPath(ORDER_BASE_URL + "/{order_id}")
@@ -39,7 +39,7 @@ public class OrderController {
     }
 
     @GetMapping("/{orderId}")
-    public ResponseEntity<Order> getOrderById(@PathVariable("orderId") UUID orderId) {
+    public ResponseEntity<OrderDto> getOrderById(@PathVariable("orderId") UUID orderId) {
         return ResponseEntity.ok(orderService.getOrderById(orderId));
     }
     

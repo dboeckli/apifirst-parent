@@ -1,9 +1,9 @@
 package ch.guru.springframework.apifirst.apifirstserver.controller;
 
 import ch.guru.springframework.apifirst.apifirstserver.repositories.CustomerRepository;
-import ch.guru.springframework.apifirst.model.Address;
-import ch.guru.springframework.apifirst.model.Customer;
-import ch.guru.springframework.apifirst.model.Name;
+import ch.guru.springframework.apifirst.model.AddressDto;
+import ch.guru.springframework.apifirst.model.CustomerDto;
+import ch.guru.springframework.apifirst.model.NameDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.Filter;
 import lombok.extern.slf4j.Slf4j;
@@ -59,7 +59,7 @@ class CustomerControllerTest {
 
     @Test
     void testGetCustomerById() throws Exception {
-        Customer testCustomer = customerRepository.findAll().iterator().next();
+        CustomerDto testCustomer = customerRepository.findAll().iterator().next();
 
         mockMvc.perform(get(CustomerController.CUSTOMER_BASE_URL + "/{customerId}", testCustomer.getId())
                 .accept(MediaType.APPLICATION_JSON))
@@ -69,15 +69,15 @@ class CustomerControllerTest {
 
     @Test
     void testCreateCustomer() throws Exception {
-        Address address = Address.builder()
+        AddressDto address = AddressDto.builder()
             .addressLine1("New Customer Address Line 1")
             .zip("12345")
             .state("ZH")
             .city("New Customer City")
             .build();
         
-        Customer newCustomer = Customer.builder()
-            .name(Name.builder()
+        CustomerDto newCustomer = CustomerDto.builder()
+            .name(NameDto.builder()
                 .firstName("New Customer Firstname")
                 .lastName("New Customer Lastname")
                 .build())

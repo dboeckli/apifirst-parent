@@ -1,7 +1,7 @@
 package ch.guru.springframework.apifirst.apifirstserver.controller;
 
 import ch.guru.springframework.apifirst.apifirstserver.service.CustomerService;
-import ch.guru.springframework.apifirst.model.Customer;
+import ch.guru.springframework.apifirst.model.CustomerDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,13 +22,13 @@ public class CustomerController {
     private final CustomerService customerService;
     
     @GetMapping
-    public ResponseEntity<List<Customer>> listCustomers() {
+    public ResponseEntity<List<CustomerDto>> listCustomers() {
         return ResponseEntity.ok(customerService.listCustomers());
     }
 
     @PostMapping
-    public ResponseEntity<Void> saveNewCustomer(@RequestBody Customer customer){
-        Customer savedCustomer = customerService.saveNewCustomer(customer);
+    public ResponseEntity<Void> saveNewCustomer(@RequestBody CustomerDto customer){
+        CustomerDto savedCustomer = customerService.saveNewCustomer(customer);
 
         // we are returning the location in the header location field of the HTTP response.
         UriComponents uriComponents = UriComponentsBuilder.fromPath(CUSTOMER_BASE_URL + "/{customer_id}")
@@ -38,7 +38,7 @@ public class CustomerController {
     }
 
     @GetMapping("/{customerId}")
-    public ResponseEntity<Customer> getCustomerById(@PathVariable("customerId") UUID customerId) {
+    public ResponseEntity<CustomerDto> getCustomerById(@PathVariable("customerId") UUID customerId) {
         return ResponseEntity.ok(customerService.getCustomerById(customerId));
     }
     

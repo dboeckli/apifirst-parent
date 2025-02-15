@@ -1,14 +1,14 @@
 package ch.guru.springframework.apifirst.apifirstserver.service;
 
-import ch.guru.springframework.apifirst.model.Customer;
+import ch.guru.springframework.apifirst.model.CustomerDto;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface CustomerService {
-    List<Customer> listCustomers();
+    List<CustomerDto> listCustomers();
 
-    Customer getCustomerById(UUID customerId);
+    CustomerDto getCustomerById(UUID customerId);
 
-    Customer saveNewCustomer(Customer customer);
+    CustomerDto saveNewCustomer(CustomerDto customer);
 }
