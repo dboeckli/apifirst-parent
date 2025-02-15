@@ -12,8 +12,8 @@
 
     <artifactId>apifirst-api</artifactId>
 
-    <name>apifirst-server</name>
-    <description>apifirst-server</description>
+    <name>apifirst-api</name>
+    <description>apifirst-api</description>
 
     <dependencies>
         <dependency>
