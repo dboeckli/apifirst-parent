@@ -15,18 +15,22 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @Entity
-public class Address {
+public class PaymentMethod {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @JdbcTypeCode(SqlTypes.CHAR)
     @Column(length = 36, columnDefinition = "char(36)", updatable = false, nullable = false)
     private UUID id;
-    private String addressLine1;
-    private String addressLine2;
-    private String city;
-    private String state;
-    private String zip;
+
+    @ManyToOne
+    private Customer customer;
+
+    private String displayName;
+    private Integer cardNumber;
+    private Integer expiryMonth;
+    private Integer expiryYear;
+    private Integer cvv;
     
     private OffsetDateTime dateCreated;
     private OffsetDateTime dateUpdated;

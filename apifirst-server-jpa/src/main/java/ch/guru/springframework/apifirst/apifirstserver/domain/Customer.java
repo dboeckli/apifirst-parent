@@ -5,6 +5,8 @@ import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -33,4 +35,11 @@ public class Customer {
 
     @OneToOne
     private Address billToAddress;
+
+    @OneToMany(mappedBy = "customer")
+    @ToString.Exclude
+    private List<PaymentMethod> paymentMethods;
+
+    private OffsetDateTime dateCreated;
+    private OffsetDateTime dateUpdated;
 }
