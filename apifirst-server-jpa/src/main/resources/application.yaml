@@ -17,7 +17,7 @@ spring:
         # Show SQL  
         show_sql: false
         # Format SQL
-        format_sql: true  
+        format_sql: true
   h2:
     console:
       enabled: false      
