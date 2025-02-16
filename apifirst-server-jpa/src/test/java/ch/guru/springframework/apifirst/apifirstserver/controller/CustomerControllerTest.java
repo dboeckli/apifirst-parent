@@ -7,11 +7,11 @@ import ch.guru.springframework.apifirst.model.NameDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.Filter;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -25,6 +25,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Slf4j
 class CustomerControllerTest {
 
@@ -50,6 +52,7 @@ class CustomerControllerTest {
     }
 
     @Test
+    @Order(1)
     void testListCustomers() throws Exception {
         mockMvc.perform(get(CustomerController.CUSTOMER_BASE_URL)
                 .accept(MediaType.APPLICATION_JSON))
@@ -58,6 +61,7 @@ class CustomerControllerTest {
     }
 
     @Test
+    @Order(2)
     void testGetCustomerById() throws Exception {
         CustomerDto testCustomer = customerRepository.findAll().iterator().next();
 
@@ -68,6 +72,7 @@ class CustomerControllerTest {
     }
 
     @Test
+    @Order(3)
     void testCreateCustomer() throws Exception {
         AddressDto address = AddressDto.builder()
             .addressLine1("New Customer Address Line 1")
