@@ -19,7 +19,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @Entity
-// TODO: RENAME ME. ORDER IS A RESERVED NAME IN HIBERNATE
+@Table(name = "Orders")
 public class Order {
 
     @Id
