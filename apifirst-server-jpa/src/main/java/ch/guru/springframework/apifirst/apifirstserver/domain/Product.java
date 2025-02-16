@@ -30,6 +30,7 @@ public class Product {
     @Embedded
     private Dimension dimensions;
 
+    // TODO: Consider using @ManyToMany or @JoinTable for many-to-many relationship with Category
     //private List<Category> categories;
 
     @OneToMany(mappedBy = "product")
