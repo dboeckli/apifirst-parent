@@ -1,5 +1,6 @@
 package ch.guru.springframework.apifirst.apifirstserver.jpa.controller;
 
+import ch.guru.springframework.apifirst.apifirstserver.jpa.domain.Product;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.ProductRepository;
 import ch.guru.springframework.apifirst.model.CategoryDto;
 import ch.guru.springframework.apifirst.model.DimensionsDto;
@@ -66,7 +67,7 @@ class ProductControllerTest {
     @Test
     @Order(2)
     void testGetProductById() throws Exception {
-        ProductDto testProduct = productRepository.findAll().iterator().next();
+        Product testProduct = productRepository.findAll().iterator().next();
 
         mockMvc.perform(get(ProductController.PRODUCT_BASE_URL + "/{prodcutId}", testProduct.getId())
                 .accept(MediaType.APPLICATION_JSON))
