@@ -8,11 +8,11 @@ import ch.guru.springframework.apifirst.model.ProductDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.Filter;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -27,6 +27,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Slf4j
 class ProductControllerTest {
 
@@ -52,6 +54,7 @@ class ProductControllerTest {
     }
 
     @Test
+    @Order(1)
     void testListProducts() throws Exception {
         mockMvc.perform(get(ProductController.PRODUCT_BASE_URL)
                 .accept(MediaType.APPLICATION_JSON))
@@ -60,6 +63,7 @@ class ProductControllerTest {
     }
 
     @Test
+    @Order(2)
     void testGetProductById() throws Exception {
         ProductDto testProduct = productRepository.findAll().iterator().next();
 
@@ -70,6 +74,7 @@ class ProductControllerTest {
     }
 
     @Test
+    @Order(3)
     void testCreateProduct() throws Exception {
         ProductDto newProduct = ProductDto.builder()
                 .description("New Product")
