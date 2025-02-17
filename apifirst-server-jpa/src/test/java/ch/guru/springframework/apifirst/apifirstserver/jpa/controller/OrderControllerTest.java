@@ -24,7 +24,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.net.URI;
-import java.util.Arrays;
 import java.util.Collections;
 
 import static org.hamcrest.Matchers.greaterThan;

@@ -1,6 +1,8 @@
 package ch.guru.springframework.apifirst.apifirstserver.jpa.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -29,20 +31,24 @@ public class Order {
     private UUID id;
 
     @ManyToOne
+    @NotNull
     private Customer customer;
 
     @ManyToOne
     private PaymentMethod selectedPaymentMethod;
 
+    @NotNull
     @Builder.Default
     @Enumerated(EnumType.STRING)
     private OrderStatusEnum orderStatus = OrderStatusEnum.NEW;
 
+    @Size(min = 1,max = 255)
     private String shipmentInfo;
 
     @Builder.Default
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     @ToString.Exclude
+    @NotNull
     private List<OrderLine> orderLines = new ArrayList<>();
 
     @CreationTimestamp

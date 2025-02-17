@@ -1,6 +1,8 @@
 package ch.guru.springframework.apifirst.apifirstserver.jpa.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -22,9 +24,15 @@ public class Category {
     @JdbcTypeCode(SqlTypes.CHAR)
     @Column(length = 36, columnDefinition = "char(36)", updatable = false, nullable = false)
     private UUID id;
-    
+
+    @NotNull
+    @Size(min = 3,max = 25)
     private String category;
+    @NotNull 
+    @Size(min = 3,max = 255)
     private String description;
+    @NotNull 
+    @Size(min = 3,max = 25)
     private String categoryCode;
 
     @ManyToMany(mappedBy = "categories")

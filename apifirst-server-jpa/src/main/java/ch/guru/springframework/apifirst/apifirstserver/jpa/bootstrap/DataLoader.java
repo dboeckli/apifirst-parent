@@ -145,6 +145,7 @@ public class DataLoader implements CommandLineRunner {
                     .shipQuantity(1)
                     .build()))
             .build();
+        order1.getOrderLines().forEach(orderLine -> orderLine.setOrder(order1));
 
         Order order2 = Order.builder()
             .customer(savedCustomer2)
@@ -162,6 +163,7 @@ public class DataLoader implements CommandLineRunner {
                     .shipQuantity(1)
                     .build()))
             .build();
+        order2.getOrderLines().forEach(orderLine -> orderLine.setOrder(order2));
 
         orderRepository.save(order1);
         orderRepository.save(order2);
