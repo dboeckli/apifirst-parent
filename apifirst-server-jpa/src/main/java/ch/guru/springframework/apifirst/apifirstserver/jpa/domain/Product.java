@@ -1,6 +1,9 @@
 package ch.guru.springframework.apifirst.apifirstserver.jpa.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -25,19 +28,25 @@ public class Product {
     @JdbcTypeCode(SqlTypes.CHAR)
     @Column(length = 36, columnDefinition = "char(36)", updatable = false, nullable = false)
     private UUID id;
+
+    @NotNull
+    @Size(min = 3, max = 255)
     private String description;
 
     @Embedded
     private Dimension dimensions;
 
-    // TODO: Consider using @ManyToMany or @JoinTable for many-to-many relationship with Category
-    //private List<Category> categories;
+    @ManyToMany
+    @ToString.Exclude
+    private List<Category> categories;
 
     @OneToMany(mappedBy = "product")
     @ToString.Exclude
     private List<Image> images;
-    
+
+    @Pattern(regexp = "^-?(?:0|[1-9]\\d{0,2}(?:,?\\d{3})*)(?:\\.\\d+)?$")
     private String price;
+    @Pattern(regexp = "^-?(?:0|[1-9]\\d{0,2}(?:,?\\d{3})*)(?:\\.\\d+)?$")
     private String cost;
 
     @CreationTimestamp

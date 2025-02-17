@@ -1,5 +1,6 @@
 package ch.guru.springframework.apifirst.apifirstserver.jpa.controller;
 
+import ch.guru.springframework.apifirst.apifirstserver.jpa.bootstrap.DataLoader;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.domain.Customer;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.CustomerRepository;
 import ch.guru.springframework.apifirst.model.AddressDto;
@@ -11,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
@@ -28,8 +30,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@Import(DataLoader.class)
 @Slf4j
-@Disabled // TODO Enable after implementing endpoints for creating, updating, and deleting customers
 class CustomerControllerTest {
 
     @Autowired

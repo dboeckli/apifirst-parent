@@ -1,17 +1,19 @@
 package ch.guru.springframework.apifirst.apifirstserver.jpa.controller;
 
+import ch.guru.springframework.apifirst.apifirstserver.jpa.bootstrap.DataLoader;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.domain.Product;
+import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.CategoryRepository;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.ProductRepository;
-import ch.guru.springframework.apifirst.model.CategoryDto;
 import ch.guru.springframework.apifirst.model.DimensionsDto;
 import ch.guru.springframework.apifirst.model.ImageDto;
-import ch.guru.springframework.apifirst.model.ProductDto;
+import ch.guru.springframework.apifirst.model.ProductCreateDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.Filter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
@@ -20,7 +22,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.net.URI;
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static org.hamcrest.Matchers.greaterThan;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -30,12 +33,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@Import(DataLoader.class)
 @Slf4j
-@Disabled // TODO Enable after implementing endpoints for creating, updating, and deleting customers
 class ProductControllerTest {
 
     @Autowired
     ProductRepository productRepository;
+
+    @Autowired
+    CategoryRepository categoryRepository;
 
     @Autowired
     WebApplicationContext wac;
@@ -78,18 +84,17 @@ class ProductControllerTest {
     @Test
     @Order(3)
     void testCreateProduct() throws Exception {
-        ProductDto newProduct = ProductDto.builder()
+        String categoryName = categoryRepository.findAll().getFirst().getCategory();
+        
+        ProductCreateDto newProduct = ProductCreateDto.builder()
                 .description("New Product")
                 .cost("5.00")
                 .price("8.95")
-                .categories(Arrays.asList(CategoryDto.builder()
-                        .category("New Category")
-                        .description("New Category Description")
-                        .build()))
-                .images(Arrays.asList(ImageDto.builder()
-                        .url("http://example.com/image.jpg")
-                        .altText("Image Alt Text")
-                        .build()))
+                .categories(List.of(categoryName))
+                .images(Collections.singletonList(ImageDto.builder()
+                    .url("http://example.com/image.jpg")
+                    .altText("Image Alt Text")
+                    .build()))
                 .dimensions(DimensionsDto.builder()
                         .length(10)
                         .width(10)

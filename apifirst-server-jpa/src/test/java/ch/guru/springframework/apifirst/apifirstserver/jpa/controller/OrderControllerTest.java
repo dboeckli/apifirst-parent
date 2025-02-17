@@ -1,5 +1,6 @@
 package ch.guru.springframework.apifirst.apifirstserver.jpa.controller;
 
+import ch.guru.springframework.apifirst.apifirstserver.jpa.bootstrap.DataLoader;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.domain.Customer;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.domain.Product;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.CustomerRepository;
@@ -9,10 +10,12 @@ import ch.guru.springframework.apifirst.model.OrderCreateDto;
 import ch.guru.springframework.apifirst.model.OrderLineCreateDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.Filter;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
@@ -21,7 +24,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.net.URI;
-import java.util.Arrays;
+import java.util.Collections;
 
 import static org.hamcrest.Matchers.greaterThan;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -31,8 +34,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@Import(DataLoader.class)
 @Slf4j
-@Disabled // TODO Enable after implementing endpoints for creating, updating, and deleting customers
 class OrderControllerTest {
 
     @Autowired
@@ -74,7 +77,7 @@ class OrderControllerTest {
     @Test
     @Order(2)
     void testGetOrderById() throws Exception {
-        ch.guru.springframework.apifirst.apifirstserver.jpa.domain.Order testOrder = orderRepository.findAll().iterator().next();
+        ch.guru.springframework.apifirst.apifirstserver.jpa.domain.Order testOrder = orderRepository.findAll().getFirst();
 
         mockMvc.perform(get(OrderController.ORDER_BASE_URL + "/{orderId}", testOrder.getId())
                 .accept(MediaType.APPLICATION_JSON))
@@ -84,14 +87,15 @@ class OrderControllerTest {
 
     @Test
     @Order(3)
+    @Transactional
     void testCreateOrder() throws Exception {
-        Customer testCustomer = customerRepository.findAll().iterator().next();
-        Product testProduct = productRepository.findAll().iterator().next();
+        Customer testCustomer = customerRepository.findAll().getFirst();
+        Product testProduct = productRepository.findAll().getFirst();
 
         OrderCreateDto orderCreate = OrderCreateDto.builder()
             .customerId(testCustomer.getId())
             .selectPaymentMethodId(testCustomer.getPaymentMethods().getFirst().getId())
-            .orderLines(Arrays.asList(OrderLineCreateDto.builder()
+            .orderLines(Collections.singletonList(OrderLineCreateDto.builder()
                 .productId(testProduct.getId())
                 .orderQuantity(1)
                 .build()))
