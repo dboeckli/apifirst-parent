@@ -31,7 +31,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Slf4j
-@Disabled // TODO Enable after implementing endpoints for creating, updating, and deleting customers
 class ProductControllerTest {
 
     @Autowired
@@ -57,6 +56,7 @@ class ProductControllerTest {
 
     @Test
     @Order(1)
+    @Disabled // TODO Enable after implementing endpoints for creating, updating, and deleting customers
     void testListProducts() throws Exception {
         mockMvc.perform(get(ProductController.PRODUCT_BASE_URL)
                 .accept(MediaType.APPLICATION_JSON))
@@ -66,6 +66,7 @@ class ProductControllerTest {
 
     @Test
     @Order(2)
+    @Disabled // TODO Enable after implementing endpoints for creating, updating, and deleting customers
     void testGetProductById() throws Exception {
         Product testProduct = productRepository.findAll().iterator().next();
 
@@ -77,6 +78,7 @@ class ProductControllerTest {
 
     @Test
     @Order(3)
+    @Disabled // TODO Enable after implementing endpoints for creating, updating, and deleting customers
     void testCreateProduct() throws Exception {
         ProductDto newProduct = ProductDto.builder()
                 .description("New Product")

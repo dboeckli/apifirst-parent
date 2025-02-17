@@ -19,7 +19,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "Orders")
+@Table(name = "Orders") // Order is a reserved keyword in SQL. Therefore, we've changed the table name to 'Orders'
 public class Order {
 
     @Id

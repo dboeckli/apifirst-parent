@@ -32,15 +32,22 @@ public class Customer {
     private String email;
     private String phone;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private Address shipToAddress;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private Address billToAddress;
 
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
     @ToString.Exclude
     private List<PaymentMethod> paymentMethods;
+
+    @PrePersist
+    public void prePersist() {
+        if (this.paymentMethods != null && !this.paymentMethods.isEmpty()) {
+            this.paymentMethods.forEach(paymentMethod -> paymentMethod.setCustomer(this));
+        }
+    }
 
     @CreationTimestamp
     private OffsetDateTime dateCreated;
