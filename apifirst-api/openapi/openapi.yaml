@@ -142,7 +142,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/product'
+              $ref: '#/components/schemas/product_create'
       responses:
         '201':
           description: Created
@@ -251,6 +251,24 @@ paths:
           description: Bad Request
         '404':
           description: Not Found
+  /v1/categories:
+    get:
+      tags:
+        - Product
+      summary: List Categories
+      description: List Categories
+      operationId: listCategories
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/category_list'
+        '400':
+          $ref: '#/components/responses/bad_request_400'
+        '404':
+          $ref: '#/components/responses/not_found_404'
 security:
   - basic_auth: []
 components:
@@ -537,6 +555,13 @@ components:
           minLength: 3
           maxLength: 255
           example: Electronics and Gadgets
+        category_code:
+          type: string
+          description: The category code of the product
+          format: alphanumeric
+          minLength: 3
+          maxLength: 25
+          example: ELECTRONICS
         dateCreated:
           $ref: '#/components/schemas/iso_timestamp'
         dateUpdated:
@@ -544,6 +569,7 @@ components:
       required:
         - category
         - description
+        - category_code
     image:
       type: object
       properties:
@@ -613,6 +639,34 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/product'
+    product_create:
+      type: object
+      properties:
+        description:
+          type: string
+          description: The description of the product
+          minLength: 3
+          maxLength: 255
+        dimensions:
+          $ref: '#/components/schemas/dimensions'
+        categories:
+          type: array
+          description: The category codes for the product
+          items:
+            type: string
+        images:
+          type: array
+          items:
+            $ref: '#/components/schemas/image'
+        price:
+          type: string
+          pattern: ^-?(?:0|[1-9]\d{0,2}(?:,?\d{3})*)(?:\.\d+)?$
+        cost:
+          type: string
+          pattern: ^-?(?:0|[1-9]\d{0,2}(?:,?\d{3})*)(?:\.\d+)?$
+      required:
+        - description
+        - price
     uuid_id:
       type: string
       format: uuid
@@ -746,6 +800,10 @@ components:
           description: The order lines of the order
       required:
         - customerId
+    category_list:
+      type: array
+      items:
+        $ref: '#/components/schemas/category'
   parameters:
     customer_id:
       name: customerId
@@ -771,3 +829,18 @@ components:
       schema:
         type: string
         format: uuid
+  responses:
+    bad_request_400:
+      description: >-
+        Request was received but was invalid. Check format and content of the
+        request.  See the problem detail for more information.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    not_found_404:
+      description: The requested resource was not found.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
