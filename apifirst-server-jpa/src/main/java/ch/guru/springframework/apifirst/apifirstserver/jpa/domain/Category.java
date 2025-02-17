@@ -28,9 +28,11 @@ public class Category {
     @NotNull
     @Size(min = 3,max = 25)
     private String category;
+    
     @NotNull 
     @Size(min = 3,max = 255)
     private String description;
+    
     @NotNull 
     @Size(min = 3,max = 25)
     private String categoryCode;
