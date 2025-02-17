@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -22,7 +21,7 @@ public class DataLoader implements CommandLineRunner {
     private final CategoryRepository categoryRepository;
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
 
         Category electronics = categoryRepository.save(Category.builder()
             .category("Electronics")
@@ -132,6 +131,7 @@ public class DataLoader implements CommandLineRunner {
 
         Order order1 = Order.builder()
             .customer(savedCustomer1)
+            .selectedPaymentMethod(savedCustomer1.getPaymentMethods().getFirst())
             .orderStatus(OrderStatusEnum.NEW)
             .shipmentInfo("shipment info")
             .orderLines(List.of(OrderLine.builder()
@@ -148,6 +148,7 @@ public class DataLoader implements CommandLineRunner {
 
         Order order2 = Order.builder()
             .customer(savedCustomer2)
+            .selectedPaymentMethod(savedCustomer2.getPaymentMethods().getFirst())
             .orderStatus(OrderStatusEnum.NEW)
             .shipmentInfo("shipment info #2")
             .orderLines(List.of(OrderLine.builder()
