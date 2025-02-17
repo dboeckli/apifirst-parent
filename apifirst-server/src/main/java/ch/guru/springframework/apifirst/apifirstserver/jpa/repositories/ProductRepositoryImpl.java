@@ -37,6 +37,7 @@ public class ProductRepositoryImpl implements ProductRepository {
                     return CategoryDto.builder()
                         .id(UUID.randomUUID())
                         .category(category.getCategory())
+                        .categoryCode(category.getCategoryCode())
                         .description(category.getDescription())
                         .dateCreated(OffsetDateTime.now())
                         .dateUpdated(OffsetDateTime.now())

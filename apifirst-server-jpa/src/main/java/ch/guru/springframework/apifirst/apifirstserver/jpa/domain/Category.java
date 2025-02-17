@@ -2,9 +2,7 @@ package ch.guru.springframework.apifirst.apifirstserver.jpa.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
 
 import java.time.OffsetDateTime;
@@ -18,33 +16,21 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @Entity
-public class Product {
-
+public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @JdbcTypeCode(SqlTypes.CHAR)
     @Column(length = 36, columnDefinition = "char(36)", updatable = false, nullable = false)
     private UUID id;
+    
+    private String category;
     private String description;
+    private String categoryCode;
 
-    @Embedded
-    private Dimension dimensions;
-
-    @ManyToMany
+    @ManyToMany(mappedBy = "categories")
     @ToString.Exclude
-    private List<Category> categories;
+    private List<Product> products;
 
-    @OneToMany(mappedBy = "product")
-    @ToString.Exclude
-    private List<Image> images;
-    
-    private String price;
-    private String cost;
-
-    @CreationTimestamp
     private OffsetDateTime dateCreated;
-
-    @UpdateTimestamp
     private OffsetDateTime dateUpdated;
-    
 }

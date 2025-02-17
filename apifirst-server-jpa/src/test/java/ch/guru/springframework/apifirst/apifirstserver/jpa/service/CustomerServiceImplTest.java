@@ -52,12 +52,6 @@ class CustomerServiceImplTest {
     @Test
     @Transactional
     void testListCustomers() {
-        CustomerDto customerDtoFirst = createCustomerDTO();
-        customerService.saveNewCustomer(customerDtoFirst);
-
-        CustomerDto customerDtoSecond = createCustomerDTO();
-        customerService.saveNewCustomer(customerDtoSecond);
-
         List<CustomerDto> customerDtoList = customerService.listCustomers();
 
         assertAll(

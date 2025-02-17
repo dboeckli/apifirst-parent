@@ -1,5 +1,6 @@
 package ch.guru.springframework.apifirst.apifirstserver.jpa;
 
+import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.CategoryRepository;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.CustomerRepository;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.OrderRepository;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.ProductRepository;
@@ -9,8 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(useMainMethod = SpringBootTest.UseMainMethod.ALWAYS)
 @Slf4j
@@ -27,6 +27,9 @@ class ApifirstServerApplicationTests {
 
     @Autowired
     OrderRepository orderRepository;
+    
+    @Autowired
+    CategoryRepository categoryRepository;
 
     @Test
     void contextLoads() {
@@ -36,9 +39,12 @@ class ApifirstServerApplicationTests {
 
     @Test
     void testDataLoad() {
-        assertThat(customerRepository.count()).isEqualTo(0);
-        assertThat(productRepository.count()).isEqualTo(0);
-        //assertThat(orderRepository.count()).isEqualTo(0); // TODO: RENAME ORDER CLASS
+        assertAll("Data should be empty at start",
+            () -> assertEquals(2, customerRepository.count()),
+            () -> assertEquals(2, productRepository.count()),
+            () -> assertEquals(2, orderRepository.count()),
+            () -> assertEquals(3, categoryRepository.count())
+        );
     }
 
 }

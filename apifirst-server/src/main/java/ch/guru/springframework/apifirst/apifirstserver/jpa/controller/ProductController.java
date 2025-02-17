@@ -27,7 +27,7 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> saveNewProduct(@RequestBody ProductDto product){
+    public ResponseEntity<Void> saveNewProduct(@RequestBody ProductDto product) {
         ProductDto savedProduct = productService.saveNewProduct(product);
 
         // we are returning the location in the header location field of the HTTP response.
