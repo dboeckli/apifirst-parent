@@ -40,9 +40,16 @@ public class Product {
     @ToString.Exclude
     private List<Category> categories;
 
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @ToString.Exclude
     private List<Image> images;
+
+    @PrePersist
+    public void prePersist() {
+        if (this.images != null && !this.images.isEmpty()) {
+            this.images.forEach(image -> image.setProduct(this));
+        }
+    }
 
     @Pattern(regexp = "^-?(?:0|[1-9]\\d{0,2}(?:,?\\d{3})*)(?:\\.\\d+)?$")
     private String price;
