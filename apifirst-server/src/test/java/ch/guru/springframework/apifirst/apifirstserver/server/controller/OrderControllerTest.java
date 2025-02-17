@@ -1,20 +1,16 @@
-package ch.guru.springframework.apifirst.apifirstserver.jpa.controller;
+package ch.guru.springframework.apifirst.apifirstserver.server.controller;
 
-import ch.guru.springframework.apifirst.apifirstserver.jpa.bootstrap.DataLoader;
-import ch.guru.springframework.apifirst.apifirstserver.jpa.domain.Customer;
-import ch.guru.springframework.apifirst.apifirstserver.jpa.domain.Product;
-import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.CustomerRepository;
-import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.OrderRepository;
-import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.ProductRepository;
-import ch.guru.springframework.apifirst.model.OrderCreateDto;
-import ch.guru.springframework.apifirst.model.OrderLineCreateDto;
+import ch.guru.springframework.apifirst.apifirstserver.server.controller.OrderController;
+import ch.guru.springframework.apifirst.apifirstserver.server.repositories.CustomerRepository;
+import ch.guru.springframework.apifirst.apifirstserver.server.repositories.OrderRepository;
+import ch.guru.springframework.apifirst.apifirstserver.server.repositories.ProductRepository;
+import ch.guru.springframework.apifirst.model.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.Filter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
@@ -33,9 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@Import(DataLoader.class)
 @Slf4j
-@Disabled // TODO Enable after implementing endpoints for creating, updating, and deleting customers
 class OrderControllerTest {
 
     @Autowired
@@ -77,7 +71,7 @@ class OrderControllerTest {
     @Test
     @Order(2)
     void testGetOrderById() throws Exception {
-        ch.guru.springframework.apifirst.apifirstserver.jpa.domain.Order testOrder = orderRepository.findAll().iterator().next();
+        OrderDto testOrder = orderRepository.findAll().iterator().next();
 
         mockMvc.perform(get(OrderController.ORDER_BASE_URL + "/{orderId}", testOrder.getId())
                 .accept(MediaType.APPLICATION_JSON))
@@ -88,8 +82,8 @@ class OrderControllerTest {
     @Test
     @Order(3)
     void testCreateOrder() throws Exception {
-        Customer testCustomer = customerRepository.findAll().iterator().next();
-        Product testProduct = productRepository.findAll().iterator().next();
+        CustomerDto testCustomer = customerRepository.findAll().iterator().next();
+        ProductDto testProduct = productRepository.findAll().iterator().next();
 
         OrderCreateDto orderCreate = OrderCreateDto.builder()
             .customerId(testCustomer.getId())

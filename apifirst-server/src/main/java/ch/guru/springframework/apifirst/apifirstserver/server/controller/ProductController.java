@@ -1,6 +1,6 @@
-package ch.guru.springframework.apifirst.apifirstserver.jpa.controller;
+package ch.guru.springframework.apifirst.apifirstserver.server.controller;
 
-import ch.guru.springframework.apifirst.apifirstserver.jpa.service.ProductService;
+import ch.guru.springframework.apifirst.apifirstserver.server.service.ProductService;
 import ch.guru.springframework.apifirst.model.ProductCreateDto;
 import ch.guru.springframework.apifirst.model.ProductDto;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,7 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> saveNewProduct(@RequestBody ProductCreateDto product){
+    public ResponseEntity<Void> saveNewProduct(@RequestBody ProductCreateDto product) {
         ProductDto savedProduct = productService.saveNewProduct(product);
 
         // we are returning the location in the header location field of the HTTP response.

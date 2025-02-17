@@ -1,4 +1,4 @@
-package ch.guru.springframework.apifirst.apifirstserver.jpa.service;
+package ch.guru.springframework.apifirst.apifirstserver.server.service;
 
 import ch.guru.springframework.apifirst.model.ProductCreateDto;
 import ch.guru.springframework.apifirst.model.ProductDto;

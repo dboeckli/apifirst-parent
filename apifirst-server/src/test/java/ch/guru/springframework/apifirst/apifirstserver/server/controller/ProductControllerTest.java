@@ -1,9 +1,7 @@
-package ch.guru.springframework.apifirst.apifirstserver.jpa.controller;
+package ch.guru.springframework.apifirst.apifirstserver.server.controller;
 
-import ch.guru.springframework.apifirst.apifirstserver.jpa.bootstrap.DataLoader;
-import ch.guru.springframework.apifirst.apifirstserver.jpa.domain.Product;
-import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.CategoryRepository;
-import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.ProductRepository;
+import ch.guru.springframework.apifirst.apifirstserver.server.controller.ProductController;
+import ch.guru.springframework.apifirst.apifirstserver.server.repositories.ProductRepository;
 import ch.guru.springframework.apifirst.model.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.Filter;
@@ -11,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
@@ -20,7 +17,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.net.URI;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -32,15 +28,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@Import(DataLoader.class)
 @Slf4j
 class ProductControllerTest {
 
     @Autowired
     ProductRepository productRepository;
-
-    @Autowired
-    CategoryRepository categoryRepository;
 
     @Autowired
     WebApplicationContext wac;
@@ -72,7 +64,7 @@ class ProductControllerTest {
     @Test
     @Order(2)
     void testGetProductById() throws Exception {
-        Product testProduct = productRepository.findAll().iterator().next();
+        ProductDto testProduct = productRepository.findAll().iterator().next();
 
         mockMvc.perform(get(ProductController.PRODUCT_BASE_URL + "/{prodcutId}", testProduct.getId())
                 .accept(MediaType.APPLICATION_JSON))
@@ -83,23 +75,21 @@ class ProductControllerTest {
     @Test
     @Order(3)
     void testCreateProduct() throws Exception {
-        String categoryName = categoryRepository.findAll().getFirst().getCategory();
-        
         ProductCreateDto newProduct = ProductCreateDto.builder()
-                .description("New Product")
-                .cost("5.00")
-                .price("8.95")
-                .categories(List.of(categoryName))
-                .images(Collections.singletonList(ImageDto.builder()
-                    .url("http://example.com/image.jpg")
-                    .altText("Image Alt Text")
-                    .build()))
-                .dimensions(DimensionsDto.builder()
-                        .length(10)
-                        .width(10)
-                        .height(10)
-                        .build())
-                .build();
+            .description("New Product")
+            .cost("5.00")
+            .price("8.95")
+            .categories(List.of("Electronics"))
+            .images(Collections.singletonList(ImageDto.builder()
+                .url("http://example.com/image.jpg")
+                .altText("Image Alt Text")
+                .build()))
+            .dimensions(DimensionsDto.builder()
+                .length(10)
+                .width(10)
+                .height(10)
+                .build())
+            .build();
 
         MvcResult result = mockMvc.perform(post(ProductController.PRODUCT_BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON)

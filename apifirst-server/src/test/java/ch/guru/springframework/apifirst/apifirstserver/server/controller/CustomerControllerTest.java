@@ -1,8 +1,7 @@
-package ch.guru.springframework.apifirst.apifirstserver.jpa.controller;
+package ch.guru.springframework.apifirst.apifirstserver.server.controller;
 
-import ch.guru.springframework.apifirst.apifirstserver.jpa.bootstrap.DataLoader;
-import ch.guru.springframework.apifirst.apifirstserver.jpa.domain.Customer;
-import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.CustomerRepository;
+import ch.guru.springframework.apifirst.apifirstserver.server.controller.CustomerController;
+import ch.guru.springframework.apifirst.apifirstserver.server.repositories.CustomerRepository;
 import ch.guru.springframework.apifirst.model.AddressDto;
 import ch.guru.springframework.apifirst.model.CustomerDto;
 import ch.guru.springframework.apifirst.model.NameDto;
@@ -12,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
@@ -30,7 +28,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@Import(DataLoader.class)
 @Slf4j
 class CustomerControllerTest {
 
@@ -67,7 +64,7 @@ class CustomerControllerTest {
     @Test
     @Order(2)
     void testGetCustomerById() throws Exception {
-        Customer testCustomer = customerRepository.findAll().iterator().next();
+        CustomerDto testCustomer = customerRepository.findAll().iterator().next();
 
         mockMvc.perform(get(CustomerController.CUSTOMER_BASE_URL + "/{customerId}", testCustomer.getId())
                 .accept(MediaType.APPLICATION_JSON))
