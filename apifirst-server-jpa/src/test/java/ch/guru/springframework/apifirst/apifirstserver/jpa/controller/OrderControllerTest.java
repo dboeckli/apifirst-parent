@@ -2,18 +2,24 @@ package ch.guru.springframework.apifirst.apifirstserver.jpa.controller;
 
 import ch.guru.springframework.apifirst.apifirstserver.jpa.bootstrap.DataLoader;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.domain.Customer;
+import ch.guru.springframework.apifirst.apifirstserver.jpa.domain.Order;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.domain.Product;
+import ch.guru.springframework.apifirst.apifirstserver.jpa.mapper.OrderMapper;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.CustomerRepository;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.OrderRepository;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.ProductRepository;
 import ch.guru.springframework.apifirst.model.OrderCreateDto;
 import ch.guru.springframework.apifirst.model.OrderLineCreateDto;
+import ch.guru.springframework.apifirst.model.OrderUpdateDto;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.Filter;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
@@ -27,9 +33,9 @@ import org.springframework.web.context.WebApplicationContext;
 import java.net.URI;
 import java.util.Collections;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -50,6 +56,9 @@ class OrderControllerTest {
 
     @Autowired
     ObjectMapper objectMapper;
+    
+    @Autowired
+    OrderMapper orderMapper;
 
     @Autowired
     WebApplicationContext wac;
@@ -69,7 +78,7 @@ class OrderControllerTest {
     }
 
     @Test
-    @Order(1)
+    @org.junit.jupiter.api.Order(1)
     void testListOrders() throws Exception {
         mockMvc.perform(get(OrderController.ORDER_BASE_URL)
                 .accept(MediaType.APPLICATION_JSON))
@@ -78,7 +87,7 @@ class OrderControllerTest {
     }
 
     @Test
-    @Order(2)
+    @org.junit.jupiter.api.Order(2)
     void testGetOrderById() throws Exception {
         ch.guru.springframework.apifirst.apifirstserver.jpa.domain.Order testOrder = orderRepository.findAll().getFirst();
 
@@ -89,7 +98,7 @@ class OrderControllerTest {
     }
 
     @Test
-    @Order(3)
+    @org.junit.jupiter.api.Order(3)
     @Transactional
     void testCreateOrder() throws Exception {
         Customer testCustomer = customerRepository.findAll().getFirst();
@@ -125,6 +134,25 @@ class OrderControllerTest {
         mockMvc.perform(get(path)
                 .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
+    }
+
+    @Test
+    @Transactional
+    @org.junit.jupiter.api.Order(4)
+    void testUpdateOrder() throws Exception {
+        Order order = orderRepository.findAll().getFirst();
+
+        order.getOrderLines().getFirst().setOrderQuantity(222);
+
+        OrderUpdateDto orderUpdate = orderMapper.orderToUpdateDto(order);
+
+        mockMvc.perform(put(OrderController.ORDER_BASE_URL + "/{orderId}", order.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(orderUpdate))
+                .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id", equalTo(order.getId().toString())))
+            .andExpect(jsonPath("$.orderLines[0].orderQuantity", equalTo(222)));
     }
 
 }
