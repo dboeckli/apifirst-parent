@@ -3,6 +3,7 @@ package ch.guru.springframework.apifirst.apifirstserver.jpa.controller;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.service.ProductService;
 import ch.guru.springframework.apifirst.model.ProductCreateDto;
 import ch.guru.springframework.apifirst.model.ProductDto;
+import ch.guru.springframework.apifirst.model.ProductUpdateDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,6 +37,11 @@ public class ProductController {
                 .buildAndExpand(savedProduct.getId());
 
         return ResponseEntity.created(URI.create(uriComponents.getPath())).build();
+    }
+    
+    @PutMapping("/{productId}")
+    public ResponseEntity<ProductDto> updateProduct(@PathVariable("productId") UUID productId, @RequestBody ProductUpdateDto updatedProduct) {
+        return ResponseEntity.ok(productService.updateProduct(productId, updatedProduct));
     }
     
 

@@ -22,7 +22,7 @@ public abstract class ProductMapperDecorator implements ProductMapper {
 
     @Autowired
     private CategoryRepository categoryRepository;
-    
+
     @Autowired
     private ImageRepository imageRepository;
 
@@ -32,17 +32,17 @@ public abstract class ProductMapperDecorator implements ProductMapper {
     @Override
     public ProductUpdateDto productToUpdateDto(Product product) {
         if (product != null && product.getCategories() != null) {
-                List<String> categoryCodes = new ArrayList<>();
+            List<String> categoryCodes = new ArrayList<>();
 
-                product.getCategories().forEach(category -> categoryCodes.add(category.getCategoryCode()));
+            product.getCategories().forEach(category -> categoryCodes.add(category.getCategoryCode()));
 
-                ProductUpdateDto productUpdateDto = productMapperDelegate.productToUpdateDto(product);
-                productUpdateDto.setCategories(categoryCodes);
+            ProductUpdateDto productUpdateDto = productMapperDelegate.productToUpdateDto(product);
+            productUpdateDto.setCategories(categoryCodes);
 
-                return productUpdateDto;
-            }
-
-
+            return productUpdateDto;
+        } else if (product != null) {
+            return productMapperDelegate.productToUpdateDto(product);
+        }
         return null;
     }
 
@@ -53,7 +53,6 @@ public abstract class ProductMapperDecorator implements ProductMapper {
 
             if (productUpdateDto.getCategories() != null) {
                 List<Category> categories = categoryCodesToCategories(productUpdateDto.getCategories());
-
                 product.setCategories(categories);
             }
 
@@ -61,7 +60,7 @@ public abstract class ProductMapperDecorator implements ProductMapper {
                 product.setImages(new ArrayList<>());
 
                 productUpdateDto.getImages().forEach(imageDto -> {
-                    if (imageDto.getId() != null ) {
+                    if (imageDto.getId() != null) {
                         imageRepository.findById(imageDto.getId()).ifPresent(image -> {
                             Image existingImage = imageRepository.findById(imageDto.getId()).get();
                             imageMapper.updateImage(imageDto, existingImage);
@@ -70,10 +69,8 @@ public abstract class ProductMapperDecorator implements ProductMapper {
                     }
                 });
             }
-
             return product;
         }
-
         return null;
     }
 
@@ -106,9 +103,7 @@ public abstract class ProductMapperDecorator implements ProductMapper {
     //list of string to list of category
     private List<Category> categoryCodesToCategories(List<String> categoryCodes) {
         List<Category> categories = new ArrayList<>();
-
         categoryCodes.forEach(categoryCode -> categoryRepository.findByCategoryCode(categoryCode).ifPresent(categories::add));
-
         return categories;
     }
 

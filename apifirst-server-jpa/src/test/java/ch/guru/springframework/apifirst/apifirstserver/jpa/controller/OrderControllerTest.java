@@ -8,6 +8,7 @@ import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.OrderRep
 import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.ProductRepository;
 import ch.guru.springframework.apifirst.model.OrderCreateDto;
 import ch.guru.springframework.apifirst.model.OrderLineCreateDto;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.Filter;
 import jakarta.transaction.Transactional;
@@ -60,6 +61,8 @@ class OrderControllerTest {
 
     @BeforeEach
     void setUp() {
+        objectMapper.configure(JsonParser.Feature.INCLUDE_SOURCE_IN_LOCATION, true);
+        
         mockMvc = MockMvcBuilders.webAppContextSetup(wac)
             .addFilter(validationFilter)
             .build();
