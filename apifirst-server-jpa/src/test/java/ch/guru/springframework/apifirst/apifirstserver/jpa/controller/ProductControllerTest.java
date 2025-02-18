@@ -5,10 +5,7 @@ import ch.guru.springframework.apifirst.apifirstserver.jpa.domain.Product;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.mapper.ProductMapper;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.CategoryRepository;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.ProductRepository;
-import ch.guru.springframework.apifirst.model.DimensionsDto;
-import ch.guru.springframework.apifirst.model.ImageDto;
-import ch.guru.springframework.apifirst.model.ProductCreateDto;
-import ch.guru.springframework.apifirst.model.ProductUpdateDto;
+import ch.guru.springframework.apifirst.model.*;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.Filter;
@@ -147,6 +144,23 @@ class ProductControllerTest {
         mockMvc.perform(put(ProductController.PRODUCT_BASE_URL + "/{productId}", product.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(productUpdateDto)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.description", equalTo("Updated Description")));
+    }
+
+    @Transactional
+    @Test
+    void testPatchProduct() throws Exception {
+
+        Product product = productRepository.findAll().getFirst();
+
+        ProductPatchDto productPatchDto = productMapper.productToPatchDto(product);
+
+        productPatchDto.setDescription("Updated Description");
+
+        mockMvc.perform(patch(ProductController.PRODUCT_BASE_URL + "/{productId}", product.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(productPatchDto)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.description", equalTo("Updated Description")));
     }
