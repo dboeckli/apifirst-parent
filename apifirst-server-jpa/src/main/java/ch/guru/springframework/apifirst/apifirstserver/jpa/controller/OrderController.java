@@ -3,6 +3,7 @@ package ch.guru.springframework.apifirst.apifirstserver.jpa.controller;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.service.OrderService;
 import ch.guru.springframework.apifirst.model.OrderCreateDto;
 import ch.guru.springframework.apifirst.model.OrderDto;
+import ch.guru.springframework.apifirst.model.OrderUpdateDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,6 +37,13 @@ public class OrderController {
             .buildAndExpand(savedOrder.getId());
 
         return ResponseEntity.created(URI.create(uriComponents.getPath())).build();
+    }
+    
+    @PutMapping("/{orderId}")
+    public ResponseEntity<OrderDto> updateOrder(@PathVariable("orderId") UUID orderId, 
+                                                @RequestBody OrderUpdateDto orderUpdate) {
+        OrderDto updatedOrder = orderService.updateOrder(orderId, orderUpdate);
+        return ResponseEntity.ok(updatedOrder);
     }
 
     @GetMapping("/{orderId}")

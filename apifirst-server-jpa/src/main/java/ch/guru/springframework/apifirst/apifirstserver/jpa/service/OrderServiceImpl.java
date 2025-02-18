@@ -5,6 +5,8 @@ import ch.guru.springframework.apifirst.apifirstserver.jpa.mapper.OrderMapper;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.OrderRepository;
 import ch.guru.springframework.apifirst.model.OrderCreateDto;
 import ch.guru.springframework.apifirst.model.OrderDto;
+import ch.guru.springframework.apifirst.model.OrderUpdateDto;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +35,17 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderDto saveNewOrder(OrderCreateDto orderCreate) {
         Order savedOrder = orderRepository.saveAndFlush(orderMapper.dtoToOrder(orderCreate));
+        return orderMapper.orderToDto(savedOrder);
+    }
+
+    @Transactional
+    @Override
+    public OrderDto updateOrder(UUID orderId, OrderUpdateDto orderUpdateDto) {
+        Order existingOrder = orderRepository.findById(orderId).orElseThrow();
+        orderMapper.updateOrder(orderUpdateDto, existingOrder);
+
+        Order savedOrder = orderRepository.saveAndFlush(existingOrder);
+
         return orderMapper.orderToDto(savedOrder);
     }
 }
