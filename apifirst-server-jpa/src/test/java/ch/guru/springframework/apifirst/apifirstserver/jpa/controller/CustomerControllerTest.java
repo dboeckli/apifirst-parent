@@ -2,6 +2,7 @@ package ch.guru.springframework.apifirst.apifirstserver.jpa.controller;
 
 import ch.guru.springframework.apifirst.apifirstserver.jpa.bootstrap.DataLoader;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.domain.Customer;
+import ch.guru.springframework.apifirst.apifirstserver.jpa.mapper.CustomerMapper;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.CustomerRepository;
 import ch.guru.springframework.apifirst.model.AddressDto;
 import ch.guru.springframework.apifirst.model.CustomerDto;
@@ -9,6 +10,7 @@ import ch.guru.springframework.apifirst.model.NameDto;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.Filter;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +26,10 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.net.URI;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -37,6 +41,9 @@ class CustomerControllerTest {
 
     @Autowired
     CustomerRepository customerRepository;
+    
+    @Autowired
+    CustomerMapper customerMapper;
 
     @Autowired
     WebApplicationContext wac;
@@ -119,5 +126,24 @@ class CustomerControllerTest {
                 .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.email").value("newcustomer@example.com"));
+    }
+
+    @Transactional
+    @Test
+    void testUpdateCustomer() throws Exception {
+        Customer customer = customerRepository.findAll().getFirst();
+
+        customer.getName().setFirstName("Updated");
+        customer.getName().setLastName("Updated2");
+        customer.getPaymentMethods().getFirst().setDisplayName("NEW NAME");
+
+        mockMvc.perform(put(CustomerController.CUSTOMER_BASE_URL + "/{customerId}", customer.getId())
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(customerMapper.customerToDto(customer))))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.name.firstName", equalTo("Updated")))
+            .andExpect(jsonPath("$.name.lastName", equalTo("Updated2")))
+            .andExpect(jsonPath("$.paymentMethods[0].displayName", equalTo("NEW NAME")));
     }
 }
