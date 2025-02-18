@@ -186,6 +186,38 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Problem'
+    put:
+      tags:
+        - Product
+      summary: Update a product by ID
+      description: |
+        Update a product by ID
+      operationId: updateProductById
+      parameters:
+        - name: productId
+          in: path
+          description: The ID of the product to update
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/product_update'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/product'
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
   /v1/orders:
     get:
       tags:
@@ -661,6 +693,58 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/image'
+        price:
+          type: string
+          pattern: ^-?(?:0|[1-9]\d{0,2}(?:,?\d{3})*)(?:\.\d+)?$
+        cost:
+          type: string
+          pattern: ^-?(?:0|[1-9]\d{0,2}(?:,?\d{3})*)(?:\.\d+)?$
+      required:
+        - description
+        - price
+    product_image_update:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: System generated unique identifier for the image.
+          nullable: true
+        url:
+          type: string
+          format: url
+          description: The url of the image
+          minLength: 5
+          maxLength: 500
+          example: >-
+            https://springframework.guru/wp-content/uploads/2019/08/spring-framework-guru-logo.jpg
+        altText:
+          type: string
+          nullable: true
+          minLength: 3
+          maxLength: 255
+      required:
+        - url
+        - id
+    product_update:
+      type: object
+      properties:
+        description:
+          type: string
+          description: The description of the product
+          minLength: 3
+          maxLength: 255
+        dimensions:
+          $ref: '#/components/schemas/dimensions'
+        categories:
+          type: array
+          description: The category codes for the product
+          items:
+            type: string
+        images:
+          type: array
+          items:
+            $ref: '#/components/schemas/product_image_update'
         price:
           type: string
           pattern: ^-?(?:0|[1-9]\d{0,2}(?:,?\d{3})*)(?:\.\d+)?$
