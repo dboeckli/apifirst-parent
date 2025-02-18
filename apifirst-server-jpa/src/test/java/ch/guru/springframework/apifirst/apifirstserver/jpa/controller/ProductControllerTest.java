@@ -2,13 +2,17 @@ package ch.guru.springframework.apifirst.apifirstserver.jpa.controller;
 
 import ch.guru.springframework.apifirst.apifirstserver.jpa.bootstrap.DataLoader;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.domain.Product;
+import ch.guru.springframework.apifirst.apifirstserver.jpa.mapper.ProductMapper;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.CategoryRepository;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.ProductRepository;
 import ch.guru.springframework.apifirst.model.DimensionsDto;
 import ch.guru.springframework.apifirst.model.ImageDto;
 import ch.guru.springframework.apifirst.model.ProductCreateDto;
+import ch.guru.springframework.apifirst.model.ProductUpdateDto;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.Filter;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +29,9 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -42,6 +46,9 @@ class ProductControllerTest {
 
     @Autowired
     CategoryRepository categoryRepository;
+    
+    @Autowired
+    ProductMapper productMapper;
 
     @Autowired
     WebApplicationContext wac;
@@ -56,6 +63,8 @@ class ProductControllerTest {
 
     @BeforeEach
     void setUp() {
+        objectMapper.configure(JsonParser.Feature.INCLUDE_SOURCE_IN_LOCATION, true);
+        
         mockMvc = MockMvcBuilders.webAppContextSetup(wac)
                 .addFilter(validationFilter)
                 .build();
@@ -73,7 +82,7 @@ class ProductControllerTest {
     @Test
     @Order(2)
     void testGetProductById() throws Exception {
-        Product testProduct = productRepository.findAll().iterator().next();
+        Product testProduct = productRepository.findAll().getFirst();
 
         mockMvc.perform(get(ProductController.PRODUCT_BASE_URL + "/{prodcutId}", testProduct.getId())
                 .accept(MediaType.APPLICATION_JSON))
@@ -125,6 +134,21 @@ class ProductControllerTest {
                 .andExpect(jsonPath("$.cost").value("5.00"))
                 .andExpect(jsonPath("$.price").value("8.95"));
 
+    }
+
+    @Transactional
+    @Test
+    void testUpdateProduct() throws Exception {
+        Product product = productRepository.findAll().getFirst();
+
+        ProductUpdateDto productUpdateDto = productMapper.productToUpdateDto(product);
+        productUpdateDto.setDescription("Updated Description");
+
+        mockMvc.perform(put(ProductController.PRODUCT_BASE_URL + "/{productId}", product.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(productUpdateDto)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.description", equalTo("Updated Description")));
     }
 
 }

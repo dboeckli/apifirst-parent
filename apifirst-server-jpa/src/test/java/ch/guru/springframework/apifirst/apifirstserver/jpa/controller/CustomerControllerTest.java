@@ -6,6 +6,7 @@ import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.Customer
 import ch.guru.springframework.apifirst.model.AddressDto;
 import ch.guru.springframework.apifirst.model.CustomerDto;
 import ch.guru.springframework.apifirst.model.NameDto;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.Filter;
 import lombok.extern.slf4j.Slf4j;
@@ -50,6 +51,8 @@ class CustomerControllerTest {
 
     @BeforeEach
     void setUp() {
+        objectMapper.configure(JsonParser.Feature.INCLUDE_SOURCE_IN_LOCATION, true);
+        
         mockMvc = MockMvcBuilders.webAppContextSetup(wac)
                 .addFilter(validationFilter)
                 .build();
@@ -67,7 +70,7 @@ class CustomerControllerTest {
     @Test
     @Order(2)
     void testGetCustomerById() throws Exception {
-        Customer testCustomer = customerRepository.findAll().iterator().next();
+        Customer testCustomer = customerRepository.findAll().getFirst();
 
         mockMvc.perform(get(CustomerController.CUSTOMER_BASE_URL + "/{customerId}", testCustomer.getId())
                 .accept(MediaType.APPLICATION_JSON))

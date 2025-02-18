@@ -1,6 +1,8 @@
 package ch.guru.springframework.apifirst.apifirstserver.jpa.controller;
 
 import ch.guru.springframework.apifirst.apifirstserver.jpa.bootstrap.DataLoader;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.Filter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,12 +27,16 @@ class CategoryControllerTest {
     WebApplicationContext wac;
 
     @Autowired
+    ObjectMapper objectMapper;
+
+    @Autowired
     Filter validationFilter;
 
     public MockMvc mockMvc;
 
     @BeforeEach
     void setUp() {
+        objectMapper.configure(JsonParser.Feature.INCLUDE_SOURCE_IN_LOCATION, true);
         mockMvc = MockMvcBuilders.webAppContextSetup(wac)
             .addFilter(validationFilter)
             .build();
