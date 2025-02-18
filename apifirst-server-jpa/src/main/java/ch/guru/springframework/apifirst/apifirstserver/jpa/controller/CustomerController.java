@@ -37,6 +37,13 @@ public class CustomerController {
         return ResponseEntity.created(URI.create(uriComponents.getPath())).build();
     }
 
+    @PutMapping("/{customerId}")
+    public ResponseEntity<CustomerDto> updateProduct(@PathVariable("customerId") UUID customerId, 
+                                                     @RequestBody CustomerDto updateCustomer) {
+        CustomerDto updatedCustomer = customerService.updateCustomer(customerId, updateCustomer);
+        return ResponseEntity.ok(updatedCustomer);
+    }
+
     @GetMapping("/{customerId}")
     public ResponseEntity<CustomerDto> getCustomerById(@PathVariable("customerId") UUID customerId) {
         return ResponseEntity.ok(customerService.getCustomerById(customerId));

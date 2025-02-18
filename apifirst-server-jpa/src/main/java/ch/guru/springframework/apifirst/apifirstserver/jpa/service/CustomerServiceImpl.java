@@ -1,5 +1,6 @@
 package ch.guru.springframework.apifirst.apifirstserver.jpa.service;
 
+import ch.guru.springframework.apifirst.apifirstserver.jpa.domain.Customer;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.mapper.CustomerMapper;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.CustomerRepository;
 import ch.guru.springframework.apifirst.model.CustomerDto;
@@ -22,6 +23,15 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public CustomerDto saveNewCustomer(CustomerDto customer) {
         return customerMapper.customerToDto(customerRepository.save(customerMapper.dtoToCustomer(customer)));
+    }
+
+    @Transactional
+    @Override
+    public CustomerDto updateCustomer(UUID customerId, CustomerDto customer) {
+        Customer existingCustomer = customerRepository.findById(customerId).orElseThrow();
+        customerMapper.updateCustomer(customer, existingCustomer);
+
+        return customerMapper.customerToDto(customerRepository.save(existingCustomer));
     }
 
     @Override
