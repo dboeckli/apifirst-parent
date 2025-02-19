@@ -112,6 +112,74 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Problem'
+    put:
+      tags:
+        - Customer
+      summary: Update a customer by ID
+      description: |
+        Update a customer by ID
+      operationId: updateCustomerById
+      parameters:
+        - $ref: '#/components/parameters/customer_id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/customer'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer'
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+    patch:
+      tags:
+        - Customer
+      summary: Patch a customer by ID
+      description: |
+        Patch a customer by ID
+      operationId: patchCustomerById
+      parameters:
+        - $ref: '#/components/parameters/customer_id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/customer_patch'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer'
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+    delete:
+      tags:
+        - Customer
+      summary: Delete a customer by ID
+      description: |
+        Delete a customer by ID
+      operationId: deleteCustomerById
+      parameters:
+        - $ref: '#/components/parameters/customer_id'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
   /v1/products:
     get:
       tags:
@@ -194,13 +262,7 @@ paths:
         Update a product by ID
       operationId: updateProductById
       parameters:
-        - name: productId
-          in: path
-          description: The ID of the product to update
-          required: true
-          schema:
-            type: string
-            format: uuid
+        - $ref: '#/components/parameters/product_id'
       requestBody:
         required: true
         content:
@@ -214,6 +276,48 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/product'
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+    patch:
+      tags:
+        - Product
+      summary: Patch a product by ID
+      description: |
+        Patch a product by ID
+      operationId: patchProductById
+      parameters:
+        - $ref: '#/components/parameters/product_id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/product_patch'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/product'
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+    delete:
+      tags:
+        - Product
+      summary: Delete a Product by ID
+      description: |
+        Delete a Product by ID
+      operationId: deleteProductById
+      parameters:
+        - $ref: '#/components/parameters/product_id'
+      responses:
+        '204':
+          description: No Content
         '400':
           description: Bad Request
         '404':
@@ -283,6 +387,70 @@ paths:
           description: Bad Request
         '404':
           description: Not Found
+    put:
+      tags:
+        - Order
+      summary: Update Order
+      description: Update Order
+      operationId: updateOrder
+      parameters:
+        - $ref: '#/components/parameters/order_id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/order_update'
+      responses:
+        '200':
+          description: Order Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/order'
+        '400':
+          description: Bad Request
+    patch:
+      tags:
+        - Order
+      summary: Patch a order by ID
+      description: |
+        Patch a order by ID
+      operationId: patchOrderById
+      parameters:
+        - $ref: '#/components/parameters/order_id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/order_patch'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/order'
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+    delete:
+      tags:
+        - Order
+      summary: Delete a Order by ID
+      description: |
+        Delete a Order by ID
+      operationId: deleteOrderById
+      parameters:
+        - $ref: '#/components/parameters/order_id'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
   /v1/categories:
     get:
       tags:
@@ -323,6 +491,12 @@ components:
       type: http
       scheme: basic
   schemas:
+    uuid_id:
+      type: string
+      format: uuid
+      description: System generated unique identifier for the resource.
+      readOnly: true
+      nullable: true
     name:
       type: object
       properties:
@@ -368,11 +542,7 @@ components:
       type: object
       properties:
         id:
-          type: string
-          format: uuid
-          description: System generated unique identifier for the address.
-          readOnly: true
-          nullable: true
+          $ref: '#/components/schemas/uuid_id'
         addressLine1:
           type: string
           minLength: 3
@@ -416,11 +586,7 @@ components:
       type: object
       properties:
         id:
-          type: string
-          format: uuid
-          description: System generated unique identifier for the payment method.
-          readOnly: true
-          nullable: true
+          $ref: '#/components/schemas/uuid_id'
         displayName:
           type: string
           minLength: 1
@@ -460,11 +626,7 @@ components:
       type: object
       properties:
         id:
-          type: string
-          format: uuid
-          description: System generated unique identifier for the customer.
-          readOnly: true
-          nullable: true
+          $ref: '#/components/schemas/uuid_id'
         name:
           $ref: '#/components/schemas/name'
         shipToAddress:
@@ -542,6 +704,143 @@ components:
             A URI reference that identifies the specific occurrence of the
             problem.  It may or may not yield further information if
             dereferenced.
+    customer_name_patch:
+      type: object
+      properties:
+        prefix:
+          type: string
+          description: Name Prefix
+          minLength: 0
+          maxLength: 25
+          example: Mr.
+          nullable: true
+        firstName:
+          type: string
+          description: First Name
+          minLength: 2
+          maxLength: 100
+          example: John
+          nullable: true
+        lastName:
+          type: string
+          description: Last Name
+          minLength: 2
+          maxLength: 100
+          example: Thompson
+          nullable: true
+        suffix:
+          type: string
+          description: Name Suffix
+          minLength: 0
+          maxLength: 25
+          nullable: true
+    customer_address_patch:
+      type: object
+      nullable: true
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier representing a specific customer address
+        addressLine1:
+          type: string
+          description: Address Line 1
+          minLength: 3
+          maxLength: 100
+          example: 123 Main Street
+          nullable: true
+        addressLine2:
+          type: string
+          description: Address Line 2
+          minLength: 3
+          maxLength: 100
+          nullable: true
+        city:
+          type: string
+          description: City
+          minLength: 2
+          maxLength: 100
+          example: St Petersburg
+          nullable: true
+        state:
+          type: string
+          description: 2 character state code
+          minLength: 2
+          maxLength: 2
+          example: FL
+          nullable: true
+        zip:
+          type: string
+          description: Zip Code
+          minLength: 5
+          maxLength: 10
+          example: 33701
+          nullable: true
+      required:
+        - id
+    customer_payment_method_patch:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier representing a specific payment method.
+        displayName:
+          type: string
+          minLength: 2
+          maxLength: 100
+          example: My Chase Card
+          nullable: true
+        cardNumber:
+          type: integer
+          example: 1234567890123456
+          nullable: true
+        expiryMonth:
+          type: integer
+          example: 7
+          nullable: true
+        expiryYear:
+          type: integer
+          example: 26
+          nullable: true
+        cvv:
+          type: integer
+          example: 123
+          nullable: true
+      required:
+        - id
+    customer_patch:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/uuid_id'
+        name:
+          $ref: '#/components/schemas/customer_name_patch'
+        shipToAddress:
+          $ref: '#/components/schemas/customer_address_patch'
+        billToAddress:
+          $ref: '#/components/schemas/customer_address_patch'
+        email:
+          type: string
+          nullable: true
+          format: email
+          minLength: 5
+          maxLength: 255
+          description: The customer's email address.
+          example: dboeckli@gmail.com
+        phone:
+          type: string
+          nullable: true
+          pattern: ^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$
+          minLength: 7
+          maxLength: 255
+          description: The customer's phone number.
+          example: +1 (123) 456-7890
+        paymentMethods:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/customer_payment_method_patch'
     dimensions:
       type: object
       properties:
@@ -572,11 +871,7 @@ components:
       type: object
       properties:
         id:
-          type: string
-          format: uuid
-          description: System generated unique identifier for the category.
-          readOnly: true
-          nullable: true
+          $ref: '#/components/schemas/uuid_id'
         category:
           type: string
           nullable: false
@@ -609,11 +904,7 @@ components:
       type: object
       properties:
         id:
-          type: string
-          format: uuid
-          description: System generated unique identifier for the image.
-          readOnly: true
-          nullable: true
+          $ref: '#/components/schemas/uuid_id'
         url:
           type: string
           format: url
@@ -637,11 +928,7 @@ components:
       type: object
       properties:
         id:
-          type: string
-          format: uuid
-          description: System generated unique identifier for the product.
-          readOnly: true
-          nullable: true
+          $ref: '#/components/schemas/uuid_id'
         description:
           type: string
           description: The description of the product
@@ -754,11 +1041,84 @@ components:
       required:
         - description
         - price
-    uuid_id:
-      type: string
-      format: uuid
-      description: System generated unique identifier for the resource.
-      readOnly: true
+    product_dimensions_patch:
+      type: object
+      properties:
+        length:
+          type: integer
+          description: The length of the product
+          minimum: 1
+          maximum: 999
+          example: 10
+          nullable: true
+        width:
+          type: integer
+          description: The width of the product
+          minimum: 1
+          maximum: 999
+          example: 10
+          nullable: true
+        height:
+          type: integer
+          description: The height of the product
+          minimum: 1
+          maximum: 999
+          example: 10
+          nullable: true
+      description: The dimensions of the product
+    product_image_patch:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The unique identifier of the image
+        url:
+          type: string
+          format: url
+          description: The url of the image
+          minLength: 5
+          maxLength: 500
+          nullable: true
+          example: >-
+            https://springframework.guru/wp-content/uploads/2019/08/spring-framework-guru-logo.jpg
+        altText:
+          type: string
+          nullable: true
+          minLength: 3
+          maxLength: 255
+      required:
+        - id
+    product_patch:
+      type: object
+      properties:
+        description:
+          type: string
+          description: The description of the product
+          minLength: 3
+          maxLength: 255
+          nullable: true
+        dimensions:
+          $ref: '#/components/schemas/product_dimensions_patch'
+        categories:
+          type: array
+          description: The category codes for the product
+          items:
+            type: string
+          nullable: true
+        images:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/product_image_patch'
+        price:
+          type: string
+          pattern: ^-?(?:0|[1-9]\d{0,2}(?:,?\d{3})*)(?:\.\d+)?$
+          nullable: true
+        cost:
+          type: string
+          pattern: ^-?(?:0|[1-9]\d{0,2}(?:,?\d{3})*)(?:\.\d+)?$
+          nullable: true
     order_customer:
       type: object
       properties:
@@ -887,6 +1247,82 @@ components:
           description: The order lines of the order
       required:
         - customerId
+    order_line_update:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The unique identifier of the order line
+        productId:
+          type: string
+          format: uuid
+        orderQuantity:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 1000
+          example: 2
+      required:
+        - id
+        - productId
+        - orderQuantity
+    order_update:
+      type: object
+      properties:
+        customerId:
+          type: string
+          format: uuid
+        selectPaymentMethodId:
+          type: string
+          format: uuid
+          nullable: true
+        orderLines:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/order_line_update'
+          description: The order lines of the order
+      required:
+        - customerId
+    order_line_patch:
+      type: object
+      nullable: true
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The unique identifier of the order line
+        productId:
+          type: string
+          format: uuid
+          nullable: true
+        orderQuantity:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 1000
+          example: 2
+          nullable: true
+      required:
+        - id
+    order_patch:
+      type: object
+      properties:
+        customerId:
+          type: string
+          format: uuid
+          nullable: true
+        selectPaymentMethodId:
+          type: string
+          format: uuid
+          nullable: true
+        orderLines:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/order_line_patch'
+          description: The order lines of the order
     category_list:
       type: array
       items:

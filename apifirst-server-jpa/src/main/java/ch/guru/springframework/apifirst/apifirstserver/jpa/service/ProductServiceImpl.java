@@ -53,4 +53,9 @@ public class ProductServiceImpl implements ProductService {
         
         return productMapper.productToDto(productRepository.save(existingProduct));
     }
+
+    @Override
+    public void deleteProduct(UUID productId) {
+        productRepository.deleteById(productId);
+    }
 }

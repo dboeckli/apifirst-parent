@@ -31,6 +31,7 @@ import org.springframework.web.context.WebApplicationContext;
 import java.net.URI;
 import java.util.Collections;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -174,6 +175,31 @@ class OrderControllerTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id", equalTo(order.getId().toString())))
             .andExpect(jsonPath("$.orderLines[0].orderQuantity", equalTo(333)));
+    }
+
+    @Transactional
+    @Test
+    void testDeleteOrder() throws Exception {
+        OrderCreateDto dto = createNewOrderDto();
+        Order savedOrder = orderRepository.save(orderMapper.dtoToOrder(dto));
+
+        mockMvc.perform(delete(OrderController.ORDER_BASE_URL + "/{orderId}", savedOrder.getId()))
+            .andExpect(status().isNoContent());
+
+        assertThat(orderRepository.findById(savedOrder.getId())).isEmpty();
+    }
+
+    private OrderCreateDto createNewOrderDto() {
+        Customer testCustomer = customerRepository.findAll().getFirst();
+        Product testProduct = productRepository.findAll().getFirst();
+        return OrderCreateDto.builder()
+            .customerId(testCustomer.getId())
+            .selectPaymentMethodId(testCustomer.getPaymentMethods().getFirst().getId())
+            .orderLines(Collections.singletonList(OrderLineCreateDto.builder()
+                .productId(testProduct.getId())
+                .orderQuantity(1)
+                .build()))
+            .build();
     }
 
 }
