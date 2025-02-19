@@ -50,6 +50,7 @@ public class OrderServiceImpl implements OrderService {
         return orderMapper.orderToDto(savedOrder);
     }
 
+    @Transactional
     @Override
     public OrderDto patchOrder(UUID orderId, OrderPatchDto orderPatchDto) {
         Order existingOrder = orderRepository.findById(orderId).orElseThrow();
@@ -58,5 +59,11 @@ public class OrderServiceImpl implements OrderService {
         Order savedOrder = orderRepository.saveAndFlush(existingOrder);
 
         return orderMapper.orderToDto(savedOrder);
+    }
+
+    @Transactional
+    @Override
+    public void deleteOrder(UUID orderId) {
+        orderRepository.deleteById(orderId);
     }
 }

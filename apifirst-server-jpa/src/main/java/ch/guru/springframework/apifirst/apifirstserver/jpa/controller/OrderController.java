@@ -54,6 +54,12 @@ public class OrderController {
         return ResponseEntity.ok(patchedOrder);
     }
 
+    @DeleteMapping("/{orderId}")
+    public ResponseEntity<Void> deleteOrder(@PathVariable("orderId") UUID orderId) {
+        orderService.deleteOrder(orderId);
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping("/{orderId}")
     public ResponseEntity<OrderDto> getOrderById(@PathVariable("orderId") UUID orderId) {
         return ResponseEntity.ok(orderService.getOrderById(orderId));

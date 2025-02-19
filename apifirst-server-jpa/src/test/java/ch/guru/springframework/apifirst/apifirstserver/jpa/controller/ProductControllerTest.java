@@ -26,6 +26,7 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -163,6 +164,36 @@ class ProductControllerTest {
                 .content(objectMapper.writeValueAsString(productPatchDto)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.description", equalTo("Updated Description")));
+    }
+
+    @Transactional
+    @Test
+    void testDeleteProduct() throws Exception {
+        ProductCreateDto newProduct = createTestProductCreateDto();
+        Product savedProduct = productRepository.save(productMapper.dtoToProduct(newProduct));
+
+        mockMvc.perform(delete(ProductController.PRODUCT_BASE_URL + "/{productId}", savedProduct.getId()))
+            .andExpect(status().isNoContent());
+
+        assertThat(productRepository.findById(savedProduct.getId())).isEmpty();
+    }
+
+    private ProductCreateDto createTestProductCreateDto() {
+        return ProductCreateDto.builder()
+            .description("New Product")
+            .cost("5.00")
+            .price("8.95")
+            .categories(List.of("ELECTRONICS"))
+            .images(Collections.singletonList(ImageDto.builder()
+                .url("http://example.com/image.jpg")
+                .altText("Image Alt Text")
+                .build()))
+            .dimensions(DimensionsDto.builder()
+                .length(10)
+                .width(10)
+                .height(10)
+                .build())
+            .build();
     }
 
 }
