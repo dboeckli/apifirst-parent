@@ -23,6 +23,9 @@ public class OpenApiValidationConfig {
     }
 
     @Bean
+    // we have currently a problem with that validator which does not validate the responses against the OpenAPI specification
+    // therefore we introduced the workaround with the swagger-request-validator-mockmvc. See the controller tests where we
+    // added the validation explicitly at the end of each test: andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL))
     public WebMvcConfigurer openAPIValidationInterceptor() {
         OpenApiInteractionValidator validator = OpenApiInteractionValidator.createForSpecificationUrl(OPENAPI_SPECIFICATION_URL)
             .build();

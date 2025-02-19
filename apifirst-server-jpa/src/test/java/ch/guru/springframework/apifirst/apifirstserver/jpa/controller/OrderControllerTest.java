@@ -32,6 +32,8 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.UUID;
 
+import static ch.guru.springframework.apifirst.apifirstserver.jpa.config.OpenApiValidationConfig.OPENAPI_SPECIFICATION_URL;
+import static com.atlassian.oai.validator.mockmvc.OpenApiValidationMatchers.openApi;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
@@ -84,7 +86,8 @@ class OrderControllerTest {
         mockMvc.perform(get(OrderController.ORDER_BASE_URL)
                 .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.length()", greaterThan(0)));
+            .andExpect(jsonPath("$.length()", greaterThan(0)))
+            .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL));
     }
 
     @Test
@@ -95,7 +98,8 @@ class OrderControllerTest {
         mockMvc.perform(get(OrderController.ORDER_BASE_URL + "/{orderId}", testOrder.getId())
                 .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.id").value(testOrder.getId().toString()));
+            .andExpect(jsonPath("$.id").value(testOrder.getId().toString()))
+            .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL));
     }
 
     @Test
@@ -103,7 +107,8 @@ class OrderControllerTest {
     void testGetOrderByIdNotFound() throws Exception {
         mockMvc.perform(get(OrderController.ORDER_BASE_URL + "/{orderId}", UUID.randomUUID())
                 .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound())
+            .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL));
     }
 
     @Test
@@ -129,6 +134,7 @@ class OrderControllerTest {
                 .content(objectMapper.writeValueAsString(orderCreate)))
             .andExpect(status().isCreated())
             .andExpect(header().exists("Location"))
+            .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL))
             .andReturn();
 
         String locationHeader = result.getResponse().getHeader("Location");
@@ -143,7 +149,8 @@ class OrderControllerTest {
         // Perform GET request using the extracted path
         mockMvc.perform(get(path)
                 .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
+            .andExpect(status().isOk())
+            .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL));
     }
 
     @Test
@@ -162,7 +169,8 @@ class OrderControllerTest {
                 .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id", equalTo(order.getId().toString())))
-            .andExpect(jsonPath("$.orderLines[0].orderQuantity", equalTo(222)));
+            .andExpect(jsonPath("$.orderLines[0].orderQuantity", equalTo(222)))
+            .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL));
     }
 
     @Transactional
@@ -180,7 +188,8 @@ class OrderControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(orderUpdate))
                 .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound())
+            .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL));
     }
 
     @Transactional
@@ -203,7 +212,8 @@ class OrderControllerTest {
                 .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id", equalTo(order.getId().toString())))
-            .andExpect(jsonPath("$.orderLines[0].orderQuantity", equalTo(333)));
+            .andExpect(jsonPath("$.orderLines[0].orderQuantity", equalTo(333)))
+            .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL));
     }
 
     @Transactional
@@ -224,7 +234,8 @@ class OrderControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(orderPatch))
                 .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound())
+            .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL));
     }
 
     @Transactional
@@ -234,7 +245,8 @@ class OrderControllerTest {
         Order savedOrder = orderRepository.save(orderMapper.dtoToOrder(dto));
 
         mockMvc.perform(delete(OrderController.ORDER_BASE_URL + "/{orderId}", savedOrder.getId()))
-            .andExpect(status().isNoContent());
+            .andExpect(status().isNoContent())
+            .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL));
 
         assertThat(orderRepository.findById(savedOrder.getId())).isEmpty();
     }
@@ -242,7 +254,8 @@ class OrderControllerTest {
     @Test
     void testDeleteNotFound() throws Exception {
         mockMvc.perform(delete(OrderController.ORDER_BASE_URL + "/{orderId}", UUID.randomUUID()))
-            .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound())
+            .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL));
     }
 
     private OrderCreateDto createNewOrderDto() {
