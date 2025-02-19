@@ -25,11 +25,10 @@ import org.springframework.web.context.WebApplicationContext;
 import java.net.URI;
 import java.util.Collections;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -171,5 +170,39 @@ class CustomerControllerTest {
             .andExpect(jsonPath("$.name.firstName", equalTo("Updated")))
             .andExpect(jsonPath("$.name.lastName", equalTo("Updated2")))
             .andExpect(jsonPath("$.paymentMethods[0].displayName", equalTo("NEW NAME")));
+    }
+
+    @Test
+    void testDeleteCustomer() throws Exception {
+        CustomerDto customer = buildTestCustomerDto();
+        Customer savedCustomer = customerRepository.save(customerMapper.dtoToCustomer(customer));
+
+        mockMvc.perform(delete(CustomerController.CUSTOMER_BASE_URL + "/{customerId}", savedCustomer.getId()))
+            .andExpect(status().isNoContent());
+        
+        assertThat(customerRepository.findById(savedCustomer.getId())).isEmpty();
+    }
+
+    private CustomerDto buildTestCustomerDto() {
+        return CustomerDto.builder()
+            .name(NameDto.builder()
+                .lastName("Doe")
+                .firstName("John")
+                .build())
+            .phone("555-555-5555")
+            .email("john@example.com")
+            .shipToAddress(AddressDto.builder()
+                .addressLine1("123 Main St")
+                .city("Denver")
+                .state("CO")
+                .zip("80216")
+                .build())
+            .billToAddress(AddressDto.builder()
+                .addressLine1("123 Main St")
+                .city("Denver")
+                .state("CO")
+                .zip("80216")
+                .build())
+            .build();
     }
 }

@@ -36,11 +36,18 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    @Transactional
     public CustomerDto patchCustomer(UUID customerId, CustomerPatchDto patchCustomer) {
         Customer existingCustomer = customerRepository.findById(customerId).orElseThrow();
         customerMapper.patchCustomer(patchCustomer, existingCustomer);
 
         return customerMapper.customerToDto(customerRepository.save(existingCustomer));
+    }
+
+    @Override
+    @Transactional
+    public void deleteCustomer(UUID customerId) {
+        customerRepository.deleteById(customerId);
     }
 
     @Override

@@ -24,7 +24,8 @@ Beide Server-Implementierungen (`apifirst-server` und `apifirst-server-jpa`) imp
 
 ### API-Dokumentation und OpenAPI-Definitionen
 
-Die OpenAPI-Definitionen werden im Projekt `apifirst-api` erstellt. Diese Definitionen durchlaufen einen GitHub-Build-Prozess mit Redocly, wo sie validiert und verarbeitet werden.
+Die OpenAPI-Definitionen werden im Projekt `apifirst-api` erstellt: https://github.com/dboeckli/apifirst-sb.git
+Diese Definitionen durchlaufen einen GitHub-Build-Prozess mit Redocly, wo sie validiert und verarbeitet werden.
 
 Die finale, validierte OpenAPI-Spezifikation ist auf Redocly verfügbar. Sie bietet eine interaktive und benutzerfreundliche Oberfläche zur Erkundung der API-Spezifikation.
 
