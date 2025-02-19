@@ -2,6 +2,7 @@ package ch.guru.springframework.apifirst.apifirstserver.jpa.service;
 
 import ch.guru.springframework.apifirst.model.ProductCreateDto;
 import ch.guru.springframework.apifirst.model.ProductDto;
+import ch.guru.springframework.apifirst.model.ProductPatchDto;
 import ch.guru.springframework.apifirst.model.ProductUpdateDto;
 
 import java.util.List;
@@ -16,4 +17,6 @@ public interface ProductService {
     ProductDto saveNewProduct(ProductCreateDto product);
     
     ProductDto updateProduct(UUID productId, ProductUpdateDto product);
+
+    ProductDto patchProduct(UUID productId, ProductPatchDto product);
 }
