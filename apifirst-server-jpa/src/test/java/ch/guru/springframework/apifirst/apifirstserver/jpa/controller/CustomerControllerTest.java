@@ -60,7 +60,6 @@ class CustomerControllerTest {
     @BeforeEach
     void setUp() {
         objectMapper.configure(JsonParser.Feature.INCLUDE_SOURCE_IN_LOCATION, true);
-        
         mockMvc = MockMvcBuilders.webAppContextSetup(wac)
                 .addFilter(validationFilter)
                 .build();
@@ -231,6 +230,14 @@ class CustomerControllerTest {
             .andExpect(status().isNoContent());
         
         assertThat(customerRepository.findById(savedCustomer.getId())).isEmpty();
+    }
+
+    @Test
+    void testDeleteCustomerConflictsWithOrders() throws Exception {
+        Customer customer = customerRepository.findAll().getFirst();
+
+        mockMvc.perform(delete(CustomerController.CUSTOMER_BASE_URL + "/{customerId}", customer.getId()))
+            .andExpect(status().isConflict());
     }
 
     @Test

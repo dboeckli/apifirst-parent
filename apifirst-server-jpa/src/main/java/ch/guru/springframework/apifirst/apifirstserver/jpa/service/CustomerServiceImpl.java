@@ -3,6 +3,7 @@ package ch.guru.springframework.apifirst.apifirstserver.jpa.service;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.domain.Customer;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.mapper.CustomerMapper;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.CustomerRepository;
+import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.OrderRepository;
 import ch.guru.springframework.apifirst.model.CustomerDto;
 import ch.guru.springframework.apifirst.model.CustomerPatchDto;
 import jakarta.transaction.Transactional;
@@ -17,6 +18,7 @@ import java.util.UUID;
 public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
+    private final OrderRepository orderRepository;
     
     private final CustomerMapper customerMapper;
 
@@ -47,8 +49,13 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     @Transactional
     public void deleteCustomer(UUID customerId) {
-        customerRepository.findById(customerId).ifPresentOrElse(customer -> customerRepository.deleteById(customerId), () -> {
-            throw new NotFoundException("Customer not found: " + customerId);
+        customerRepository.findById(customerId).ifPresentOrElse(customer -> {
+            if (!orderRepository.findAllByCustomer(customer).isEmpty()) {
+                throw new ConflictException("Customer has orders");
+            }
+            customerRepository.delete(customer);
+        }, () -> {
+            throw new NotFoundException("Customer Not Found");
         });
     }
 
