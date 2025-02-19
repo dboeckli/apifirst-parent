@@ -10,12 +10,27 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>apifirst-api</artifactId>
+    <artifactId>apifirst-client</artifactId>
 
-    <name>apifirst-api</name>
-    <description>apifirst-api</description>
+    <name>apifirst-client</name>
+    <description>apifirst-client</description>
 
     <dependencies>
+        <dependency>
+            <groupId>ch.guru.springframework.apifirst</groupId>
+            <artifactId>apifirst-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        
+        
         <dependency>
             <groupId>org.openapitools</groupId>
             <artifactId>jackson-databind-nullable</artifactId>
@@ -37,6 +52,18 @@
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-docker-compose</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
 
     <build>
@@ -55,6 +82,27 @@
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
+
+            <!-- we need a port to be able to start the local profile -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>reserve-tomcat-port</id>
+                        <goals>
+                            <goal>reserve-network-port</goal>
+                        </goals>
+                        <phase>process-resources</phase>
+                        <configuration>
+                            <portNames>
+                                <portName>jmx.server.port</portName>
+                                <portName>tomcat.http.port</portName>
+                            </portNames>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             
             <plugin>
                 <groupId>org.openapitools</groupId>
@@ -70,16 +118,20 @@
                             <generatorName>${openapi.generatorName}</generatorName>
                             <library>${openapi.library}</library>
                             
+                            <generateApis>true</generateApis>
                             <generateApiDocumentation>false</generateApiDocumentation>
-                            <generateModelDocumentation>false</generateModelDocumentation>
                             <generateApiTests>false</generateApiTests>
-                            <generateSupportingFiles>false</generateSupportingFiles>
+                            
+                            <generateModels>false</generateModels>
                             <generateModelTests>false</generateModelTests>
                             <generateAliasAsModel>false</generateAliasAsModel>
-                            <generateApis>false</generateApis>
+
+                            <generateSupportingFiles>true</generateSupportingFiles>
                             
+                            <apiPackage>${openapi.apiPackage}</apiPackage>
                             <modelPackage>${openapi.modelPackage}</modelPackage>
                             <modelNameSuffix>${openapi.modelNameSuffix}</modelNameSuffix>
+
                             <configOptions>
                                 <sourceFolder>src/gen/java/main</sourceFolder>
                                 <useJakartaEe>true</useJakartaEe>
