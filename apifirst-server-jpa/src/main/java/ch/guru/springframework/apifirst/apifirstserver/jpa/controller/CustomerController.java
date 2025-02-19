@@ -2,6 +2,7 @@ package ch.guru.springframework.apifirst.apifirstserver.jpa.controller;
 
 import ch.guru.springframework.apifirst.apifirstserver.jpa.service.CustomerService;
 import ch.guru.springframework.apifirst.model.CustomerDto;
+import ch.guru.springframework.apifirst.model.CustomerPatchDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,10 +39,17 @@ public class CustomerController {
     }
 
     @PutMapping("/{customerId}")
-    public ResponseEntity<CustomerDto> updateProduct(@PathVariable("customerId") UUID customerId, 
+    public ResponseEntity<CustomerDto> updateCustomer(@PathVariable("customerId") UUID customerId, 
                                                      @RequestBody CustomerDto updateCustomer) {
         CustomerDto updatedCustomer = customerService.updateCustomer(customerId, updateCustomer);
         return ResponseEntity.ok(updatedCustomer);
+    }
+
+    @PatchMapping("/{customerId}")
+    public ResponseEntity<CustomerDto> patchCustomer(@PathVariable("customerId") UUID customerId,
+                                                     @RequestBody CustomerPatchDto patchCustomer) {
+        CustomerDto patchedCustomer = customerService.patchCustomer(customerId, patchCustomer);
+        return ResponseEntity.ok(patchedCustomer);
     }
 
     @GetMapping("/{customerId}")
