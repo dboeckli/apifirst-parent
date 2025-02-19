@@ -3,6 +3,7 @@ package ch.guru.springframework.apifirst.apifirstserver.jpa.controller;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.service.ProductService;
 import ch.guru.springframework.apifirst.model.ProductCreateDto;
 import ch.guru.springframework.apifirst.model.ProductDto;
+import ch.guru.springframework.apifirst.model.ProductPatchDto;
 import ch.guru.springframework.apifirst.model.ProductUpdateDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -40,8 +41,16 @@ public class ProductController {
     }
     
     @PutMapping("/{productId}")
-    public ResponseEntity<ProductDto> updateProduct(@PathVariable("productId") UUID productId, @RequestBody ProductUpdateDto updatedProduct) {
+    public ResponseEntity<ProductDto> updateProduct(@PathVariable("productId") UUID productId, 
+                                                    @RequestBody ProductUpdateDto updatedProduct) {
         return ResponseEntity.ok(productService.updateProduct(productId, updatedProduct));
+    }
+
+    @PatchMapping("/{productId}")
+    public ResponseEntity<ProductDto> patchProduct(@PathVariable("productId") UUID productId,
+                                                   @RequestBody ProductPatchDto product){
+        ProductDto savedProduct = productService.patchProduct(productId, product);
+        return ResponseEntity.ok(savedProduct);
     }
     
 

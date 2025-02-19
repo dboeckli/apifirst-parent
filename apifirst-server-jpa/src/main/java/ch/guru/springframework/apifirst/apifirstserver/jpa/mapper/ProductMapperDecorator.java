@@ -7,6 +7,7 @@ import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.Category
 import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.ImageRepository;
 import ch.guru.springframework.apifirst.model.ProductCreateDto;
 import ch.guru.springframework.apifirst.model.ProductDto;
+import ch.guru.springframework.apifirst.model.ProductPatchDto;
 import ch.guru.springframework.apifirst.model.ProductUpdateDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -99,6 +100,42 @@ public abstract class ProductMapperDecorator implements ProductMapper {
             target.setCategories(categories);
         }
     }
+
+    @Override
+    public ProductPatchDto productToPatchDto(Product product) {
+        if (product != null) {
+            if (product.getCategories() != null) {
+                List<String> categoryCodes = new ArrayList<>();
+
+                product.getCategories().forEach(category -> {
+                    categoryCodes.add(category.getCategoryCode());
+                });
+                ProductPatchDto productPatchDto = productMapperDelegate.productToPatchDto(product);
+                productPatchDto.setCategories(categoryCodes);
+                return productPatchDto;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public void patchProduct(ProductPatchDto productPatchDto, Product target) {
+        productMapperDelegate.patchProduct(productPatchDto, target);
+
+        if (productPatchDto.getImages() != null) {
+            productPatchDto.getImages().forEach(imageDto -> {
+                target.getImages().stream().filter(image -> image.getId().equals(imageDto.getId()))
+                        .findFirst().ifPresent(image -> {
+                            imageMapper.patchImage(imageDto, image);
+                        });
+            });
+        }
+        if (productPatchDto.getCategories() != null) {
+            List<Category> categories = categoryCodesToCategories(productPatchDto.getCategories());
+            target.setCategories(categories);
+        }
+    }
+
 
     //list of string to list of category
     private List<Category> categoryCodesToCategories(List<String> categoryCodes) {

@@ -5,6 +5,7 @@ import ch.guru.springframework.apifirst.apifirstserver.jpa.mapper.ProductMapper;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.ProductRepository;
 import ch.guru.springframework.apifirst.model.ProductCreateDto;
 import ch.guru.springframework.apifirst.model.ProductDto;
+import ch.guru.springframework.apifirst.model.ProductPatchDto;
 import ch.guru.springframework.apifirst.model.ProductUpdateDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -41,6 +42,14 @@ public class ProductServiceImpl implements ProductService {
     public ProductDto updateProduct(UUID productId, ProductUpdateDto product) {
         Product existingProduct = productRepository.findById(productId).orElseThrow();
         productMapper.updateProduct(product, existingProduct);
+        
+        return productMapper.productToDto(productRepository.save(existingProduct));
+    }
+
+    @Override
+    public ProductDto patchProduct(UUID productId, ProductPatchDto product) {
+        Product existingProduct = productRepository.findById(productId).orElseThrow();
+        productMapper.patchProduct(product, existingProduct);
         
         return productMapper.productToDto(productRepository.save(existingProduct));
     }
