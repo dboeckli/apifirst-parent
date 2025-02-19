@@ -207,6 +207,27 @@ class OrderControllerTest {
     }
 
     @Transactional
+    @org.junit.jupiter.api.Order(4)
+    @Test
+    void testPatchOrderNotFound() throws Exception {
+
+        Order order = orderRepository.findAll().getFirst();
+
+        OrderPatchDto orderPatch = OrderPatchDto.builder()
+            .orderLines(Collections.singletonList(OrderLinePatchDto.builder()
+                .id(order.getOrderLines().getFirst().getId())
+                .orderQuantity(333)
+                .build()))
+            .build();
+
+        mockMvc.perform(patch(OrderController.ORDER_BASE_URL + "/{orderId}", UUID.randomUUID())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(orderPatch))
+                .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound());
+    }
+
+    @Transactional
     @Test
     void testDeleteOrder() throws Exception {
         OrderCreateDto dto = createNewOrderDto();

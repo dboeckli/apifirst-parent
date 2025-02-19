@@ -199,6 +199,29 @@ class CustomerControllerTest {
             .andExpect(jsonPath("$.paymentMethods[0].displayName", equalTo("NEW NAME")));
     }
 
+    @Transactional
+    @Test
+    void testPatchCustomerNotFound() throws Exception {
+        Customer customer = customerRepository.findAll().getFirst();
+
+        CustomerPatchDto customerPatch = CustomerPatchDto.builder()
+            .name(CustomerNamePatchDto.builder()
+                .firstName("Updated")
+                .lastName("Updated2")
+                .build())
+            .paymentMethods(Collections.singletonList(CustomerPaymentMethodPatchDto.builder()
+                .id(customer.getPaymentMethods().getFirst().getId())
+                .displayName("NEW NAME")
+                .build()))
+            .build();
+
+        mockMvc.perform(patch(CustomerController.CUSTOMER_BASE_URL + "/{customerId}", UUID.randomUUID())
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(customerPatch)))
+            .andExpect(status().isNotFound());
+    }
+
     @Test
     void testDeleteCustomer() throws Exception {
         CustomerDto customer = buildTestCustomerDto();

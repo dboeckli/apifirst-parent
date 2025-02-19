@@ -193,6 +193,22 @@ class ProductControllerTest {
 
     @Transactional
     @Test
+    void testPatchProductNotFound() throws Exception {
+
+        Product product = productRepository.findAll().getFirst();
+
+        ProductPatchDto productPatchDto = productMapper.productToPatchDto(product);
+
+        productPatchDto.setDescription("Updated Description");
+
+        mockMvc.perform(patch(ProductController.PRODUCT_BASE_URL + "/{productId}",UUID.randomUUID())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(productPatchDto)))
+            .andExpect(status().isNotFound());
+    }
+
+    @Transactional
+    @Test
     void testDeleteProduct() throws Exception {
         ProductCreateDto newProduct = createTestProductCreateDto();
         Product savedProduct = productRepository.save(productMapper.dtoToProduct(newProduct));
