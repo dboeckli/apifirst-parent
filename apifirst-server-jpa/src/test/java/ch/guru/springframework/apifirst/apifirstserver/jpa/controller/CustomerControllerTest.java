@@ -159,6 +159,22 @@ class CustomerControllerTest {
 
     @Transactional
     @Test
+    void testUpdateCustomerNotFound() throws Exception {
+        Customer customer = customerRepository.findAll().getFirst();
+
+        customer.getName().setFirstName("Updated");
+        customer.getName().setLastName("Updated2");
+        customer.getPaymentMethods().getFirst().setDisplayName("NEW NAME");
+
+        mockMvc.perform(put(CustomerController.CUSTOMER_BASE_URL + "/{customerId}", UUID.randomUUID())
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(customerMapper.customerToDto(customer))))
+            .andExpect(status().isNotFound());
+    }
+
+    @Transactional
+    @Test
     void testPatchCustomer() throws Exception {
         Customer customer = customerRepository.findAll().getFirst();
 
