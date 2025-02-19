@@ -30,7 +30,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDto getProductById(UUID productId) {
-        return productMapper.productToDto(productRepository.findById(productId).orElseThrow());
+        return productMapper.productToDto(productRepository.findById(productId).orElseThrow(NotFoundException::new));
     }
 
     @Override
@@ -40,7 +40,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDto updateProduct(UUID productId, ProductUpdateDto product) {
-        Product existingProduct = productRepository.findById(productId).orElseThrow();
+        Product existingProduct = productRepository.findById(productId).orElseThrow(NotFoundException::new);
         productMapper.updateProduct(product, existingProduct);
         
         return productMapper.productToDto(productRepository.save(existingProduct));
@@ -48,7 +48,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDto patchProduct(UUID productId, ProductPatchDto product) {
-        Product existingProduct = productRepository.findById(productId).orElseThrow();
+        Product existingProduct = productRepository.findById(productId).orElseThrow(NotFoundException::new);
         productMapper.patchProduct(product, existingProduct);
         
         return productMapper.productToDto(productRepository.save(existingProduct));

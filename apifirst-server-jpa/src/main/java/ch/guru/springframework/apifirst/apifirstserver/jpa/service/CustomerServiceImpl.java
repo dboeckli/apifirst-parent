@@ -29,7 +29,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Transactional
     @Override
     public CustomerDto updateCustomer(UUID customerId, CustomerDto customer) {
-        Customer existingCustomer = customerRepository.findById(customerId).orElseThrow();
+        Customer existingCustomer = customerRepository.findById(customerId).orElseThrow(NotFoundException::new);
         customerMapper.updateCustomer(customer, existingCustomer);
 
         return customerMapper.customerToDto(customerRepository.save(existingCustomer));
@@ -38,7 +38,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     @Transactional
     public CustomerDto patchCustomer(UUID customerId, CustomerPatchDto patchCustomer) {
-        Customer existingCustomer = customerRepository.findById(customerId).orElseThrow();
+        Customer existingCustomer = customerRepository.findById(customerId).orElseThrow(NotFoundException::new);
         customerMapper.patchCustomer(patchCustomer, existingCustomer);
 
         return customerMapper.customerToDto(customerRepository.save(existingCustomer));
@@ -61,7 +61,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public CustomerDto getCustomerById(UUID customerId) {
-        return customerMapper.customerToDto(customerRepository.findById(customerId).orElseThrow());
+        return customerMapper.customerToDto(customerRepository.findById(customerId).orElseThrow(NotFoundException::new));
     }
     
 }

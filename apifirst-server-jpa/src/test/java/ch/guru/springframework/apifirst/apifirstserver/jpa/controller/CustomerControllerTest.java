@@ -29,6 +29,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -86,6 +87,14 @@ class CustomerControllerTest {
     }
 
     @Test
+    @Order(2)
+    void testGetCustomerByIdNotFound() throws Exception {
+        mockMvc.perform(get(CustomerController.CUSTOMER_BASE_URL + "/{customerId}", UUID.randomUUID())
+                .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
     @Order(3)
     void testCreateCustomer() throws Exception {
         AddressDto address = AddressDto.builder()
@@ -115,6 +124,7 @@ class CustomerControllerTest {
 
         String locationHeader = result.getResponse().getHeader("Location");
         log.info("Location header: {}", locationHeader);
+        assertNotNull(locationHeader);
 
         // Extract the URI from the location header
         URI locationUri = new URI(locationHeader);
@@ -149,6 +159,22 @@ class CustomerControllerTest {
 
     @Transactional
     @Test
+    void testUpdateCustomerNotFound() throws Exception {
+        Customer customer = customerRepository.findAll().getFirst();
+
+        customer.getName().setFirstName("Updated");
+        customer.getName().setLastName("Updated2");
+        customer.getPaymentMethods().getFirst().setDisplayName("NEW NAME");
+
+        mockMvc.perform(put(CustomerController.CUSTOMER_BASE_URL + "/{customerId}", UUID.randomUUID())
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(customerMapper.customerToDto(customer))))
+            .andExpect(status().isNotFound());
+    }
+
+    @Transactional
+    @Test
     void testPatchCustomer() throws Exception {
         Customer customer = customerRepository.findAll().getFirst();
 
@@ -171,6 +197,29 @@ class CustomerControllerTest {
             .andExpect(jsonPath("$.name.firstName", equalTo("Updated")))
             .andExpect(jsonPath("$.name.lastName", equalTo("Updated2")))
             .andExpect(jsonPath("$.paymentMethods[0].displayName", equalTo("NEW NAME")));
+    }
+
+    @Transactional
+    @Test
+    void testPatchCustomerNotFound() throws Exception {
+        Customer customer = customerRepository.findAll().getFirst();
+
+        CustomerPatchDto customerPatch = CustomerPatchDto.builder()
+            .name(CustomerNamePatchDto.builder()
+                .firstName("Updated")
+                .lastName("Updated2")
+                .build())
+            .paymentMethods(Collections.singletonList(CustomerPaymentMethodPatchDto.builder()
+                .id(customer.getPaymentMethods().getFirst().getId())
+                .displayName("NEW NAME")
+                .build()))
+            .build();
+
+        mockMvc.perform(patch(CustomerController.CUSTOMER_BASE_URL + "/{customerId}", UUID.randomUUID())
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(customerPatch)))
+            .andExpect(status().isNotFound());
     }
 
     @Test

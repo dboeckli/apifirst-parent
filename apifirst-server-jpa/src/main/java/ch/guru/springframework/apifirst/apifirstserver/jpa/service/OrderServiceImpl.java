@@ -30,7 +30,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderDto getOrderById(UUID orderId) {
-        return orderMapper.orderToDto(orderRepository.findById(orderId).orElseThrow());
+        return orderMapper.orderToDto(orderRepository.findById(orderId).orElseThrow(NotFoundException::new));
     }
 
     @Override
@@ -42,7 +42,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     @Override
     public OrderDto updateOrder(UUID orderId, OrderUpdateDto orderUpdateDto) {
-        Order existingOrder = orderRepository.findById(orderId).orElseThrow();
+        Order existingOrder = orderRepository.findById(orderId).orElseThrow(NotFoundException::new);
         orderMapper.updateOrder(orderUpdateDto, existingOrder);
 
         Order savedOrder = orderRepository.saveAndFlush(existingOrder);
@@ -53,7 +53,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     @Override
     public OrderDto patchOrder(UUID orderId, OrderPatchDto orderPatchDto) {
-        Order existingOrder = orderRepository.findById(orderId).orElseThrow();
+        Order existingOrder = orderRepository.findById(orderId).orElseThrow(NotFoundException::new);
         orderMapper.patchOrder(orderPatchDto, existingOrder);
 
         Order savedOrder = orderRepository.saveAndFlush(existingOrder);

@@ -35,6 +35,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -98,6 +99,14 @@ class OrderControllerTest {
     }
 
     @Test
+    @org.junit.jupiter.api.Order(2)
+    void testGetOrderByIdNotFound() throws Exception {
+        mockMvc.perform(get(OrderController.ORDER_BASE_URL + "/{orderId}", UUID.randomUUID())
+                .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
     @org.junit.jupiter.api.Order(3)
     @Transactional
     void testCreateOrder() throws Exception {
@@ -124,6 +133,7 @@ class OrderControllerTest {
 
         String locationHeader = result.getResponse().getHeader("Location");
         log.info("Location header: {}", locationHeader);
+        assertNotNull(locationHeader);
 
         // Extract the URI from the location header
         URI locationUri = new URI(locationHeader);
@@ -156,6 +166,24 @@ class OrderControllerTest {
     }
 
     @Transactional
+    @Test
+    @org.junit.jupiter.api.Order(4)
+    void testUpdateOrderNotFound() throws Exception {
+        Order order = orderRepository.findAll().getFirst();
+
+        order.getOrderLines().getFirst().setOrderQuantity(222);
+
+        OrderUpdateDto orderUpdate = orderMapper.orderToUpdateDto(order);
+
+
+        mockMvc.perform(put(OrderController.ORDER_BASE_URL + "/{orderId}", UUID.randomUUID())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(orderUpdate))
+                .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound());
+    }
+
+    @Transactional
     @org.junit.jupiter.api.Order(4)
     @Test
     void testPatchOrder() throws Exception {
@@ -176,6 +204,27 @@ class OrderControllerTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id", equalTo(order.getId().toString())))
             .andExpect(jsonPath("$.orderLines[0].orderQuantity", equalTo(333)));
+    }
+
+    @Transactional
+    @org.junit.jupiter.api.Order(4)
+    @Test
+    void testPatchOrderNotFound() throws Exception {
+
+        Order order = orderRepository.findAll().getFirst();
+
+        OrderPatchDto orderPatch = OrderPatchDto.builder()
+            .orderLines(Collections.singletonList(OrderLinePatchDto.builder()
+                .id(order.getOrderLines().getFirst().getId())
+                .orderQuantity(333)
+                .build()))
+            .build();
+
+        mockMvc.perform(patch(OrderController.ORDER_BASE_URL + "/{orderId}", UUID.randomUUID())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(orderPatch))
+                .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound());
     }
 
     @Transactional

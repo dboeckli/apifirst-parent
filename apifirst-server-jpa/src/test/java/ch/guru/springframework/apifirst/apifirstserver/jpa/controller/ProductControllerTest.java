@@ -30,6 +30,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -90,6 +91,14 @@ class ProductControllerTest {
     }
 
     @Test
+    @org.junit.jupiter.api.Order(2)
+    void testGetProductByIdNotFound() throws Exception {
+        mockMvc.perform(get(ProductController.PRODUCT_BASE_URL + "/{prodcutId}", UUID.randomUUID())
+                .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
     @Order(3)
     void testCreateProduct() throws Exception {
         String categoryName = categoryRepository.findAll().getFirst().getCategory();
@@ -119,6 +128,7 @@ class ProductControllerTest {
 
         String locationHeader = result.getResponse().getHeader("Location");
         log.info("Location header: {}", locationHeader);
+        assertNotNull(locationHeader);
 
         // Extract the URI from the location header
         URI locationUri = new URI(locationHeader);
@@ -152,6 +162,20 @@ class ProductControllerTest {
 
     @Transactional
     @Test
+    void testUpdateProductNotFound() throws Exception {
+        Product product = productRepository.findAll().getFirst();
+
+        ProductUpdateDto productUpdateDto = productMapper.productToUpdateDto(product);
+        productUpdateDto.setDescription("Updated Description");
+
+        mockMvc.perform(put(ProductController.PRODUCT_BASE_URL + "/{productId}", UUID.randomUUID())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(productUpdateDto)))
+            .andExpect(status().isNotFound());
+    }
+
+    @Transactional
+    @Test
     void testPatchProduct() throws Exception {
 
         Product product = productRepository.findAll().getFirst();
@@ -165,6 +189,22 @@ class ProductControllerTest {
                 .content(objectMapper.writeValueAsString(productPatchDto)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.description", equalTo("Updated Description")));
+    }
+
+    @Transactional
+    @Test
+    void testPatchProductNotFound() throws Exception {
+
+        Product product = productRepository.findAll().getFirst();
+
+        ProductPatchDto productPatchDto = productMapper.productToPatchDto(product);
+
+        productPatchDto.setDescription("Updated Description");
+
+        mockMvc.perform(patch(ProductController.PRODUCT_BASE_URL + "/{productId}",UUID.randomUUID())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(productPatchDto)))
+            .andExpect(status().isNotFound());
     }
 
     @Transactional
