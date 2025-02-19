@@ -30,6 +30,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.net.URI;
 import java.util.Collections;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -187,6 +188,12 @@ class OrderControllerTest {
             .andExpect(status().isNoContent());
 
         assertThat(orderRepository.findById(savedOrder.getId())).isEmpty();
+    }
+
+    @Test
+    void testDeleteNotFound() throws Exception {
+        mockMvc.perform(delete(OrderController.ORDER_BASE_URL + "/{orderId}", UUID.randomUUID()))
+            .andExpect(status().isNotFound());
     }
 
     private OrderCreateDto createNewOrderDto() {

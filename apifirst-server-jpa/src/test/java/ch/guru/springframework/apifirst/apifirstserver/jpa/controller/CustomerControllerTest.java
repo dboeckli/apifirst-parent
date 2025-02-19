@@ -24,6 +24,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.net.URI;
 import java.util.Collections;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -181,6 +182,12 @@ class CustomerControllerTest {
             .andExpect(status().isNoContent());
         
         assertThat(customerRepository.findById(savedCustomer.getId())).isEmpty();
+    }
+
+    @Test
+    void testDeleteNotFound() throws Exception {
+        mockMvc.perform(delete(CustomerController.CUSTOMER_BASE_URL + "/{customerId}", UUID.randomUUID()))
+            .andExpect(status().isNotFound());
     }
 
     private CustomerDto buildTestCustomerDto() {
