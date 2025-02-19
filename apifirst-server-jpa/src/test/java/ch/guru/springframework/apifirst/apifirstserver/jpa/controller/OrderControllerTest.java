@@ -27,6 +27,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.zalando.logbook.Logbook;
+import org.zalando.logbook.servlet.LogbookFilter;
 
 import java.net.URI;
 import java.util.Collections;
@@ -59,7 +61,7 @@ class OrderControllerTest {
 
     @Autowired
     ObjectMapper objectMapper;
-    
+
     @Autowired
     OrderMapper orderMapper;
 
@@ -74,9 +76,10 @@ class OrderControllerTest {
     @BeforeEach
     void setUp() {
         objectMapper.configure(JsonParser.Feature.INCLUDE_SOURCE_IN_LOCATION, true);
-        
+
         mockMvc = MockMvcBuilders.webAppContextSetup(wac)
             .addFilter(validationFilter)
+            .addFilter(new LogbookFilter(Logbook.create()))
             .build();
     }
 

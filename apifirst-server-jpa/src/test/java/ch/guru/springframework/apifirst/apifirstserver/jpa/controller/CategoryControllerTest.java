@@ -13,6 +13,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.zalando.logbook.Logbook;
+import org.zalando.logbook.servlet.LogbookFilter;
 
 import static ch.guru.springframework.apifirst.apifirstserver.jpa.config.OpenApiValidationConfig.OPENAPI_SPECIFICATION_URL;
 import static com.atlassian.oai.validator.mockmvc.OpenApiValidationMatchers.openApi;
@@ -41,6 +43,7 @@ class CategoryControllerTest {
         objectMapper.configure(JsonParser.Feature.INCLUDE_SOURCE_IN_LOCATION, true);
         mockMvc = MockMvcBuilders.webAppContextSetup(wac)
             .addFilter(validationFilter)
+            .addFilter(new LogbookFilter(Logbook.create()))    
             .build();
     }
 

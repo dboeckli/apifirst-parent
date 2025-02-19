@@ -15,7 +15,7 @@ spring:
     properties:
       hibernate:
         # Show SQL  
-        show_sql: true
+        show_sql: false
         # Format SQL
         format_sql: true
   h2:

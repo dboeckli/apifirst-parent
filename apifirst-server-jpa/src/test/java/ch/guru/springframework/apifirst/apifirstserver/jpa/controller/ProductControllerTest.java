@@ -21,6 +21,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.zalando.logbook.Logbook;
+import org.zalando.logbook.servlet.LogbookFilter;
 
 import java.net.URI;
 import java.util.Collections;
@@ -48,7 +50,7 @@ class ProductControllerTest {
 
     @Autowired
     CategoryRepository categoryRepository;
-    
+
     @Autowired
     ProductMapper productMapper;
 
@@ -66,10 +68,11 @@ class ProductControllerTest {
     @BeforeEach
     void setUp() {
         objectMapper.configure(JsonParser.Feature.INCLUDE_SOURCE_IN_LOCATION, true);
-        
+
         mockMvc = MockMvcBuilders.webAppContextSetup(wac)
-                .addFilter(validationFilter)
-                .build();
+            .addFilter(validationFilter)
+            .addFilter(new LogbookFilter(Logbook.create()))
+            .build();
     }
 
     @Test
@@ -107,30 +110,30 @@ class ProductControllerTest {
     @Order(3)
     void testCreateProduct() throws Exception {
         String categoryName = categoryRepository.findAll().getFirst().getCategory();
-        
+
         ProductCreateDto newProduct = ProductCreateDto.builder()
-                .description("New Product")
-                .cost("5.00")
-                .price("8.95")
-                .categories(List.of(categoryName))
-                .images(Collections.singletonList(ImageDto.builder()
-                    .url("http://example.com/image.jpg")
-                    .altText("Image Alt Text")
-                    .build()))
-                .dimensions(DimensionsDto.builder()
-                        .length(10)
-                        .width(10)
-                        .height(10)
-                        .build())
-                .build();
+            .description("New Product")
+            .cost("5.00")
+            .price("8.95")
+            .categories(List.of(categoryName))
+            .images(Collections.singletonList(ImageDto.builder()
+                .url("http://example.com/image.jpg")
+                .altText("Image Alt Text")
+                .build()))
+            .dimensions(DimensionsDto.builder()
+                .length(10)
+                .width(10)
+                .height(10)
+                .build())
+            .build();
 
         MvcResult result = mockMvc.perform(post(ProductController.PRODUCT_BASE_URL)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(newProduct)))
-                .andExpect(status().isCreated())
-                .andExpect(header().exists("Location"))
-                .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL))
-                .andReturn();
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(newProduct)))
+            .andExpect(status().isCreated())
+            .andExpect(header().exists("Location"))
+            .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL))
+            .andReturn();
 
         String locationHeader = result.getResponse().getHeader("Location");
         log.info("Location header: {}", locationHeader);
@@ -143,12 +146,12 @@ class ProductControllerTest {
 
         // Perform GET request using the extracted path
         mockMvc.perform(get(path)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.description").value("New Product"))
-                .andExpect(jsonPath("$.cost").value("5.00"))
-                .andExpect(jsonPath("$.price").value("8.95"))
-                .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL));
+                .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.description").value("New Product"))
+            .andExpect(jsonPath("$.cost").value("5.00"))
+            .andExpect(jsonPath("$.price").value("8.95"))
+            .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL));
 
     }
 
@@ -211,7 +214,7 @@ class ProductControllerTest {
 
         productPatchDto.setDescription("Updated Description");
 
-        mockMvc.perform(patch(ProductController.PRODUCT_BASE_URL + "/{productId}",UUID.randomUUID())
+        mockMvc.perform(patch(ProductController.PRODUCT_BASE_URL + "/{productId}", UUID.randomUUID())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(productPatchDto)))
             .andExpect(status().isNotFound())
