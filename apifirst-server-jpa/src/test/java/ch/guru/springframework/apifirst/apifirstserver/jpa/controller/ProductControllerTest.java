@@ -27,6 +27,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import static ch.guru.springframework.apifirst.apifirstserver.jpa.config.OpenApiValidationConfig.OPENAPI_SPECIFICATION_URL;
+import static com.atlassian.oai.validator.mockmvc.OpenApiValidationMatchers.openApi;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
@@ -223,6 +225,14 @@ class ProductControllerTest {
     void testDeleteProductNotFound() throws Exception {
         mockMvc.perform(delete(ProductController.PRODUCT_BASE_URL + "/{productId}", UUID.randomUUID()))
             .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testDeleteConflictProductHasOrders() throws Exception {
+        Product product = productRepository.findAll().getFirst();
+        mockMvc.perform(delete(ProductController.PRODUCT_BASE_URL + "/{productId}", product.getId()))
+            .andExpect(status().isConflict())
+            .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL));
     }
 
     private ProductCreateDto createTestProductCreateDto() {

@@ -12,6 +12,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class OpenApiValidationConfig {
     
+    public static final String OPENAPI_SPECIFICATION_URL = "https://dboeckli.redocly.app/_spec/openapi/openapi.yaml";
+    
     @Bean
     public Filter validationFilter() {
         return new OpenApiValidationFilter(
@@ -22,7 +24,7 @@ public class OpenApiValidationConfig {
 
     @Bean
     public WebMvcConfigurer openAPIValidationInterceptor() {
-        OpenApiInteractionValidator validator = OpenApiInteractionValidator.createForSpecificationUrl("https://dboeckli.redocly.app/_spec/openapi/openapi.yaml")
+        OpenApiInteractionValidator validator = OpenApiInteractionValidator.createForSpecificationUrl(OPENAPI_SPECIFICATION_URL)
             .build();
         OpenApiValidationInterceptor interceptor = new OpenApiValidationInterceptor(validator);
 
