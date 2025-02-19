@@ -2,6 +2,7 @@ package ch.guru.springframework.apifirst.apifirstserver.jpa.service;
 
 import ch.guru.springframework.apifirst.apifirstserver.jpa.domain.Product;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.mapper.ProductMapper;
+import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.OrderRepository;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.ProductRepository;
 import ch.guru.springframework.apifirst.model.ProductCreateDto;
 import ch.guru.springframework.apifirst.model.ProductDto;
@@ -18,6 +19,7 @@ import java.util.UUID;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
+    private final OrderRepository orderRepository;
 
     private final ProductMapper productMapper;
 
@@ -56,9 +58,13 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void deleteProduct(UUID productId) {
-        productRepository.findById(productId).ifPresentOrElse(product -> productRepository.deleteById(productId), () -> {
-            throw new NotFoundException("Product not found: " + productId);
+        productRepository.findById(productId).ifPresentOrElse(product -> {
+            if (!orderRepository.findAllByOrderLines_Product(product).isEmpty()){
+                throw new ConflictException("Product is used in orders");
+            }
+            productRepository.delete(product);
+        }, () -> {
+            throw new NotFoundException("Product Not Found");
         });
-        
     }
 }

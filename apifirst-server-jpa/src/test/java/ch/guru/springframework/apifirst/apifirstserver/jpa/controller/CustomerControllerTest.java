@@ -26,6 +26,8 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.UUID;
 
+import static ch.guru.springframework.apifirst.apifirstserver.jpa.config.OpenApiValidationConfig.OPENAPI_SPECIFICATION_URL;
+import static com.atlassian.oai.validator.mockmvc.OpenApiValidationMatchers.openApi;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
@@ -71,7 +73,8 @@ class CustomerControllerTest {
         mockMvc.perform(get(CustomerController.CUSTOMER_BASE_URL)
                 .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.length()", greaterThan(0)));
+            .andExpect(jsonPath("$.length()", greaterThan(0)))
+            .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL));
     }
 
     @Test
@@ -82,7 +85,8 @@ class CustomerControllerTest {
         mockMvc.perform(get(CustomerController.CUSTOMER_BASE_URL + "/{customerId}", testCustomer.getId())
                 .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.id").value(testCustomer.getId().toString()));
+            .andExpect(jsonPath("$.id").value(testCustomer.getId().toString()))
+            .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL));
     }
 
     @Test
@@ -90,7 +94,8 @@ class CustomerControllerTest {
     void testGetCustomerByIdNotFound() throws Exception {
         mockMvc.perform(get(CustomerController.CUSTOMER_BASE_URL + "/{customerId}", UUID.randomUUID())
                 .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound())
+            .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL));
     }
 
     @Test
@@ -119,6 +124,7 @@ class CustomerControllerTest {
                 .content(objectMapper.writeValueAsString(newCustomer)))
             .andExpect(status().isCreated())
             .andExpect(header().exists("Location"))
+            .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL))
             .andReturn();
 
         String locationHeader = result.getResponse().getHeader("Location");
@@ -134,7 +140,8 @@ class CustomerControllerTest {
         mockMvc.perform(get(path)
                 .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.email").value("newcustomer@example.com"));
+            .andExpect(jsonPath("$.email").value("newcustomer@example.com"))
+            .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL));
     }
 
     @Transactional
@@ -153,7 +160,8 @@ class CustomerControllerTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.name.firstName", equalTo("Updated")))
             .andExpect(jsonPath("$.name.lastName", equalTo("Updated2")))
-            .andExpect(jsonPath("$.paymentMethods[0].displayName", equalTo("NEW NAME")));
+            .andExpect(jsonPath("$.paymentMethods[0].displayName", equalTo("NEW NAME")))
+            .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL));
     }
 
     @Transactional
@@ -169,7 +177,8 @@ class CustomerControllerTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(customerMapper.customerToDto(customer))))
-            .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound())
+            .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL));
     }
 
     @Transactional
@@ -195,7 +204,8 @@ class CustomerControllerTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.name.firstName", equalTo("Updated")))
             .andExpect(jsonPath("$.name.lastName", equalTo("Updated2")))
-            .andExpect(jsonPath("$.paymentMethods[0].displayName", equalTo("NEW NAME")));
+            .andExpect(jsonPath("$.paymentMethods[0].displayName", equalTo("NEW NAME")))
+            .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL));
     }
 
     @Transactional
@@ -218,7 +228,8 @@ class CustomerControllerTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(customerPatch)))
-            .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound())
+            .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL));
     }
 
     @Test
@@ -227,7 +238,8 @@ class CustomerControllerTest {
         Customer savedCustomer = customerRepository.save(customerMapper.dtoToCustomer(customer));
 
         mockMvc.perform(delete(CustomerController.CUSTOMER_BASE_URL + "/{customerId}", savedCustomer.getId()))
-            .andExpect(status().isNoContent());
+            .andExpect(status().isNoContent())
+            .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL));
         
         assertThat(customerRepository.findById(savedCustomer.getId())).isEmpty();
     }
@@ -237,13 +249,15 @@ class CustomerControllerTest {
         Customer customer = customerRepository.findAll().getFirst();
 
         mockMvc.perform(delete(CustomerController.CUSTOMER_BASE_URL + "/{customerId}", customer.getId()))
-            .andExpect(status().isConflict());
+            .andExpect(status().isConflict())
+            .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL));
     }
 
     @Test
     void testDeleteNotFound() throws Exception {
         mockMvc.perform(delete(CustomerController.CUSTOMER_BASE_URL + "/{customerId}", UUID.randomUUID()))
-            .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound())
+            .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL));
     }
 
     private CustomerDto buildTestCustomerDto() {

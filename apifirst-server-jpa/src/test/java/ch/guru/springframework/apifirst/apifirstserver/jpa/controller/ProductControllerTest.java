@@ -27,6 +27,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import static ch.guru.springframework.apifirst.apifirstserver.jpa.config.OpenApiValidationConfig.OPENAPI_SPECIFICATION_URL;
+import static com.atlassian.oai.validator.mockmvc.OpenApiValidationMatchers.openApi;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
@@ -76,7 +78,8 @@ class ProductControllerTest {
         mockMvc.perform(get(ProductController.PRODUCT_BASE_URL)
                 .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.length()", greaterThan(0)));
+            .andExpect(jsonPath("$.length()", greaterThan(0)))
+            .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL));
     }
 
     @Test
@@ -87,7 +90,8 @@ class ProductControllerTest {
         mockMvc.perform(get(ProductController.PRODUCT_BASE_URL + "/{prodcutId}", testProduct.getId())
                 .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.id").value(testProduct.getId().toString()));
+            .andExpect(jsonPath("$.id").value(testProduct.getId().toString()))
+            .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL));
     }
 
     @Test
@@ -95,7 +99,8 @@ class ProductControllerTest {
     void testGetProductByIdNotFound() throws Exception {
         mockMvc.perform(get(ProductController.PRODUCT_BASE_URL + "/{prodcutId}", UUID.randomUUID())
                 .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound())
+            .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL));
     }
 
     @Test
@@ -124,6 +129,7 @@ class ProductControllerTest {
                         .content(objectMapper.writeValueAsString(newProduct)))
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("Location"))
+                .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL))
                 .andReturn();
 
         String locationHeader = result.getResponse().getHeader("Location");
@@ -141,7 +147,8 @@ class ProductControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.description").value("New Product"))
                 .andExpect(jsonPath("$.cost").value("5.00"))
-                .andExpect(jsonPath("$.price").value("8.95"));
+                .andExpect(jsonPath("$.price").value("8.95"))
+                .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL));
 
     }
 
@@ -157,7 +164,8 @@ class ProductControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(productUpdateDto)))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.description", equalTo("Updated Description")));
+            .andExpect(jsonPath("$.description", equalTo("Updated Description")))
+            .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL));
     }
 
     @Transactional
@@ -171,7 +179,8 @@ class ProductControllerTest {
         mockMvc.perform(put(ProductController.PRODUCT_BASE_URL + "/{productId}", UUID.randomUUID())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(productUpdateDto)))
-            .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound())
+            .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL));
     }
 
     @Transactional
@@ -188,7 +197,8 @@ class ProductControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(productPatchDto)))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.description", equalTo("Updated Description")));
+            .andExpect(jsonPath("$.description", equalTo("Updated Description")))
+            .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL));
     }
 
     @Transactional
@@ -204,7 +214,8 @@ class ProductControllerTest {
         mockMvc.perform(patch(ProductController.PRODUCT_BASE_URL + "/{productId}",UUID.randomUUID())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(productPatchDto)))
-            .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound())
+            .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL));
     }
 
     @Transactional
@@ -214,7 +225,8 @@ class ProductControllerTest {
         Product savedProduct = productRepository.save(productMapper.dtoToProduct(newProduct));
 
         mockMvc.perform(delete(ProductController.PRODUCT_BASE_URL + "/{productId}", savedProduct.getId()))
-            .andExpect(status().isNoContent());
+            .andExpect(status().isNoContent())
+            .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL));
 
         assertThat(productRepository.findById(savedProduct.getId())).isEmpty();
     }
@@ -222,7 +234,16 @@ class ProductControllerTest {
     @Test
     void testDeleteProductNotFound() throws Exception {
         mockMvc.perform(delete(ProductController.PRODUCT_BASE_URL + "/{productId}", UUID.randomUUID()))
-            .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound())
+            .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL));
+    }
+
+    @Test
+    void testDeleteConflictProductHasOrders() throws Exception {
+        Product product = productRepository.findAll().getFirst();
+        mockMvc.perform(delete(ProductController.PRODUCT_BASE_URL + "/{productId}", product.getId()))
+            .andExpect(status().isConflict())
+            .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL));
     }
 
     private ProductCreateDto createTestProductCreateDto() {
