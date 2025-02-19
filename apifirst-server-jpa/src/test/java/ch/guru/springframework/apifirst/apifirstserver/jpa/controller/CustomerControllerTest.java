@@ -29,6 +29,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -86,6 +87,14 @@ class CustomerControllerTest {
     }
 
     @Test
+    @Order(2)
+    void testGetCustomerByIdNotFound() throws Exception {
+        mockMvc.perform(get(CustomerController.CUSTOMER_BASE_URL + "/{customerId}", UUID.randomUUID())
+                .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
     @Order(3)
     void testCreateCustomer() throws Exception {
         AddressDto address = AddressDto.builder()
@@ -115,6 +124,7 @@ class CustomerControllerTest {
 
         String locationHeader = result.getResponse().getHeader("Location");
         log.info("Location header: {}", locationHeader);
+        assertNotNull(locationHeader);
 
         // Extract the URI from the location header
         URI locationUri = new URI(locationHeader);

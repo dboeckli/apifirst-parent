@@ -30,6 +30,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -90,6 +91,14 @@ class ProductControllerTest {
     }
 
     @Test
+    @org.junit.jupiter.api.Order(2)
+    void testGetProductByIdNotFound() throws Exception {
+        mockMvc.perform(get(ProductController.PRODUCT_BASE_URL + "/{prodcutId}", UUID.randomUUID())
+                .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
     @Order(3)
     void testCreateProduct() throws Exception {
         String categoryName = categoryRepository.findAll().getFirst().getCategory();
@@ -119,6 +128,7 @@ class ProductControllerTest {
 
         String locationHeader = result.getResponse().getHeader("Location");
         log.info("Location header: {}", locationHeader);
+        assertNotNull(locationHeader);
 
         // Extract the URI from the location header
         URI locationUri = new URI(locationHeader);
