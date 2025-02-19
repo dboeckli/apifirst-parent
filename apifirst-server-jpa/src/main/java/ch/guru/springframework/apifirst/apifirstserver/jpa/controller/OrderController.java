@@ -3,6 +3,7 @@ package ch.guru.springframework.apifirst.apifirstserver.jpa.controller;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.service.OrderService;
 import ch.guru.springframework.apifirst.model.OrderCreateDto;
 import ch.guru.springframework.apifirst.model.OrderDto;
+import ch.guru.springframework.apifirst.model.OrderPatchDto;
 import ch.guru.springframework.apifirst.model.OrderUpdateDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -44,6 +45,13 @@ public class OrderController {
                                                 @RequestBody OrderUpdateDto orderUpdate) {
         OrderDto updatedOrder = orderService.updateOrder(orderId, orderUpdate);
         return ResponseEntity.ok(updatedOrder);
+    }
+
+    @PatchMapping("/{orderId}")
+    public ResponseEntity<OrderDto> patchOrder(@PathVariable("orderId") UUID orderId,
+                                                @RequestBody OrderPatchDto orderPatch) {
+        OrderDto patchedOrder = orderService.patchOrder(orderId, orderPatch);
+        return ResponseEntity.ok(patchedOrder);
     }
 
     @GetMapping("/{orderId}")
