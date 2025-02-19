@@ -8,9 +8,7 @@ import ch.guru.springframework.apifirst.apifirstserver.jpa.mapper.OrderMapper;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.CustomerRepository;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.OrderRepository;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.ProductRepository;
-import ch.guru.springframework.apifirst.model.OrderCreateDto;
-import ch.guru.springframework.apifirst.model.OrderLineCreateDto;
-import ch.guru.springframework.apifirst.model.OrderUpdateDto;
+import ch.guru.springframework.apifirst.model.*;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.Filter;
@@ -153,6 +151,29 @@ class OrderControllerTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id", equalTo(order.getId().toString())))
             .andExpect(jsonPath("$.orderLines[0].orderQuantity", equalTo(222)));
+    }
+
+    @Transactional
+    @org.junit.jupiter.api.Order(4)
+    @Test
+    void testPatchOrder() throws Exception {
+
+        Order order = orderRepository.findAll().getFirst();
+
+        OrderPatchDto orderPatch = OrderPatchDto.builder()
+            .orderLines(Collections.singletonList(OrderLinePatchDto.builder()
+                .id(order.getOrderLines().getFirst().getId())
+                .orderQuantity(333)
+                .build()))
+            .build();
+
+        mockMvc.perform(patch(OrderController.ORDER_BASE_URL + "/{orderId}", order.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(orderPatch))
+                .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id", equalTo(order.getId().toString())))
+            .andExpect(jsonPath("$.orderLines[0].orderQuantity", equalTo(333)));
     }
 
 }
