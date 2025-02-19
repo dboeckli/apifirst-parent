@@ -21,6 +21,8 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.zalando.logbook.Logbook;
+import org.zalando.logbook.servlet.LogbookFilter;
 
 import java.net.URI;
 import java.util.Collections;
@@ -44,13 +46,13 @@ class CustomerControllerTest {
 
     @Autowired
     CustomerRepository customerRepository;
-    
+
     @Autowired
     CustomerMapper customerMapper;
 
     @Autowired
     WebApplicationContext wac;
-    
+
     @Autowired
     Filter validationFilter;
 
@@ -63,8 +65,9 @@ class CustomerControllerTest {
     void setUp() {
         objectMapper.configure(JsonParser.Feature.INCLUDE_SOURCE_IN_LOCATION, true);
         mockMvc = MockMvcBuilders.webAppContextSetup(wac)
-                .addFilter(validationFilter)
-                .build();
+            .addFilter(validationFilter)
+            .addFilter(new LogbookFilter(Logbook.create()))
+            .build();
     }
 
     @Test
@@ -107,7 +110,7 @@ class CustomerControllerTest {
             .state("ZH")
             .city("New Customer City")
             .build();
-        
+
         CustomerDto newCustomer = CustomerDto.builder()
             .name(NameDto.builder()
                 .firstName("New Customer Firstname")
@@ -240,7 +243,7 @@ class CustomerControllerTest {
         mockMvc.perform(delete(CustomerController.CUSTOMER_BASE_URL + "/{customerId}", savedCustomer.getId()))
             .andExpect(status().isNoContent())
             .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL));
-        
+
         assertThat(customerRepository.findById(savedCustomer.getId())).isEmpty();
     }
 
