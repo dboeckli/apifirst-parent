@@ -55,6 +55,78 @@
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <version>${frontend-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>install node and npm</id>
+                        <phase>generate-sources</phase> <!-- default: generate-resources -->
+                        <goals>
+                            <goal>install-node-and-npm</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>npm install</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <phase>generate-sources</phase> <!-- default: generate-resources -->
+                        <configuration>
+                            <arguments>install</arguments>
+                            <environmentVariables>
+                                <NPM_CONFIG_REGISTRY>https://registry.npmjs.org/</NPM_CONFIG_REGISTRY>
+                                <NPM_CONFIG_SCOPED__REGISTRY key="@dboeckli:registry">https://npm.pkg.github.com/</NPM_CONFIG_SCOPED__REGISTRY>
+                            </environmentVariables>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>npm build</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <arguments>run build</arguments>
+                            <environmentVariables>
+                                <NPM_CONFIG_REGISTRY>https://registry.npmjs.org/</NPM_CONFIG_REGISTRY>
+                                <NPM_CONFIG_SCOPED__REGISTRY key="@dboeckli:registry">https://npm.pkg.github.com/</NPM_CONFIG_SCOPED__REGISTRY>
+                            </environmentVariables>
+                        </configuration>
+                    </execution>
+                </executions>
+                <configuration>
+                    <nodeVersion>v23.6.0</nodeVersion>
+                    <npmVersion>11.0.0</npmVersion>
+                    <installDirectory>target</installDirectory>
+                    <workingDirectory>api-def</workingDirectory>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-artifacts</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attach-artifact</goal>
+                        </goals>
+                        <configuration>
+                            <artifacts>
+                                <artifact>
+                                    <file>${project.basedir}/api-def/dist/bundle.yaml</file>
+                                    <type>yaml</type>
+                                    <classifier>openapi</classifier>
+                                </artifact>
+                            </artifacts>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             
             <plugin>
                 <groupId>org.openapitools</groupId>
@@ -66,7 +138,7 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${openapi.inputSpec.location}</inputSpec>
+                            <inputSpec>${project.parent.basedir}/apifirst-api/api-def/dist/bundle.yaml</inputSpec>
                             <generatorName>${openapi.generatorName}</generatorName>
                             <library>${openapi.library}</library>
                             

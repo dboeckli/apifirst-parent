@@ -12,6 +12,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -33,7 +34,7 @@ class CustomerApiTest {
     
     @Test
     void testListCustomers() {
-        ResponseEntity<List<CustomerDto>> response = customerApi.listCustomersWithHttpInfo();
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        List<CustomerDto> customers = customerApi.listCustomers();
+        assertThat(customers.size()).isPositive();
     }
 }

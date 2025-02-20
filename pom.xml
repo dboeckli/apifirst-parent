@@ -22,7 +22,7 @@
 
     <modules>
         <module>apifirst-api</module>
-        <module>apifirst-server</module>
+        <!--<module>apifirst-server</module>-->
         <module>apifirst-server-jpa</module>
         <!--<module>apifirst-client</module>-->
     </modules>
@@ -46,6 +46,8 @@
         <openapi.modelPackage>ch.guru.springframework.apifirst.model</openapi.modelPackage>
         <openapi.modelNameSuffix>Dto</openapi.modelNameSuffix>
         <openapi.library>resttemplate</openapi.library>
+        
+        <frontend-maven-plugin.version>1.15.1</frontend-maven-plugin.version>
 
         <logbook.version>3.10.0</logbook.version>
         <logstash-logback.version>8.0</logstash-logback.version>

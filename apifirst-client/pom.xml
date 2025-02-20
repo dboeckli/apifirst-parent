@@ -114,7 +114,7 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${openapi.inputSpec.location}</inputSpec>
+                            <inputSpec>${project.parent.basedir}/apifirst-api/api-def/dist/bundle.yaml</inputSpec>
                             <generatorName>${openapi.generatorName}</generatorName>
                             <library>${openapi.library}</library>
                             
