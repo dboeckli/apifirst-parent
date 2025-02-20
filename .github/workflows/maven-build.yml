@@ -113,6 +113,7 @@ jobs:
           BRANCH_NAME: ${{needs.setup.outputs.BRANCH_NAME}}
           DOCKER_USER: ${{ vars.DOCKER_USER }}
           DOCKER_TOKEN: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -o pipefail    # don't hide errors within pipes
           set -o nounset     # abort on unbound variable
@@ -218,6 +219,7 @@ jobs:
           DOCKER_TOKEN: ${{ secrets.DOCKER_ACCESS_TOKEN }}
           ORGANIZATION: ${{needs.setup.outputs.ORGANIZATION}}
           ARTIFACT_ID: ${{needs.setup.outputs.ARTIFACT_ID}}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
         run: |
           set -o pipefail    # don't hide errors within pipes
