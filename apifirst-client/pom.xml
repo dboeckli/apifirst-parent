@@ -10,12 +10,34 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>apifirst-api</artifactId>
+    <artifactId>apifirst-client</artifactId>
 
-    <name>apifirst-api</name>
-    <description>apifirst-api</description>
+    <name>apifirst-client</name>
+    <description>apifirst-client</description>
 
     <dependencies>
+        <dependency>
+            <groupId>ch.guru.springframework.apifirst</groupId>
+            <artifactId>apifirst-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.guru.springframework.apifirst</groupId>
+            <artifactId>apifirst-api</artifactId>
+            <type>yaml</type>
+            <classifier>openapi</classifier>
+            <version>${project.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        
         <dependency>
             <groupId>org.openapitools</groupId>
             <artifactId>jackson-databind-nullable</artifactId>
@@ -37,6 +59,18 @@
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-docker-compose</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
 
     <build>
@@ -57,51 +91,30 @@
             </plugin>
 
             <plugin>
-                <groupId>com.github.eirslett</groupId>
-                <artifactId>frontend-maven-plugin</artifactId>
-                <version>${frontend-maven-plugin.version}</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>install node and npm</id>
-                        <phase>generate-sources</phase> <!-- default: generate-resources -->
+                        <id>copy</id>
+                        <phase>generate-resources</phase>
                         <goals>
-                            <goal>install-node-and-npm</goal>
+                            <goal>copy</goal>
                         </goals>
-                    </execution>
-                    <execution>
-                        <id>npm install</id>
-                        <goals>
-                            <goal>npm</goal>
-                        </goals>
-                        <phase>generate-sources</phase> <!-- default: generate-resources -->
-                        <configuration>
-                            <arguments>install</arguments>
-                            <environmentVariables>
-                                <NPM_CONFIG_REGISTRY>https://registry.npmjs.org/</NPM_CONFIG_REGISTRY>
-                                <NPM_CONFIG_SCOPED__REGISTRY key="@dboeckli:registry">https://npm.pkg.github.com/</NPM_CONFIG_SCOPED__REGISTRY>
-                            </environmentVariables>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>npm build</id>
-                        <goals>
-                            <goal>npm</goal>
-                        </goals>
-                        <phase>generate-sources</phase>
-                        <configuration>
-                            <arguments>run build</arguments>
-                            <environmentVariables>
-                                <NPM_CONFIG_REGISTRY>https://registry.npmjs.org/</NPM_CONFIG_REGISTRY>
-                                <NPM_CONFIG_SCOPED__REGISTRY key="@dboeckli:registry">https://npm.pkg.github.com/</NPM_CONFIG_SCOPED__REGISTRY>
-                            </environmentVariables>
-                        </configuration>
                     </execution>
                 </executions>
                 <configuration>
-                    <nodeVersion>v23.6.0</nodeVersion>
-                    <npmVersion>11.0.0</npmVersion>
-                    <installDirectory>target</installDirectory>
-                    <workingDirectory>api-def</workingDirectory>
+                    <artifactItems>
+                        <artifactItem>
+                            <groupId>ch.guru.springframework.apifirst</groupId>
+                            <artifactId>apifirst-api</artifactId>
+                            <type>yaml</type>
+                            <classifier>openapi</classifier>
+                            <version>${project.version}</version>
+                            <overWrite>true</overWrite>
+                            <outputDirectory>${project.build.directory}/openapi</outputDirectory>
+                            <destFileName>openapi.yaml</destFileName>
+                        </artifactItem>
+                    </artifactItems>
                 </configuration>
             </plugin>
 
@@ -110,19 +123,34 @@
                 <artifactId>build-helper-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>attach-artifacts</id>
-                        <phase>package</phase>
+                        <id>add-resource-openapi</id>
+                        <phase>generate-resources</phase>
                         <goals>
-                            <goal>attach-artifact</goal>
+                            <goal>add-resource</goal>
                         </goals>
                         <configuration>
-                            <artifacts>
-                                <artifact>
-                                    <file>${project.basedir}/api-def/dist/bundle.yaml</file>
-                                    <type>yaml</type>
-                                    <classifier>openapi</classifier>
-                                </artifact>
-                            </artifacts>
+                            <resources>
+                                <resource>
+                                    <directory>${project.build.directory}/openapi</directory>
+                                    <includes>
+                                        <include>**/*.yaml</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <!-- we need a port to be able to start the local profile -->
+                    <execution>
+                        <id>reserve-tomcat-port</id>
+                        <goals>
+                            <goal>reserve-network-port</goal>
+                        </goals>
+                        <phase>process-resources</phase>
+                        <configuration>
+                            <portNames>
+                                <portName>jmx.server.port</portName>
+                                <portName>tomcat.http.port</portName>
+                            </portNames>
                         </configuration>
                     </execution>
                 </executions>
@@ -137,21 +165,26 @@
                         <goals>
                             <goal>generate</goal>
                         </goals>
+                        <phase>process-resources</phase>
                         <configuration>
-                            <inputSpec>${project.parent.basedir}/apifirst-api/api-def/dist/bundle.yaml</inputSpec>
+                            <inputSpec>${project.build.directory}/openapi/openapi.yaml</inputSpec>
                             <generatorName>${openapi.generatorName}</generatorName>
                             <library>${openapi.library}</library>
                             
+                            <generateApis>true</generateApis>
                             <generateApiDocumentation>false</generateApiDocumentation>
-                            <generateModelDocumentation>false</generateModelDocumentation>
                             <generateApiTests>false</generateApiTests>
-                            <generateSupportingFiles>false</generateSupportingFiles>
+                            
+                            <generateModels>false</generateModels>
                             <generateModelTests>false</generateModelTests>
                             <generateAliasAsModel>false</generateAliasAsModel>
-                            <generateApis>false</generateApis>
+
+                            <generateSupportingFiles>true</generateSupportingFiles>
                             
+                            <apiPackage>${openapi.apiPackage}</apiPackage>
                             <modelPackage>${openapi.modelPackage}</modelPackage>
                             <modelNameSuffix>${openapi.modelNameSuffix}</modelNameSuffix>
+
                             <configOptions>
                                 <sourceFolder>src/gen/java/main</sourceFolder>
                                 <useJakartaEe>true</useJakartaEe>

@@ -24,6 +24,7 @@
         <module>apifirst-api</module>
         <module>apifirst-server</module>
         <module>apifirst-server-jpa</module>
+        <module>apifirst-client</module>
     </modules>
 
     <properties>
@@ -37,6 +38,16 @@
         <jackson-databind-nullable.version>0.2.6</jackson-databind-nullable.version>
         <openapi-generator-maven-plugin.version>7.11.0</openapi-generator-maven-plugin.version>
         <swagger.request.validator.version>2.44.1</swagger.request.validator.version>
+        
+        <!-- openapi common config -->
+        <openapi.inputSpec.location>https://dboeckli.redocly.app/_spec/openapi/openapi.yaml</openapi.inputSpec.location>
+        <openapi.generatorName>java</openapi.generatorName>
+        <openapi.apiPackage>ch.guru.springframework.apifirst.client</openapi.apiPackage>
+        <openapi.modelPackage>ch.guru.springframework.apifirst.model</openapi.modelPackage>
+        <openapi.modelNameSuffix>Dto</openapi.modelNameSuffix>
+        <openapi.library>resttemplate</openapi.library>
+        
+        <frontend-maven-plugin.version>1.15.1</frontend-maven-plugin.version>
 
         <logbook.version>3.10.0</logbook.version>
         <logstash-logback.version>8.0</logstash-logback.version>
@@ -131,6 +142,7 @@
                         </archive>
                     </configuration>
                 </plugin>
+                
                 <plugin>
                     <groupId>org.sonarsource.scanner.maven</groupId>
                     <artifactId>sonar-maven-plugin</artifactId>

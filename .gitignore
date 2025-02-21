@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+/apifirst-api/api-def/dist/
+/apifirst-api/api-def/dist/bundle.yaml
+/apifirst-api/api-def/node_modules/
+/apifirst-api/api-def/package-lock.json

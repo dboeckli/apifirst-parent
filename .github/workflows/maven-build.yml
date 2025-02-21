@@ -84,6 +84,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@dboeckli'
+      
       - name: Set up java 21
         uses: actions/setup-java@v4
         with:
@@ -113,6 +120,7 @@ jobs:
           BRANCH_NAME: ${{needs.setup.outputs.BRANCH_NAME}}
           DOCKER_USER: ${{ vars.DOCKER_USER }}
           DOCKER_TOKEN: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -o pipefail    # don't hide errors within pipes
           set -o nounset     # abort on unbound variable
@@ -150,7 +158,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0    
+          fetch-depth: 0   
+          
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@dboeckli'    
           
       - name: Set up java 21
         uses: actions/setup-java@v4
@@ -169,6 +184,7 @@ jobs:
           BRANCH_NAME: ${{needs.setup.outputs.BRANCH_NAME}}
           DOCKER_USER: ${{ vars.DOCKER_USER }}
           DOCKER_TOKEN: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -o pipefail    # don't hide errors within pipes
           set -o nounset     # abort on unbound variable
@@ -210,6 +226,7 @@ jobs:
           DOCKER_TOKEN: ${{ secrets.DOCKER_ACCESS_TOKEN }}
           ORGANIZATION: ${{needs.setup.outputs.ORGANIZATION}}
           ARTIFACT_ID: ${{needs.setup.outputs.ARTIFACT_ID}}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
         run: |
           set -o pipefail    # don't hide errors within pipes

@@ -1,0 +1,11 @@
+{
+  "name": "@dboeckli/api-def",
+  "version": "1.0.0",
+  "dependencies": {
+    "@dboeckli/apifirst-sb": "1.0.0-dev.dadb46e.222"
+  },
+  "private": false,
+  "scripts": {
+    "build": "redocly bundle node_modules/@dboeckli/apifirst-sb/openapi/openapi.yaml -o dist/bundle.yaml"
+  }
+}
