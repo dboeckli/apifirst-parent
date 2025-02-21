@@ -29,7 +29,6 @@
     </properties>
 
     <profiles>
-        <!-- CI/CD profile for GitHub Actions -->
         <profile>
             <id>ci-cd</id>
             <activation>

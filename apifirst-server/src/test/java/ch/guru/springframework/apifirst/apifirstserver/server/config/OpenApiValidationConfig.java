@@ -6,11 +6,24 @@ import com.atlassian.oai.validator.springmvc.OpenApiValidationInterceptor;
 import jakarta.servlet.Filter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.io.IOException;
+
 @Configuration
 public class OpenApiValidationConfig {
+
+    public static final String OPENAPI_SPECIFICATION_URL;
+
+    static {
+        try {
+            OPENAPI_SPECIFICATION_URL = new ClassPathResource("openapi.yaml").getFile().toURI().toString();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
     
     @Bean
     public Filter validationFilter() {
@@ -22,7 +35,8 @@ public class OpenApiValidationConfig {
 
     @Bean
     public WebMvcConfigurer openAPIValidationInterceptor() {
-        OpenApiInteractionValidator validator = OpenApiInteractionValidator.createForSpecificationUrl("https://dboeckli.redocly.app/_spec/openapi/openapi.yaml")
+        OpenApiInteractionValidator validator = OpenApiInteractionValidator
+            .createForSpecificationUrl(OPENAPI_SPECIFICATION_URL)
             .build();
         OpenApiValidationInterceptor interceptor = new OpenApiValidationInterceptor(validator);
 
