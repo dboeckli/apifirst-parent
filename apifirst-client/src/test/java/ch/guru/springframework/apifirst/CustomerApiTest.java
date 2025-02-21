@@ -5,36 +5,39 @@ import ch.guru.springframework.apifirst.model.CustomerDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class CustomerApiTest {
 
-    @LocalServerPort
-    private int port;
+    CustomerApi customerApiJpa;
 
-    ApiClient apiClient;
-    
-    CustomerApi customerApi;
+    CustomerApi customerApiServer;
     
     @BeforeEach
     void setup() {
-        apiClient = new ApiClient(new RestTemplate());
-        apiClient.setBasePath("http://localhost:" + 8081);
-        customerApi = new CustomerApi(apiClient);
+        ApiClient apiClientJpa = new ApiClient(new RestTemplate());
+
+        apiClientJpa.setBasePath("http://localhost:" + 8081);
+        customerApiJpa = new CustomerApi(apiClientJpa);
+
+        apiClientJpa.setBasePath("http://localhost:" + 8082);
+        customerApiServer = new CustomerApi(apiClientJpa);
     }  
     
     @Test
-    void testListCustomers() {
-        List<CustomerDto> customers = customerApi.listCustomers();
-        assertThat(customers.size()).isPositive();
+    void testListCustomersInJpaModule() {
+        List<CustomerDto> customers = customerApiJpa.listCustomers();
+        assertThat(customers).isNotEmpty();
+    }
+
+    @Test
+    void testListCustomersInServerModule() {
+        List<CustomerDto> customers = customerApiJpa.listCustomers();
+        assertThat(customers).isNotEmpty();
     }
 }

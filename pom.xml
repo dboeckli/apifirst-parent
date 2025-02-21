@@ -24,7 +24,7 @@
         <module>apifirst-api</module>
         <module>apifirst-server</module>
         <module>apifirst-server-jpa</module>
-        <!--<module>apifirst-client</module>-->
+        <module>apifirst-client</module>
     </modules>
 
     <properties>
