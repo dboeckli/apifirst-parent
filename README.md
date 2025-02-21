@@ -20,6 +20,11 @@ Das Projekt besteht aus drei Hauptkomponenten:
     - Persistiert Daten in einer H2-Datenbank
     - Nutzt ebenfalls die von `apifirst-api` generierten Modelklassen
 
+4. `apifirst-client`: Client-Implementierung für die API
+    - Enthält die generierte Clientschnittstelle
+    - Nutzt die von `apifirst-api` generierten Modelklassen und API-Interfaces
+    - Ermöglicht das Testen und die Demonstration der API-Funktionalität
+
 Beide Server-Implementierungen (`apifirst-server` und `apifirst-server-jpa`) implementieren die gleiche Schnittstelle, verwenden aber unterschiedliche Datenspeicherungsmechanismen.
 
 ### API-Dokumentation und OpenAPI-Definitionen
@@ -27,12 +32,8 @@ Beide Server-Implementierungen (`apifirst-server` und `apifirst-server-jpa`) imp
 Die OpenAPI-Definitionen werden im Projekt `apifirst-api` erstellt: https://github.com/dboeckli/apifirst-sb.git
 Diese Definitionen durchlaufen einen GitHub-Build-Prozess mit Redocly, wo sie validiert und verarbeitet werden.
 
-Die finale, validierte OpenAPI-Spezifikation ist auf Redocly verfügbar. Sie bietet eine interaktive und benutzerfreundliche Oberfläche zur Erkundung der API-Spezifikation.
-
-Um auf die Redocly-Dokumentation zuzugreifen, besuchen Sie bitte den folgenden Link:
-[API-Dokumentation auf Redocly](https://dboeckli.redocly.app/openapi/openapi/customer)
-
-Dieser Link führt zur finalen YAML-Datei, die durch den Redocly-Prozess erstellt wurde.
+Die finale, validierte OpenAPI-Spezifikation war auf Redocly verfügbar. Sie bot eine interaktive und benutzerfreundliche Oberfläche zur Erkundung der API-Spezifikation.
+Dies ist nicht der Fall wegen kostenpflichtiger Lizenz. Das openapi yaml wird jetzt per npm dependency geholt (statt wie vorher via url.)
 
 ## Generierte Quellen
 
