@@ -37,6 +37,8 @@ Dies ist nicht der Fall wegen kostenpflichtiger Lizenz. Das openapi yaml wird je
 
 ## Generierte Quellen
 
+Um die npm-Abhängigkeiten aufzulösen, muss eine .npmrc-Datei im Home-Verzeichnis platziert werden. Diese Datei enthält den GitHub-Zugriffstoken, der im KeePass-Tresor unter "github dboeckli access token" gespeichert ist.
+
 Basierend auf den OpenAPI-Definitionen werden Quellen generiert, einschließlich der Modelklassen und API-Interfaces. Diese werden in das folgende Verzeichnis geschrieben:
 
 Die generierten Quellen, einschließlich der Modelklassen und API-Interfaces, werden in das folgende Verzeichnis geschrieben:
