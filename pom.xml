@@ -49,7 +49,7 @@
         
         <frontend-maven-plugin.version>1.15.1</frontend-maven-plugin.version>
 
-        <logbook.version>3.10.0</logbook.version>
+        <logbook.version>3.11.0</logbook.version>
         <logstash-logback.version>8.0</logstash-logback.version>
 
         <!-- Sonar -->
