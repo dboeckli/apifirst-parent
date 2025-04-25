@@ -6,6 +6,7 @@ import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.Customer
 import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.OrderRepository;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +14,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Component
+@Slf4j
 public class DataLoader implements CommandLineRunner {
 
     private final CustomerRepository customerRepository;
@@ -22,6 +24,8 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        
+        log.info("Loading initial data...");
 
         Category electronics = categoryRepository.save(Category.builder()
             .category("Electronics")
@@ -167,5 +171,7 @@ public class DataLoader implements CommandLineRunner {
 
         orderRepository.save(order1);
         orderRepository.save(order2);
+
+        log.info("Loading initial data done");
     }
 }
