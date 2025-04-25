@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @Slf4j
 @Import(DataLoader.class)
-class ProductRepositoryTest {
+class ProductRepositoryIT {
 
     @Autowired
     ProductRepository productRepository;

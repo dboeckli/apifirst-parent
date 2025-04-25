@@ -181,6 +181,7 @@
                         <exclude>**/api-def/package-lock.json</exclude>
                         <exclude>.run/**</exclude>
                         <exclude>**/banner.txt</exclude>
+                        <exclude>mvnv*</exclude>
                     </excludes>
                 </configuration>
             </plugin>
