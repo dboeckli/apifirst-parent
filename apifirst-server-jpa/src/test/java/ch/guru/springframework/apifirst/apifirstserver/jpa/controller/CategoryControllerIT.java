@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @Import(DataLoader.class)
-class CategoryControllerTest {
+class CategoryControllerIT {
 
     @Autowired
     WebApplicationContext wac;

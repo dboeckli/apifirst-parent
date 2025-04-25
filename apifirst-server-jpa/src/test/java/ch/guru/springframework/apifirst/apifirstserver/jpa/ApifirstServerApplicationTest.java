@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(useMainMethod = SpringBootTest.UseMainMethod.ALWAYS)
 @Slf4j
-class ApifirstServerApplicationTests {
+class ApifirstServerApplicationTest {
 
     @Autowired
     private ApplicationContext applicationContext;
