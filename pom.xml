@@ -29,9 +29,10 @@
 
     <properties>
         <java.version>21</java.version>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+
         <repo.name>apifirst-parent</repo.name>
 
         <google.findbugs.version>3.0.2</google.findbugs.version>
@@ -174,14 +175,17 @@
                         <!-- Note that maven submodule directories and many non-source file patterns are excluded by default -->
                         <!-- see https://github.com/ec4j/editorconfig-linters/blob/master/editorconfig-lint-api/src/main/java/org/ec4j/lint/api/Constants.java#L37 -->
                         <!-- You can exclude further files from processing: -->
-                        <exclude>**/toolchains.xml</exclude>
-                        <exclude>**/settings.xml</exclude>
                         <exclude>**/api-def/dist/**</exclude>
                         <exclude>**/api-def/node_modules/**</exclude>
                         <exclude>**/api-def/package-lock.json</exclude>
+                        <exclude>**/toolchains.xml</exclude>
+                        <exclude>**/settings.xml</exclude>
                         <exclude>.run/**</exclude>
+                        <exclude>.mvn/**</exclude>
+                        <exclude>.idea/**</exclude>
                         <exclude>**/banner.txt</exclude>
-                        <exclude>mvnv*</exclude>
+                        <exclude>mvnw</exclude>
+                        <exclude>mvnw.cmd</exclude>
                     </excludes>
                 </configuration>
             </plugin>
