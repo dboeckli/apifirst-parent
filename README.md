@@ -15,10 +15,12 @@ Das Projekt besteht aus drei Hauptkomponenten:
 2. `apifirst-server`: Implementierung des Servers basierend auf der API-Spezifikation
     - Verwendet eine In-Memory-HashMap zur Datenspeicherung
     - Nutzt die von `apifirst-api` generierten Modelklassen
+    - erreichbar über port 8081/30081
 
 3. `apifirst-server-jpa`: Erweiterung des Servers mit JPA-Integration
     - Persistiert Daten in einer H2-Datenbank
     - Nutzt ebenfalls die von `apifirst-api` generierten Modelklassen
+    - erreichbar über port 8082/30082
 
 4. `apifirst-client`: Client-Implementierung für die API
     - Enthält die generierte Clientschnittstelle
@@ -85,7 +87,7 @@ kubectl get deployments -o wide
 kubectl get pods -o wide
 ```
 
-You can use the actuator rest call to verify via port 30080
+You can use the actuator rest call to verify via port 30081/30082
 
 ## Deployment with Helm
 
@@ -138,4 +140,4 @@ uninstall
 helm uninstall $APPLICATION_NAME --namespace $namespace
 ```
 
-You can use the actuator rest call to verify via port 30080
+You can use the actuator rest call to verify via port 30081/30082

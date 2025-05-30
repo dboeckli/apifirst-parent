@@ -6,9 +6,9 @@ metadata:
 spec:
   type: NodePort
   ports:
-    - port: 8080
-      targetPort: 8080
-      nodePort: 30080
+    - port: 8082
+      targetPort: 8082
+      nodePort: 30082
   selector:
     app: @project.artifactId@
 
@@ -34,7 +34,7 @@ spec:
           image: @docker.repo@/@project.artifactId@:@project.version@
           ports:
             - name: http
-              containerPort: 8080
+              containerPort: 8082
           startupProbe:
             httpGet:
               path: /actuator/health
