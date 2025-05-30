@@ -527,7 +527,7 @@
                 <version>${exec-maven-plugin.version}</version>
                 <executions>
                     <execution>
-                        <id>helm-login-to-docker</id>
+                        <id>helm-login-and-push</id>
                         <phase>deploy</phase>
                         <goals>
                             <goal>exec</goal>
@@ -537,8 +537,10 @@
                             <arguments>
                                 <argument>-c</argument>
                                 <!--suppress UnresolvedMavenProperty: DOCKER_USER is set by GitHub Actions -->
-                                <!--<argument>echo ${env.DOCKER_TOKEN} \| helm registry login registry-1.docker.io -u ${env.DOCKER_USER} --password-stdin</argument>-->
-                                <argument>echo ${env.DOCKER_TOKEN} \| helm registry login registry-1.docker.io -u ${env.DOCKER_USER} --password-stdin \&\& ls -la ~/.config/helm/registry</argument>
+                                <argument>
+                                    echo "${env.DOCKER_TOKEN}" \| helm registry login registry-1.docker.io -u "${env.DOCKER_USER}" --password-stdin &amp;&amp; \
+                                    helm push ./target/helm/repo/${project.artifactId}-${helm.chart.version}.tgz oci://registry-1.docker.io/${env.DOCKER_USER}
+                                </argument>
                             </arguments>
                         </configuration>
                     </execution>
@@ -549,6 +551,7 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
+                            <skip>true</skip>
                             <executable>helm</executable>
                             <arguments>
                                 <argument>push</argument>
