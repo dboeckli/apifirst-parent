@@ -379,7 +379,7 @@ jobs:
           -f "application-name=apifirst-server" \
           -f "version=$BRANCH_MVN_VERSION" \
           -f "helm-chart-version=$HELM_CHART_VERSION" \
-          -f "namespace=$NAMESPACE" \
+          -f "namespace=apifirst-server" \
           -f "deployed-by-build=${{ github.run_id }}" \
           -f "deployed-by-workflow=${{ github.workflow }}"
           
@@ -387,7 +387,7 @@ jobs:
           -f "application-name=apifirst-server-jpa" \
           -f "version=$BRANCH_MVN_VERSION" \
           -f "helm-chart-version=$HELM_CHART_VERSION" \
-          -f "namespace=$NAMESPACE" \
+          -f "namespace=apifirst-server-jpa" \
           -f "deployed-by-build=${{ github.run_id }}" \
           -f "deployed-by-workflow=${{ github.workflow }}"
 

@@ -99,10 +99,12 @@ mvn clean install -DskipTests
 first which projects you want to deploy
 ```bash
 cd apifirst-server
+$namespace = "apifirst-server"
 ```
 or
 ```bash
 cd apifirst-server-jpa
+$namespace = "apifirst-server-jpa"
 ```
 
 Go to the directory where the tgz file has been created after 'mvn install'
@@ -119,21 +121,21 @@ tar -xvf $file.Name
 install
 ```powershell
 $APPLICATION_NAME = Get-ChildItem -Directory | Where-Object { $_.LastWriteTime -ge $file.LastWriteTime } | Select-Object -ExpandProperty Name
-helm upgrade --install $APPLICATION_NAME ./$APPLICATION_NAME --namespace spring-6-project-template --create-namespace --wait --timeout 5m --debug
+helm upgrade --install $APPLICATION_NAME ./$APPLICATION_NAME --namespace $namespace --create-namespace --wait --timeout 5m --debug
 ```
 
 show logs
 ```powershell
-kubectl get pods -l app.kubernetes.io/name=$APPLICATION_NAME -n spring-6-project-template
+kubectl get pods -l app.kubernetes.io/name=$APPLICATION_NAME -n $namespace
 ```
 replace $POD with pods from the command above
 ```powershell
-kubectl logs $POD -n spring-6-project-template --all-containers
+kubectl logs $POD -n $namespace --all-containers
 ```
 
 uninstall
 ```powershell
-helm uninstall $APPLICATION_NAME --namespace spring-6-project-template
+helm uninstall $APPLICATION_NAME --namespace $namespace
 ```
 
 You can use the actuator rest call to verify via port 30080
