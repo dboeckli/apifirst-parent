@@ -22,7 +22,7 @@
 
     <modules>
         <module>apifirst-api</module>
-        <module>apifirst-server</module>
+        <!--<module>apifirst-server</module>-->
         <module>apifirst-server-jpa</module>
         <module>apifirst-client</module>
     </modules>
@@ -43,8 +43,7 @@
         <editorconfig-maven-plugin.version>0.1.3</editorconfig-maven-plugin.version>
         <helm.plugin.version>6.17.0</helm.plugin.version>
         <properties-maven-plugin.version>1.2.1</properties-maven-plugin.version>
-        <helm.plugin.version>6.17.0</helm.plugin.version>
-        
+
         <!-- openapi common config -->
         <openapi.inputSpec.location>https://dboeckli.redocly.app/_spec/openapi/openapi.yaml</openapi.inputSpec.location>
         <openapi.generatorName>java</openapi.generatorName>
