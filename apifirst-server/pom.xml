@@ -436,7 +436,7 @@
                 <groupId>io.kokuwa.maven</groupId>
                 <artifactId>helm-maven-plugin</artifactId>
                 <version>${helm.plugin.version}</version>
-                <extensions>true</extensions>
+                <extensions>false</extensions>
 
                 <configuration>
                     <chartDirectory>${project.build.directory}/helm-charts/</chartDirectory>
@@ -511,8 +511,7 @@
                             <uploadRepoStable>
                                 <name>stable-repo</name>
                                 <!--suppress UnresolvedMavenProperty: DOCKER_USER is set by GitHub Actions -->
-                                <url>oci://registry-1.docker.io/${env.DOCKER_USER}</url>
-                                <!--<url>registry-1.docker.io/${env.DOCKER_USER}</url>-->
+                                <url>registry-1.docker.io/${env.DOCKER_USER}</url>
                             </uploadRepoStable>
                         </configuration>
                     </execution>
