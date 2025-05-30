@@ -492,7 +492,7 @@
                         <configuration>
                             <uploadRepoStable>
                                 <name>stable-repo</name>
-                                <url>registry-1.docker.io</url>
+                                <url>registry-1.docker.io/${env.DOCKER_USER}</url>
                                 <!--suppress UnresolvedMavenProperty: DOCKER_USER is set by GitHub Actions -->
                                 <username>${env.DOCKER_USER}</username>  <!-- registry username -->
                                 <!--suppress UnresolvedMavenProperty: DOCKER_TOKEN is set by GitHub Actions -->
