@@ -537,7 +537,7 @@
                             <arguments>
                                 <argument>-c</argument>
                                 <!--suppress UnresolvedMavenProperty: DOCKER_USER is set by GitHub Actions -->
-                                <argument>echo ${env.DOCKER_TOKEN} | helm registry login registry-1.docker.io -u ${env.DOCKER_USER} --password-stdin</argument>
+                                <argument>echo ${env.DOCKER_TOKEN} \| helm registry login registry-1.docker.io -u ${env.DOCKER_USER} --password-stdin</argument>
                             </arguments>
                         </configuration>
                     </execution>
