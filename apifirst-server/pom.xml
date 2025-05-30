@@ -507,6 +507,7 @@
                             <goal>push</goal>
                         </goals>
                         <configuration>
+                            <debug>true</debug>
                             <skipPushLogin>true</skipPushLogin>
                             <uploadRepoStable>
                                 <name>stable-repo</name>
