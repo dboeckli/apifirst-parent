@@ -202,6 +202,7 @@ jobs:
             echo "::notice:: ### Build of Feature Branch ${BRANCH_NAME}. Version: $BRANCH_MVN_VERSION"
             mvn -B versions:set -e -DnewVersion="$BRANCH_MVN_VERSION"
           fi
+          echo "✅ Secrets are set. DOCKER_USER length: ${#DOCKER_USER}, DOCKER_TOKEN length: ${#DOCKER_TOKEN}"
           mvn -B -e deploy -s $GITHUB_WORKSPACE/settings.xml
 
       - name: Upload Test Reports
@@ -212,12 +213,6 @@ jobs:
          path: |
            target/failsafe-reports/
            target/surefire-reports/
-
-      - name: Display Files
-        if: failure()
-        run: |
-          echo "Show all Files"
-          tree -a
 
       - name: get helm version and namespace
         id: get_helm_version_and_namespace
