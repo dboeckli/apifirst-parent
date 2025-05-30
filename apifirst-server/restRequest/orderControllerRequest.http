@@ -1,7 +1,7 @@
 ###
-GET http://localhost:8080/v1/orders
+GET http://localhost:{{application-port}}/v1/orders
 Accept: application/json
 Content-Type: application/json
 
 ###
-GET http://localhost:8080/v1/orders/9146727c-7012-41df-9dcd-f0d5f03dc0a3
+GET http://localhost:{{application-port}}/v1/orders/9146727c-7012-41df-9dcd-f0d5f03dc0a3

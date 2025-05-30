@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest(useMainMethod = SpringBootTest.UseMainMethod.ALWAYS)
 @Slf4j
-class ApifirstServerApplicationTests {
+class ApifirstServerApplicationTest {
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -30,7 +30,7 @@ class ApifirstServerApplicationTests {
 
     @Test
     void contextLoads() {
-        assertNotNull(applicationContext, "Application context should not be null");
+        assertNotNull(applicationContext);
         log.info("Testing Spring 6 Application {}", applicationContext.getApplicationName());
     }
 
