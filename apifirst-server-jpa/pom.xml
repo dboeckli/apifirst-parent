@@ -581,7 +581,6 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <skip>true</skip>
                             <executable>bash</executable>
                             <arguments>
                                 <argument>-c</argument>
@@ -597,7 +596,6 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <skip>true</skip>
                             <executable>helm</executable>
                             <arguments>
                                 <argument>push</argument>
