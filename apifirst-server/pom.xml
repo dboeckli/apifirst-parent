@@ -501,7 +501,7 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>helm-push</id>
+                        <id>helm-push-to-oci</id>
                         <phase>deploy</phase>
                         <goals>
                             <goal>push</goal>
