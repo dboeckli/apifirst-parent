@@ -213,6 +213,12 @@ jobs:
            target/failsafe-reports/
            target/surefire-reports/
 
+      - name: Display Files
+        if: failure()
+        run: |
+          echo "Show all Files"
+          tree -a
+
       - name: get helm version and namespace
         id: get_helm_version_and_namespace
         env:
