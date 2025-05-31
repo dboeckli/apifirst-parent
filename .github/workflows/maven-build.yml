@@ -203,14 +203,13 @@ jobs:
             mvn -B versions:set -e -DnewVersion="$BRANCH_MVN_VERSION"
           fi
           mvn -B -e deploy -s $GITHUB_WORKSPACE/settings.xml
-          
-          echo "### tree: "
-          tree -f
-          echo "### workspace: "
-          pwd $GITHUB_WORKSPACE
-          echo "### helm push: "
+
+          echo "### helm login: "
           echo ${DOCKER_TOKEN} | helm registry login registry-1.docker.io -u ${DOCKER_USER} --password-stdin
-          helm push ./apifirst-server/target/helm/repo/apifirst-server-v0.0.1-SNAPSHOT.tgz oci://registry-1.docker.io/${DOCKER_USER}
+          
+          HELM_CHART=$(find ./apifirst-server/target/helm/repo -name "apifirst-server-*.tgz")
+          echo "### helm push of: ${HELM_CHART}"
+          helm push ./apifirst-server/target/helm/repo/${HELM_CHART} oci://registry-1.docker.io/${DOCKER_USER}
       
 
       - name: Upload Test Reports
