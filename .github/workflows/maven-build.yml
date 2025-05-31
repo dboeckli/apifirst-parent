@@ -204,6 +204,9 @@ jobs:
           fi
           mvn -B -e deploy -s $GITHUB_WORKSPACE/settings.xml
 
+          echo "Helm version:"
+          helm version --short
+
           echo "### helm login: "
           echo ${DOCKER_TOKEN} | helm registry login registry-1.docker.io -u ${DOCKER_USER} --password-stdin
           
