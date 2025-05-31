@@ -520,51 +520,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>${exec-maven-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>helm-login-and-push</id>
-                        <phase>deploy</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>bash</executable>
-                            <arguments>
-                                <argument>-c</argument>
-                                <!--suppress UnresolvedMavenProperty: DOCKER_USER is set by GitHub Actions -->
-                                <argument>
-                                    echo "${env.DOCKER_TOKEN}" \| helm registry login registry-1.docker.io -u "${env.DOCKER_USER}" --password-stdin &amp;&amp; \
-                                    helm push ./target/helm/repo/${project.artifactId}-${helm.chart.version}.tgz oci://registry-1.docker.io/${env.DOCKER_USER}
-                                </argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>helm-push-to-docker</id>
-                        <phase>deploy</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <skip>true</skip>
-                            <executable>helm</executable>
-                            <arguments>
-                                <argument>push</argument>
-                                <!--suppress UnresolvedMavenProperty: helm.chart.version is set by maven antrun plugin -->
-                                <argument>./target/helm/repo/${project.artifactId}-${helm.chart.version}.tgz</argument>
-                                <!--suppress UnresolvedMavenProperty: DOCKER_USER is set by GitHub Actions -->
-                                <argument>oci://registry-1.docker.io/${env.DOCKER_USER}</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
         </plugins>
     </build>
 
