@@ -1,6 +1,5 @@
 package ch.guru.springframework.apifirst.apifirstserver.server.controller;
 
-import ch.guru.springframework.apifirst.apifirstserver.server.controller.OrderController;
 import ch.guru.springframework.apifirst.apifirstserver.server.repositories.CustomerRepository;
 import ch.guru.springframework.apifirst.apifirstserver.server.repositories.OrderRepository;
 import ch.guru.springframework.apifirst.apifirstserver.server.repositories.ProductRepository;
