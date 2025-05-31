@@ -209,7 +209,7 @@ jobs:
           
           HELM_CHART=$(find ./apifirst-server/target/helm/repo -name "apifirst-server-*.tgz")
           echo "### helm push of: ${HELM_CHART}"
-          helm push ./apifirst-server/target/helm/repo/${HELM_CHART} oci://registry-1.docker.io/${DOCKER_USER}
+          helm push ${HELM_CHART} oci://registry-1.docker.io/${DOCKER_USER}
       
 
       - name: Upload Test Reports
