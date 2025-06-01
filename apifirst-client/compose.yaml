@@ -1,7 +1,7 @@
 services:
   apifirst-server-jpa:
     container_name: apifirst-server-jpa
-    image: local/apifirst-server-jpa:0.0.1-SNAPSHOT
+    image: domboeckli/apifirst-server-jpa:0.0.1-SNAPSHOT
     ports:
       - "8081:8081"
     expose:
@@ -11,7 +11,7 @@ services:
       
   apifirst-server:
     container_name: apifirst-server
-    image: local/apifirst-server:0.0.1-SNAPSHOT
+    image: domboeckli/apifirst-server:0.0.1-SNAPSHOT
     ports:
       - "8082:8082"
     expose:
