@@ -205,6 +205,8 @@ jobs:
           mvn -B -e deploy -s $GITHUB_WORKSPACE/settings.xml
 
       - name: Helm Push
+        # This is a workaround because the helm push does not work the standard way. helm login file under ~/.config/helm/registry/config.json is ignored.
+        # Instead, we use the docker login file under ~/.docker/config.json
         env:
           DOCKER_USER: ${{ vars.DOCKER_USER }}
           DOCKER_TOKEN: ${{ secrets.DOCKER_ACCESS_TOKEN }}
@@ -212,6 +214,8 @@ jobs:
           set -o pipefail
           set -o nounset
           set -o errexit
+          
+          rm -f ~/.config/helm/registry/config.json
 
           echo "Helm version:"
           helm version --short
