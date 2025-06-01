@@ -229,6 +229,9 @@ jobs:
               "https://index.docker.io/v1/": {
                 "auth": "$AUTH"
               }
+              "registry-1.docker.io": {
+                "auth": "$AUTH"
+              }
             }
           }
           EOF
