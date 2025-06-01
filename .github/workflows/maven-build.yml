@@ -207,6 +207,7 @@ jobs:
       - name: Helm Push
         # This is a workaround because the helm push does not work the standard way. helm login file under ~/.config/helm/registry/config.json is ignored.
         # Instead, we use the docker login file under ~/.docker/config.json
+        # see: https://github.com/helm/helm/issues/30929 and https://github.com/helm/helm/issues/30942
         env:
           DOCKER_USER: ${{ vars.DOCKER_USER }}
           DOCKER_TOKEN: ${{ secrets.DOCKER_ACCESS_TOKEN }}
@@ -397,9 +398,7 @@ jobs:
   Trigger-Deploy:
     runs-on: ubuntu-latest
     needs: [ setup, build ]
-    # TODO: enable me
-    #if: github.event_name != 'pull_request'
-    if: false
+    if: github.event_name != 'pull_request'
 
     permissions:
       actions: write
