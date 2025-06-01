@@ -369,7 +369,7 @@
                                 <tags>
                                     local/${project.artifactId}:${docker.image.tag}
                                 </tags>
-                                <publish>false</publish>
+                                <publish>true</publish>
                             </image>
                         </configuration>
                     </execution>
