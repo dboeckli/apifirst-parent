@@ -216,6 +216,9 @@ jobs:
           echo "Helm version:"
           helm version --short
           
+          echo "Helm environment:"
+          helm env
+          
           # Base64-Encode: username:token
           AUTH=$(echo -n "$DOCKER_USER:$DOCKER_TOKEN" | base64)
           
