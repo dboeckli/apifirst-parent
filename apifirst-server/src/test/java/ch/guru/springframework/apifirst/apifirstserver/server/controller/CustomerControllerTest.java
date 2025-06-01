@@ -1,6 +1,5 @@
 package ch.guru.springframework.apifirst.apifirstserver.server.controller;
 
-import ch.guru.springframework.apifirst.apifirstserver.server.controller.CustomerController;
 import ch.guru.springframework.apifirst.apifirstserver.server.repositories.CustomerRepository;
 import ch.guru.springframework.apifirst.model.AddressDto;
 import ch.guru.springframework.apifirst.model.CustomerDto;

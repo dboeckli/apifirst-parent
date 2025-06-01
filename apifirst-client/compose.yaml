@@ -43,13 +43,13 @@ services:
       /bin/sh -c '
       while true; do
         apifirst_server_jpa_health=$$(wget -q -O - http://apifirst-server-jpa:8081/actuator/health/readiness 2>/dev/null)
-        apifirst_server__health=$$(wget -q -O - http://apifirst-server:8080/actuator/health/readiness 2>/dev/null)
+        apifirst_server_health=$$(wget -q -O - http://apifirst-server:8082/actuator/health/readiness 2>/dev/null)
 
         echo "{
           \"timestamp\": \"$$(date -Iseconds)\",
           \"services\": {
             \"apifirst-server-jpa\": $$apifirst_server_jpa_health,
-            \"apifirst-server\": $$apifirst_server__health
+            \"apifirst-server\": $$apifirst_server_health
           }
         }"
 

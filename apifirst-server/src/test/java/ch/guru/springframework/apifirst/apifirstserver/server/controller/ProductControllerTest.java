@@ -1,8 +1,10 @@
 package ch.guru.springframework.apifirst.apifirstserver.server.controller;
 
-import ch.guru.springframework.apifirst.apifirstserver.server.controller.ProductController;
 import ch.guru.springframework.apifirst.apifirstserver.server.repositories.ProductRepository;
-import ch.guru.springframework.apifirst.model.*;
+import ch.guru.springframework.apifirst.model.DimensionsDto;
+import ch.guru.springframework.apifirst.model.ImageDto;
+import ch.guru.springframework.apifirst.model.ProductCreateDto;
+import ch.guru.springframework.apifirst.model.ProductDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.Filter;
 import lombok.extern.slf4j.Slf4j;

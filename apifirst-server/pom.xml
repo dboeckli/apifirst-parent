@@ -18,12 +18,17 @@
         <github.acions.build>false</github.acions.build>
         <skip.docker.publish>true</skip.docker.publish>
         <skip.start.stop.springboot>false</skip.start.stop.springboot>
+        <skip.docker.build>false</skip.docker.build>
+
+        <docker.image.tag>development</docker.image.tag> <!-- for feature branches -->
+        <docker.repo>local</docker.repo>
 
         <!--suppress UnresolvedMavenProperty -->
         <buildNumber>${git.commit.id.abbrev}</buildNumber>
     </properties>
 
     <profiles>
+        <!-- CI/CD profile for GitHub Actions -->
         <profile>
             <id>ci-cd</id>
             <activation>
@@ -35,6 +40,33 @@
             <properties>
                 <github.acions.build>true</github.acions.build>
                 <skip.docker.publish>false</skip.docker.publish>
+                <docker.repo>domboeckli</docker.repo>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>master-branch</id>
+            <activation>
+                <property>
+                    <name>env.GITHUB_REF</name>
+                    <value>refs/heads/master</value>
+                </property>
+            </activation>
+            <properties>
+                <docker.image.tag>latest</docker.image.tag>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>main-branch</id>
+            <activation>
+                <property>
+                    <name>env.GITHUB_REF</name>
+                    <value>refs/heads/main</value>
+                </property>
+            </activation>
+            <properties>
+                <docker.image.tag>latest</docker.image.tag>
             </properties>
         </profile>
     </profiles>
@@ -165,6 +197,63 @@
             </plugin>
 
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+
+                    <execution>
+                        <id>copy-and-filter-k8s-yaml-to-target</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/k8s</outputDirectory>
+                            <includeEmptyDirs>true</includeEmptyDirs>
+                            <resources>
+                                <resource>
+                                    <directory>k8s</directory>
+                                    <filtering>true</filtering>
+                                    <includes>
+                                        <include>**/*</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+
+                    <!--
+                        This execution copies helm charts and puts them into the target directory 'helm-charts'. The helm charts are used to deploy the project.
+                        During the build some variables are resolved by maven filtering (e.g. the project version).
+                    -->
+                    <execution>
+                        <id>copy-and-filter-helm-charts-to-target</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/helm-charts</outputDirectory>
+                            <includeEmptyDirs>true</includeEmptyDirs>
+                            <resources>
+                                <resource>
+                                    <directory>helm-charts</directory>
+                                    <filtering>true</filtering>
+                                    <includes>
+                                        <include>**/*</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                            <filters>
+                                <filter>${project.build.directory}/helm.properties</filter>
+                            </filters>
+                        </configuration>
+                    </execution>
+
+                </executions>
+            </plugin>
+
+            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
                 <executions>
@@ -240,7 +329,6 @@
                         <id>start-springboot-app</id>
                         <goals>
                             <goal>start</goal>
-                            <goal>stop</goal>
                         </goals>
                         <phase>post-integration-test</phase>
                         <configuration>
@@ -258,16 +346,28 @@
                     </execution>
 
                     <execution>
+                        <id>stop-springboot-app</id>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${skip.start.stop.springboot}</skip>
+                            <jmxPort>${jmx.server.port}</jmxPort>
+                        </configuration>
+                    </execution>
+
+                    <execution>
                         <id>build-docker-image</id>
                         <goals>
                             <goal>build-image-no-fork</goal>
                         </goals>
                         <phase>install</phase>
                         <configuration>
+                            <skip>${skip.docker.build}</skip>
                             <image>
-                                <name>local/${project.artifactId}:latest</name>
+                                <name>local/${project.artifactId}:${project.version}</name>
                                 <tags>
-                                    local/${project.artifactId}:${project.version}
+                                    local/${project.artifactId}:${docker.image.tag}
                                 </tags>
                                 <publish>false</publish>
                             </image>
@@ -283,18 +383,17 @@
                         <configuration>
                             <skip>${skip.docker.publish}</skip>
                             <image>
-                                <name>ghcr.io/${project.organization.name}/${project.artifactId}:latest</name>
+                                <name>ghcr.io/${project.organization.name}/${project.artifactId}:${project.version}</name>
                                 <tags>
-                                    ghcr.io/${project.organization.name}/${project.artifactId}:${project.version}
+                                    ghcr.io/${project.organization.name}/${project.artifactId}:${docker.image.tag}
                                 </tags>
                                 <publish>true</publish>
                             </image>
                             <docker>
                                 <publishRegistry>
-                                    <!-- GITHUB_ACTOR and GITHUB_TOKEN are set by gitHub Actions -->
-                                    <!--suppress UnresolvedMavenProperty -->
+                                    <!--suppress UnresolvedMavenProperty: GITHUB_ACTOR is set by GitHub Actions -->
                                     <username>${env.GITHUB_ACTOR}</username>
-                                    <!--suppress UnresolvedMavenProperty -->
+                                    <!--suppress UnresolvedMavenProperty: GITHUB_TOKEN is set by GitHub Actions -->
                                     <password>${env.GITHUB_TOKEN}</password>
                                     <url>https://ghcr.io</url><!-- gitHub packages -->
                                 </publishRegistry>
@@ -311,20 +410,19 @@
                         <configuration>
                             <skip>${skip.docker.publish}</skip>
                             <image>
-                                <!--suppress UnresolvedMavenProperty -->
-                                <name>${env.DOCKER_USER}/${project.artifactId}:latest</name>
+                                <!--suppress UnresolvedMavenProperty: DOCKER_USER is set by GitHub Actions -->
+                                <name>${env.DOCKER_USER}/${project.artifactId}:${project.version}</name>
                                 <tags>
-                                    <!--suppress UnresolvedMavenProperty -->
-                                    ${env.DOCKER_USER}/${project.artifactId}:${project.version}
+                                    <!--suppress UnresolvedMavenProperty: DOCKER_USER is set by GitHub Actions -->
+                                    ${env.DOCKER_USER}/${project.artifactId}:${docker.image.tag}
                                 </tags>
                                 <publish>true</publish>
                             </image>
                             <docker>
                                 <publishRegistry>
-                                    <!-- DOCKER_USER and DOCKER_TOKEN are set by gitHub Actions -->
-                                    <!--suppress UnresolvedMavenProperty -->
+                                    <!--suppress UnresolvedMavenProperty: DOCKER_USER is set by GitHub Actions -->
                                     <username>${env.DOCKER_USER}</username>
-                                    <!--suppress UnresolvedMavenProperty -->
+                                    <!--suppress UnresolvedMavenProperty: DOCKER_TOKEN is set by GitHub Actions -->
                                     <password>${env.DOCKER_TOKEN}</password>
                                     <url>https://index.docker.io/v1/</url>
                                 </publishRegistry>
@@ -334,6 +432,94 @@
                 </executions>
             </plugin>
 
+            <plugin>
+                <groupId>io.kokuwa.maven</groupId>
+                <artifactId>helm-maven-plugin</artifactId>
+                <version>${helm.plugin.version}</version>
+                <extensions>false</extensions>
+
+                <configuration>
+                    <chartDirectory>${project.build.directory}/helm-charts/</chartDirectory>
+                    <!--suppress UnresolvedMavenProperty: helm.chart.version is set by maven antrun plugin -->
+                    <chartVersion>${helm.chart.version}</chartVersion>
+                    <skipLint>true</skipLint>
+                    <useLocalHelmBinary>true</useLocalHelmBinary>
+                    <skip>false</skip>
+                    <templateOutputDir>${project.build.directory}/helm-templated</templateOutputDir>
+                </configuration>
+
+                <executions>
+                    <execution>
+                        <id>execute-helm-lint</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>lint</goal> <!-- Locally render templates -->
+                        </goals>
+                        <configuration>
+                            <skipLint>false</skipLint>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>execute-helm-template</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>template</goal> <!-- Locally render templates -->
+                        </goals>
+                        <configuration>
+                            <skipTemplate>false</skipTemplate>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>execute-helm-dry-run</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>dry-run</goal> <!-- simulates an install. output goes to target/helm-templated -->
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>helm-package</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>package</goal> <!-- creates tgz file to target/helm -->
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>helm-login</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>registry-login</goal>
+                        </goals>
+                        <configuration>
+                            <skip>true</skip>
+                            <uploadRepoStable>
+                                <name>stable-repo</name>
+                                <url>registry-1.docker.io</url>
+                                <!--suppress UnresolvedMavenProperty: DOCKER_USER is set by GitHub Actions -->
+                                <username>${env.DOCKER_USER}</username>  <!-- registry username -->
+                                <!--suppress UnresolvedMavenProperty: DOCKER_TOKEN is set by GitHub Actions -->
+                                <password>${env.DOCKER_TOKEN}</password> <!-- registry password or identity token -->
+                            </uploadRepoStable>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>helm-push</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>push</goal>
+                        </goals>
+                        <configuration>
+                            <skip>true</skip>
+                            <debug>true</debug>
+                            <skipPushLogin>true</skipPushLogin>
+                            <uploadRepoStable>
+                                <name>stable-repo</name>
+                                <!--suppress UnresolvedMavenProperty: DOCKER_USER is set by GitHub Actions -->
+                                <url>registry-1.docker.io/${env.DOCKER_USER}/${project.artifactId}</url>
+                            </uploadRepoStable>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
