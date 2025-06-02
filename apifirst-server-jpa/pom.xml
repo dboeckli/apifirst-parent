@@ -539,7 +539,6 @@
                             <goal>registry-login</goal>
                         </goals>
                         <configuration>
-                            <skip>true</skip>
                             <uploadRepoStable>
                                 <name>stable-repo</name>
                                 <url>registry-1.docker.io</url>
@@ -557,7 +556,6 @@
                             <goal>push</goal>
                         </goals>
                         <configuration>
-                            <skip>true</skip>
                             <skipPushLogin>true</skipPushLogin>
                             <uploadRepoStable>
                                 <name>stable-repo</name>
