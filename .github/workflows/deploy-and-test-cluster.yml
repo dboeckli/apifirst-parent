@@ -33,7 +33,14 @@ on:
         default: 'None'
 
 jobs:
+
   deploy-app-with-kubectl:
+
+    permissions:
+      contents: read
+      packages: read
+      actions: read
+
     runs-on: ubuntu-latest
     steps:
       - name: Show Version
@@ -60,9 +67,11 @@ jobs:
         env:
           APPLICATION_NAME: ${{ inputs.application-name }}
           VERSION: ${{ inputs.version }}
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
-          mvn -B versions:set -e -DnewVersion="$VERSION"
-          mvn -B process-resources
+          mvn -B versions:set -e -DnewVersion="$VERSION" -s $GITHUB_WORKSPACE/settings.xml
+          mvn -B process-resources -pl :$APPLICATION_NAME -s $GITHUB_WORKSPACE/settings.xml
           cat $APPLICATION_NAME/target/k8s/app.yml
           echo "Deploying Application $APPLICATION_NAME with version $VERSION"
           kubectl apply -f $APPLICATION_NAME/target/k8s/ --v=6
@@ -81,7 +90,7 @@ jobs:
             exit 1
           fi
           BUILD_LINK="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ inputs.deployed-by-build }}"
-          echo "::notice:: ### Deployed Version: ${{ inputs.version }}"
+          echo "::notice:: ### Kubernetes Deployment: Application ${{ inputs.application-name }}, Version: ${{ inputs.version }}"
           echo "::notice:: ### Deployment triggered by workflow ${{ inputs.deployed-by-workflow }}. Run number: ${{ inputs.deployed-by-build }}: $BUILD_LINK"
 
       - name: Display Deployment Information
@@ -114,7 +123,7 @@ jobs:
             echo "No pods found with label app=$APPLICATION_NAME in default namespace"
             echo "Listing all pods in default namespace:"
             kubectl get pods -n default
-          fi      
+          fi  
 
   deploy-app-with-helm:
     runs-on: ubuntu-latest
@@ -170,7 +179,7 @@ jobs:
             exit 1
           fi
           BUILD_LINK="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ inputs.deployed-by-build }}"
-          echo "::notice:: ### Helm Deployed Version: ${{ inputs.version }}"
+          echo "::notice:: ### Helm Deployment: Application ${{ inputs.application-name }}, Version: ${{ inputs.version }}"
           echo "::notice:: ### Deployment triggered by workflow ${{ inputs.deployed-by-workflow }}. Run number: ${{ inputs.deployed-by-build }}: $BUILD_LINK"
 
       - name: Display Deployment Information
@@ -203,4 +212,3 @@ jobs:
             echo "Listing all pods in $NAMESPACE namespace:"
             kubectl get pods -n $NAMESPACE
           fi          
-

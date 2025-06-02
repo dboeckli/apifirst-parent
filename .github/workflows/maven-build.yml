@@ -141,7 +141,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
+        
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
@@ -207,6 +207,7 @@ jobs:
       - name: Helm Push
         # This is a workaround because the helm push does not work the standard way. helm login file under ~/.config/helm/registry/config.json is ignored.
         # Instead, we use the docker login file under ~/.docker/config.json
+        # see: https://github.com/helm/helm/issues/30929 and https://github.com/helm/helm/issues/30942
         env:
           DOCKER_USER: ${{ vars.DOCKER_USER }}
           DOCKER_TOKEN: ${{ secrets.DOCKER_ACCESS_TOKEN }}
@@ -345,14 +346,14 @@ jobs:
             echo "::notice:: ### Build of Feature Branch ${BRANCH_NAME}. Version: $BRANCH_MVN_VERSION"
             mvn -B versions:set -e -DnewVersion="$BRANCH_MVN_VERSION"
           fi
-          mvn -B -e verify -Dskip.start.stop.springboot=true -Dskip.docker.build=true -Dskip.docker.publish=true -s $GITHUB_WORKSPACE/settings.xml	
+          mvn -B -e verify -Dskip.start.stop.springboot=true -Dskip.docker.build=true -Dskip.docker.publish=true -s $GITHUB_WORKSPACE/settings.xml
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
           files: |
-            ./target/surefire-reports/TEST-*.xml
-            ./target/failsafe-reports/TEST-*.xml
+            **/target/surefire-reports/TEST-*.xml
+            **/target/failsafe-reports/TEST-*.xml
       
       - name: analyze
         env:
@@ -397,9 +398,7 @@ jobs:
   Trigger-Deploy:
     runs-on: ubuntu-latest
     needs: [ setup, build ]
-    # TODO: enable me
-    #if: github.event_name != 'pull_request'
-    if: false
+    if: github.event_name != 'pull_request'
 
     permissions:
       actions: write
