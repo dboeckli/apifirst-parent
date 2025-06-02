@@ -243,59 +243,6 @@ jobs:
           fi
           mvn -B -e deploy -s $GITHUB_WORKSPACE/settings.xml
 
-      - name: Helm Push
-        # This is a workaround because the helm push does not work the standard way. helm login file under ~/.config/helm/registry/config.json is ignored.
-        # Instead, we use the docker login file under ~/.docker/config.json
-        # see: https://github.com/helm/helm/issues/30929 and https://github.com/helm/helm/issues/30942
-        env:
-          DOCKER_USER: ${{ vars.DOCKER_USER }}
-          DOCKER_TOKEN: ${{ secrets.DOCKER_ACCESS_TOKEN }}
-        run: |
-          set -o pipefail
-          set -o nounset
-          set -o errexit
-          
-          rm -f ~/.config/helm/registry/config.json
-
-          echo "Helm version:"
-          helm version --short
-          
-          echo "Helm environment:"
-          helm env
-          
-          # Base64-Encode: username:token
-          AUTH=$(echo -n "$DOCKER_USER:$DOCKER_TOKEN" | base64)
-          
-          # Zielverzeichnis anlegen
-          mkdir -p ~/.docker
-          
-          # Docker config.json erzeugen
-          cat > ~/.docker/config.json <<EOF
-          {
-            "auths": {
-              "https://index.docker.io/v1/": {
-                "auth": "$AUTH"
-              },
-              "registry-1.docker.io": {
-                "auth": "$AUTH"
-              }
-            }
-          }
-          EOF
-          
-          echo "✅ Docker config.json erfolgreich erstellt unter ~/.docker/config.json"
-
-          echo "### helm login: "
-          echo ${DOCKER_TOKEN} | helm registry login registry-1.docker.io -u ${DOCKER_USER} --password-stdin
-          
-          HELM_CHART_APIFIRST_SERVER=$(find ./apifirst-server/target/helm/repo -name "apifirst-server-*.tgz")
-          echo "### helm push of: ${HELM_CHART_APIFIRST_SERVER}"
-          helm push ${HELM_CHART_APIFIRST_SERVER} oci://registry-1.docker.io/${DOCKER_USER} --debug
-          
-          HELM_CHART_APIFIRST_SERVER_JPA=$(find ./apifirst-server-jpa/target/helm/repo -name "apifirst-server-jpa-*.tgz")
-          echo "### helm push of: ${HELM_CHART_APIFIRST_SERVER_JPA}"
-          helm push ${HELM_CHART_APIFIRST_SERVER_JPA} oci://registry-1.docker.io/${DOCKER_USER} --debug
-
       - name: Upload Test Reports
         uses: actions/upload-artifact@v4.6.2
         if: failure()
