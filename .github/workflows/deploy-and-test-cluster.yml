@@ -90,7 +90,7 @@ jobs:
             exit 1
           fi
           BUILD_LINK="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ inputs.deployed-by-build }}"
-          echo "::notice:: ### Deployed Version: ${{ inputs.version }}"
+          echo "::notice:: ### Kubernetes Deployment: Application ${{ inputs.application-name }}, Version: ${{ inputs.version }}"
           echo "::notice:: ### Deployment triggered by workflow ${{ inputs.deployed-by-workflow }}. Run number: ${{ inputs.deployed-by-build }}: $BUILD_LINK"
 
       - name: Display Deployment Information
@@ -179,7 +179,7 @@ jobs:
             exit 1
           fi
           BUILD_LINK="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ inputs.deployed-by-build }}"
-          echo "::notice:: ### Helm Deployed Version: ${{ inputs.version }}"
+          echo "::notice:: ### Helm Deployment: Application ${{ inputs.application-name }}, Version: ${{ inputs.version }}"
           echo "::notice:: ### Deployment triggered by workflow ${{ inputs.deployed-by-workflow }}. Run number: ${{ inputs.deployed-by-build }}: $BUILD_LINK"
 
       - name: Display Deployment Information
@@ -212,4 +212,3 @@ jobs:
             echo "Listing all pods in $NAMESPACE namespace:"
             kubectl get pods -n $NAMESPACE
           fi          
-
