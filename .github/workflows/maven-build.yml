@@ -249,8 +249,8 @@ jobs:
         with:
          name: failsafe-and-surefire-reports
          path: |
-           target/failsafe-reports/
-           target/surefire-reports/
+           **/target/surefire-reports/TEST-*.xml
+           **/target/failsafe-reports/TEST-*.xml
 
       - name: get helm version
         id: get_helm_version_and_namespace
