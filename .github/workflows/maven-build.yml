@@ -141,7 +141,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
+        
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
@@ -346,14 +346,14 @@ jobs:
             echo "::notice:: ### Build of Feature Branch ${BRANCH_NAME}. Version: $BRANCH_MVN_VERSION"
             mvn -B versions:set -e -DnewVersion="$BRANCH_MVN_VERSION"
           fi
-          mvn -B -e verify -Dskip.start.stop.springboot=true -Dskip.docker.build=true -Dskip.docker.publish=true -s $GITHUB_WORKSPACE/settings.xml	
+          mvn -B -e verify -Dskip.start.stop.springboot=true -Dskip.docker.build=true -Dskip.docker.publish=true -s $GITHUB_WORKSPACE/settings.xml
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
           files: |
-            ./target/surefire-reports/TEST-*.xml
-            ./target/failsafe-reports/TEST-*.xml
+            **/target/surefire-reports/TEST-*.xml
+            **/target/failsafe-reports/TEST-*.xml
       
       - name: analyze
         env:
