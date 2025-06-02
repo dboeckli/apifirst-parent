@@ -35,6 +35,12 @@ on:
 jobs:
 
   deploy-app-with-kubectl:
+
+    permissions:
+      contents: read
+      packages: read
+      actions: read
+
     runs-on: ubuntu-latest
     steps:
       - name: Show Version
@@ -119,6 +125,7 @@ jobs:
 
   deploy-app-with-helm:
     runs-on: ubuntu-latest
+    needs: deploy-app-with-kubectl
 
     steps:
       - name: Show Version
