@@ -11,6 +11,13 @@ spec:
   containers:
     - name: wget
       image: busybox:1.37.0
-      command: ['wget']
-      args: ['{{ include "application-template.fullname" . }}:{{ .Values.service.port }}/actuator/health']
+      command: [ '/bin/sh', '-c' ]
+      args:
+        - |
+          echo "### Test 1: Checking health endpoint using service short name"
+          wget -O- -q {{ include "application-template.fullname" . }}:{{ .Values.service.port }}/actuator/health
+          echo "Exit code: $?"
+          echo "### Test 2: Checking health endpoint using fully qualified domain name (FQDN)"
+          wget -O- -q {{ include "application-template.serviceFQDN" . }}:{{ .Values.service.port }}/actuator/health
+          echo "Exit code: $?"
   restartPolicy: Never

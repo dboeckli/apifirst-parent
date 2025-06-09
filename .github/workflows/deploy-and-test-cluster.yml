@@ -182,6 +182,15 @@ jobs:
           echo "::notice:: ### Helm Deployment: Application ${{ inputs.application-name }}, Version: ${{ inputs.version }}"
           echo "::notice:: ### Deployment triggered by workflow ${{ inputs.deployed-by-workflow }}. Run number: ${{ inputs.deployed-by-build }}: $BUILD_LINK"
 
+      - name: Test Application
+        env:
+          APP_VERSION: ${{ inputs.version }}
+          APPLICATION_NAME: ${{ inputs.application-name }}
+          NAMESPACE: ${{ inputs.namespace }}
+        run: |
+          echo "Testing Application $APPLICATION_NAME: $APP_VERSION"
+          helm test $APPLICATION_NAME --namespace ${NAMESPACE} --logs
+
       - name: Display Deployment Information
         env:
           NAMESPACE: ${{ inputs.namespace }}
