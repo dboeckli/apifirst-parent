@@ -135,6 +135,11 @@ replace $POD with pods from the command above
 kubectl logs $POD -n $namespace --all-containers
 ```
 
+test
+```powershell
+helm test $APPLICATION_NAME --namespace workflow-hello-world --logs
+```
+
 uninstall
 ```powershell
 helm uninstall $APPLICATION_NAME --namespace $namespace
