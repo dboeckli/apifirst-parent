@@ -54,5 +54,6 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 Create the FQDN for the service
 */}}
 {{- define "application-template.serviceFQDN" -}}
-{{- printf "%s.%s.svc.cluster.local" .Release.Name .Release.Namespace }}
+{{- $fullname := include "application-template.fullname" . -}}
+{{- printf "%s.%s.svc.cluster.local" $fullname .Release.Namespace }}
 {{- end }}
