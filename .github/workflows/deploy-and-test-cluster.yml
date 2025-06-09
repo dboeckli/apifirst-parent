@@ -195,6 +195,10 @@ jobs:
           echo "Helm Test Results, TEST_OUTPUT:    $TEST_OUTPUT"
           echo "Helm Test Results, TEST_EXIT_CODE: $TEST_EXIT_CODE"
           
+          echo "::group::Helm Test Raw Output"
+          echo "Helm Test Results, TEST_OUTPUT:    $TEST_OUTPUT"
+          echo "::endgroup::"
+          
           echo "::notice::Helm Test Results for $APPLICATION_NAME (Version $APP_VERSION): \n$TEST_OUTPUT"
           echo "::notice::Output: $TEST_OUTPUT"
           if [ $TEST_EXIT_CODE -ne 0 ]; then
