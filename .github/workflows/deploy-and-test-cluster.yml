@@ -1,6 +1,6 @@
 name: Deploy and Test Cluster
 run-name: >
-  ${{ github.workflow }}: ${{ github.event_name }} for ${{ github.ref_name }} by @${{ github.actor }}
+  ${{ github.workflow }} ${{inpus.application-name}}: ${{ github.event_name }} for ${{ github.ref_name }} by @${{ github.actor }}
 
 on:
   workflow_dispatch:
