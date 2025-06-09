@@ -9,7 +9,7 @@ metadata:
     "helm.sh/hook": test
 spec:
   containers:
-    - name: test-actuator/health-shortname
+    - name: test-actuator-health
       image: busybox:1.37.0
       command: [ '/bin/sh', '-c' ]
       args:
@@ -17,14 +17,7 @@ spec:
           echo "### Test 1: Checking health endpoint using service short name: {{ include "application-template.fullname" . }}"
           wget -O- -q {{ include "application-template.fullname" . }}:{{ .Values.service.port }}/actuator/health
           echo "Exit code: $?"
-          exit $?
-    - name: test-actuator/health-fqdn
-      image: busybox:1.37.0
-      command: [ '/bin/sh', '-c' ]
-      args:
-        - |
           echo "### Test 2: Checking health endpoint using fully qualified domain name (FQDN): {{ include "application-template.serviceFQDN" . }}"
           wget -O- -q {{ include "application-template.serviceFQDN" . }}:{{ .Values.service.port }}/actuator/health
           echo "Exit code: $?"
-          exit $?
   restartPolicy: Never
