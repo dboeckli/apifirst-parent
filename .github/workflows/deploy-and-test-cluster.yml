@@ -1,6 +1,6 @@
 name: Deploy and Test Cluster
 run-name: >
-  ${{ github.workflow }}: ${{ github.event_name }} for ${{ github.ref_name }} by @${{ github.actor }}
+  ${{ github.workflow }} ${{inputs.application-name}}: ${{ github.event_name }} for ${{ github.ref_name }} by @${{ github.actor }}
 
 on:
   workflow_dispatch:
@@ -181,6 +181,25 @@ jobs:
           BUILD_LINK="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ inputs.deployed-by-build }}"
           echo "::notice:: ### Helm Deployment: Application ${{ inputs.application-name }}, Version: ${{ inputs.version }}"
           echo "::notice:: ### Deployment triggered by workflow ${{ inputs.deployed-by-workflow }}. Run number: ${{ inputs.deployed-by-build }}: $BUILD_LINK"
+
+      - name: Test Application
+        env:
+          APP_VERSION: ${{ inputs.version }}
+          APPLICATION_NAME: ${{ inputs.application-name }}
+          NAMESPACE: ${{ inputs.namespace }}
+        run: |
+          echo "Testing Application $APPLICATION_NAME: $APP_VERSION"
+          TEST_OUTPUT=$(helm test $APPLICATION_NAME --namespace ${NAMESPACE} --logs)
+          TEST_EXIT_CODE=$?
+          
+          echo "::group::Helm Test Raw Output"
+          echo "$TEST_OUTPUT"
+          echo "::endgroup::"
+
+          if [ $TEST_EXIT_CODE -ne 0 ]; then
+            echo "::error::Helm test failed with exit code $TEST_EXIT_CODE"
+            exit $TEST_EXIT_CODE
+          fi
 
       - name: Display Deployment Information
         env:
