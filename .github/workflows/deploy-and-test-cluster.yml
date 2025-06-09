@@ -191,7 +191,11 @@ jobs:
           echo "Testing Application $APPLICATION_NAME: $APP_VERSION"
           TEST_OUTPUT=$(helm test $APPLICATION_NAME --namespace ${NAMESPACE} --logs)
           TEST_EXIT_CODE=$?
-          echo "::notice::Helm Test Results for $APPLICATION_NAME (Version $APP_VERSION):"
+          
+          echo "Helm Test Results, TEST_OUTPUT:    $TEST_OUTPUT"
+          echo "Helm Test Results, TEST_EXIT_CODE: $TEST_EXIT_CODE"
+          
+          echo "::notice::Helm Test Results for $APPLICATION_NAME (Version $APP_VERSION): \n$TEST_OUTPUT"
           echo "::notice::Output: $TEST_OUTPUT"
           if [ $TEST_EXIT_CODE -ne 0 ]; then
             echo "::error::Helm test failed with exit code $TEST_EXIT_CODE"
