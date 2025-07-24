@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="ApifirstServerApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+    <module name="apifirst-server" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="ch.guru.springframework.apifirst.apifirstserver.server.ApifirstServerApplication" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
