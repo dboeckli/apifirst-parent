@@ -37,7 +37,7 @@
             "/apifirst-server/helm-charts/values\\.ya?ml$/",
             "/apifirst-server/helm-charts/dependencies-values\\.ya?ml$/",
             "/apifirst-server/helm-charts/.+/values\\.ya?ml$/",
-            "/apifirst-server/helm-charts/charts/.+/values\\.ya?ml$/".,
+            "/apifirst-server/helm-charts/charts/.+/values\\.ya?ml$/",
             "/apifirst-server-jpa/helm-charts/values\\.ya?ml$/",
             "/apifirst-server-jpa/helm-charts/dependencies-values\\.ya?ml$/",
             "/apifirst-server-jpa/helm-charts/.+/values\\.ya?ml$/",
