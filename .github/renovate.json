@@ -9,7 +9,7 @@
         {
             "hostType": "npm",
             "matchHost": "npm.pkg.github.com",
-            "username": "dboeckli@gmail.com",
+            "username": "dboeckli",
             "token": "${DBOECKLI_GITHUB_ACCESS_TOKEN}"
         }
     ],
