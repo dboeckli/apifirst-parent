@@ -4,15 +4,6 @@
         "mergeConfidence:all-badges",
         "config:recommended"
     ],
-    "npmrc": "@dboeckli:registry=https://npm.pkg.github.com/\n//npm.pkg.github.com/:_authToken=${DBOECKLI_GITHUB_ACCESS_TOKEN}",
-    "hostRules": [
-        {
-            "hostType": "npm",
-            "matchHost": "npm.pkg.github.com",
-            "username": "dboeckli",
-            "token": "${DBOECKLI_GITHUB_ACCESS_TOKEN}"
-        }
-    ],
     "enabledManagers": [
         "docker-compose",
         "maven-wrapper",
