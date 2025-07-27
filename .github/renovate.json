@@ -56,16 +56,6 @@
             "/apifirst-server-jpa/helm-charts/charts/.+/Chart\\.ya?ml$/"
         ]
     },
-
-    "hostRules": [
-        {
-            "hostType": "npm",
-            "host": "npm.pkg.github.com",
-            "username": "dboeckli",
-            "token": "{{MEND_DBOECKLI_GITHUB_ACCESS_TOKEN}}"
-        }
-    ],
-
     "npm": {
         "managerFilePatterns": [
             "(^|/)package\\.json$/",
