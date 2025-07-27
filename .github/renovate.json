@@ -8,7 +8,7 @@
     "hostRules": [
         {
             "hostType": "npm",
-            "matchHost": "https://npm.pkg.github.com",
+            "matchHost": "https://npm.pkg.github.com/",
             "authType": "Bearer",
             "token": "${{secrets.DBOECKLI_GITHUB_ACCESS_TOKEN}}"
         }
