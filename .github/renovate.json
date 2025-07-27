@@ -65,6 +65,15 @@
     },
     "packageRules": [
         {
+            "matchPackagePatterns": ["^@dboeckli/"],
+            "registryUrls": ["https://npm.pkg.github.com"],
+            "datasource": "npm",
+            "versioning": "semver",
+            "automerge": false,
+            "automergeType": "pr",
+            "ignoreTests": true
+        },
+        {
             "matchCategories": [
                 "docker"
             ],
