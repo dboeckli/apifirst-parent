@@ -4,7 +4,7 @@
         "mergeConfidence:all-badges",
         "config:recommended"
     ],
-    "npmrc": "@dboeckli:registry=https://npm.pkg.github.com/",
+    "npmrc": "@dboeckli:registry=https://npm.pkg.github.com/\n//npm.pkg.github.com/:_authToken=${DBOECKLI_GITHUB_ACCESS_TOKEN}",
     "hostRules": [
         {
             "hostType": "npm",
