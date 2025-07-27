@@ -12,6 +12,14 @@
         "helmv3",
         "npm"
     ],
+    "hostRules": [
+        {
+            "hostType": "npm",
+            "matchHost": "npm.pkg.github.com",
+            "token": "process.env.MEND_DBOECKLI_GITHUB_ACCESS_TOKEN"
+        }
+    ],
+
     "maven-wrapper": {
         "managerFilePatterns": [
             "/(^|/)mvnw$/",
@@ -63,13 +71,6 @@
             "/apifirst-api/api-def/package\\.json$/"
         ]
     },
-    "hostRules": [
-        {
-            "hostType": "npm",
-            "matchHost": "npm.pkg.github.com",
-            "token": "{{MEND_DBOECKLI_GITHUB_ACCESS_TOKEN}}"
-        }
-    ],
     "packageRules": [
         {
             "matchPackagePatterns": ["^@dboeckli/"],
