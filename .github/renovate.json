@@ -123,7 +123,7 @@
     "prHourlyLimit": 0,
     "prConcurrentLimit": 0,
     "baseBranches": [
-        "development"
+        "master"
     ],
     "branchPrefix": "feature/renovate-",
     "separateMinorPatch": true,
