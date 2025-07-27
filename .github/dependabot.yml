@@ -10,11 +10,6 @@ registries:
     url: https://maven.pkg.github.com/dboeckli
     username: dboeckli@gmail.com
     password: ${{secrets.DBOECKLI_GITHUB_ACCESS_TOKEN}}
-  npm-dboeckli:
-    type: npm-registry
-    url: https://npm.pkg.github.com
-    username: dboeckli@gmail.com
-    password: ${{secrets.DBOECKLI_GITHUB_ACCESS_TOKEN}}
 updates:
   - package-ecosystem: maven
     directory: "/"
@@ -29,19 +24,3 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
-
-  - package-ecosystem: npm
-    directory: "/apifirst-api/api-def"
-    schedule:
-      interval: daily
-    registries:
-      - npm-dboeckli
-    allow:
-      - dependency-name: "@dboeckli/*"
-    ignore:
-      - dependency-name: "@dboeckli/apifirst-sb"
-        versions:
-          - ">=2.0.0"
-          - "1.0.0"
-          - ">=1.0.0-0 <1.0.0-dev"
-          - ">1.0.0-dev <1.0.1"
