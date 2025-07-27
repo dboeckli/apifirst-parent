@@ -10,7 +10,7 @@
             "hostType": "npm",
             "matchHost": "https://npm.pkg.github.com",
             "authType": "Bearer",
-            "token": "{{secrets.GITHUB_ACCESS_TOKEN}}"
+            "token": "${{secrets.DBOECKLI_GITHUB_ACCESS_TOKEN}}"
         }
     ],
 
