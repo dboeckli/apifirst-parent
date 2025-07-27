@@ -83,14 +83,7 @@
             "registryUrls": [
                 "https://npm.pkg.github.com"
             ],
-            "allowedVersions": "1.0.0-dev",
-            "excludeVersions": [
-                ">=2.0.0",
-                "1.0.0",
-                ">=1.0.0-0 <1.0.0-dev",
-                ">1.0.0-dev <1.0.1"
-            ],
-
+            "allowedVersions": "^1.0.0-dev",
             "versioning": "semver",
             "automerge": false,
             "automergeType": "pr",
