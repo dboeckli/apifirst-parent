@@ -84,7 +84,6 @@
                 "https://npm.pkg.github.com"
             ],
             "allowedVersions": "/^1\\.0\\.0-dev\\..+$/",
-            "ignoredVersions": ["1.0.0-fc3f839.216.202502200833"],
             "versioning": "semver",
             "automerge": false,
             "automergeType": "pr",
