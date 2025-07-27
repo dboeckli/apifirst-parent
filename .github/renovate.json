@@ -12,6 +12,7 @@
         "helmv3",
         "npm"
     ],
+    "npmrc": "@dboeckli:registry=https://npm.pkg.github.com/",
     "hostRules": [
         {
             "hostType": "npm",
