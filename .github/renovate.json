@@ -56,7 +56,9 @@
             "/apifirst-server-jpa/helm-charts/charts/.+/Chart\\.ya?ml$/"
         ]
     },
-    "npmrc": "@dboeckli:registry=https://npm.pkg.github.com/\n//npm.pkg.github.com/:_authToken=${MEND_DBOECKLI_GITHUB_ACCESS_TOKEN}",
+
+    "npmrc": "//npm.pkg.github.com/:_authToken=${MEND_DBOECKLI_GITHUB_ACCESS_TOKEN}",
+
     "npm": {
         "managerFilePatterns": [
             "(^|/)package\\.json$/",
