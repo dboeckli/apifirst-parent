@@ -9,7 +9,8 @@
         "maven-wrapper",
         "kubernetes",
         "helm-values",
-        "helmv3"
+        "helmv3",
+        "npm"
     ],
     "maven-wrapper": {
         "managerFilePatterns": [
@@ -53,6 +54,13 @@
             "/apifirst-server-jpa/helm-charts/dependencies-Chart\\.ya?ml$/",
             "/apifirst-server-jpa/helm-charts/Chart\\.ya?ml$/",
             "/apifirst-server-jpa/helm-charts/charts/.+/Chart\\.ya?ml$/"
+        ]
+    },
+    "npm": {
+        "managerFilePatterns": [
+            "(^|/)package\\.json$/",
+            "(^|/)package-lock\\.json$/",
+            "/apifirst-api/api-def/package\\.json$/"
         ]
     },
     "packageRules": [
