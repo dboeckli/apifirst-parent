@@ -71,7 +71,7 @@
                 "npm"
             ],
             "registryUrls": [
-                "https://npm.pkg.github.com/"
+                "https://npm.pkg.github.com"
             ],
             "versioning": "semver",
             "automerge": false,
