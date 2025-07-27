@@ -40,4 +40,4 @@ updates:
       - dependency-name: "@dboeckli/*"
     ignore:
       - dependency-name: "@dboeckli/apifirst-sb"
-        versions: [ "!/^1\.0\.0-dev/" ]
+        versions: ["!/^1\\.0\\.0-dev/"]
