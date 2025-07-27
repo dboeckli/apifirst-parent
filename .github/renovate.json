@@ -16,6 +16,7 @@
         {
             "hostType": "npm",
             "matchHost": "npm.pkg.github.com",
+            "registryUrls": ["https://npm.pkg.github.com"],
             "token": "process.env.MEND_DBOECKLI_GITHUB_ACCESS_TOKEN"
         }
     ],
