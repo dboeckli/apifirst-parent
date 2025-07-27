@@ -4,6 +4,16 @@
         "mergeConfidence:all-badges",
         "config:recommended"
     ],
+
+    "hostRules": [
+        {
+            "hostType": "npm",
+            "matchHost": "https://npm.pkg.github.com",
+            "authType": "Bearer",
+            "token": "{{secrets.GITHUB_ACCESS_TOKEN}}"
+        }
+    ],
+
     "enabledManagers": [
         "docker-compose",
         "maven-wrapper",
