@@ -66,8 +66,12 @@
     "packageRules": [
         {
             "matchPackagePatterns": ["^@dboeckli/"],
-            "registryUrls": ["https://npm.pkg.github.com"],
-            "datasource": "npm",
+            "matchCategories": [
+                "npm"
+            ],
+            "registryUrls": [
+                "https://npm.pkg.github.com"
+            ],
             "versioning": "semver",
             "automerge": false,
             "automergeType": "pr",
