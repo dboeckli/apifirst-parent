@@ -57,7 +57,7 @@
         ]
     },
 
-    "npmrc": "@dboeckli:registry=https://npm.pkg.github.com/\n//npm.pkg.github.com/:_authToken=${MEND_DBOECKLI_GITHUB_ACCESS_TOKEN}",
+    "npmrc": "@dboeckli:registry=https://npm.pkg.github.com\n//npm.pkg.github.com/:_authToken=${MEND_DBOECKLI_GITHUB_ACCESS_TOKEN}",
 
     "npm": {
         "managerFilePatterns": [
