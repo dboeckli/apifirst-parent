@@ -4,16 +4,15 @@
         "mergeConfidence:all-badges",
         "config:recommended"
     ],
-
+    "npmrc": "@dboeckli:registry=https://npm.pkg.github.com/",
     "hostRules": [
         {
             "hostType": "npm",
             "matchHost": "npm.pkg.github.com",
             "username": "dboeckli@gmail.com",
-            "passwordKey": "DBOECKLI_GITHUB_ACCESS_TOKEN"
+            "token": "{{secrets.DBOECKLI_GITHUB_ACCESS_TOKEN}}"
         }
     ],
-
     "enabledManagers": [
         "docker-compose",
         "maven-wrapper",
@@ -73,7 +72,6 @@
             "/apifirst-api/api-def/package\\.json$/"
         ]
     },
-    "npmrc": "@dboeckli:registry=https://npm.pkg.github.com/",
     "packageRules": [
         {
             "matchPackagePatterns": ["^@dboeckli/"],
