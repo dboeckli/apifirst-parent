@@ -75,7 +75,6 @@
     },
     "packageRules": [
         {
-            "matchPackagePatterns": ["^@dboeckli/"],
             "matchPackageNames": ["@dboeckli/apifirst-sb"],
             "matchCategories": [
                 "npm"
