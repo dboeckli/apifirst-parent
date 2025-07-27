@@ -67,7 +67,6 @@
         {
             "hostType": "npm",
             "matchHost": "npm.pkg.github.com",
-            "matchPackageNames": ["^@dboeckli/"],
             "token": "{{MEND_DBOECKLI_GITHUB_ACCESS_TOKEN}}"
         }
     ],
