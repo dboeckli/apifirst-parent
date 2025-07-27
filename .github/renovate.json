@@ -63,6 +63,14 @@
             "/apifirst-api/api-def/package\\.json$/"
         ]
     },
+    "hostRules": [
+        {
+            "hostType": "npm",
+            "matchHost": "npm.pkg.github.com",
+            "matchPackagePrefixes": ["@dboeckli/"],
+            "token": "{{MEND_DBOECKLI_GITHUB_ACCESS_TOKEN}}"
+        }
+    ],
     "packageRules": [
         {
             "matchPackagePatterns": ["^@dboeckli/"],
