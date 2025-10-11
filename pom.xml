@@ -65,9 +65,6 @@
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
         <sonar.language>java</sonar.language>
         <jacoco.version>0.8.13</jacoco.version>
-
-        <!--suppress UnresolvedMavenProperty -->
-        <buildNumber>${git.commit.id.abbrev}</buildNumber>
     </properties>
 
     <scm>
@@ -139,7 +136,8 @@
                                 <groupId>${project.groupId}</groupId>
                                 <artifactId>${project.artifactId}</artifactId>
                                 <Implementation-Version>${project.version}</Implementation-Version>
-                                <git-SHA-1>${buildNumber}</git-SHA-1>
+                                <!--suppress UnresolvedMavenProperty. git.commit.id.abbrev is set by git git-commit-id-maven-plugin -->
+                                <git-SHA-1>${git.commit.id.abbrev}</git-SHA-1>
                                 <source-url>${project.scm.url}</source-url>
                                 <BuildDate>${maven.build.timestamp}</BuildDate>
                                 <Built-By>${user.name}</Built-By>
@@ -292,7 +290,7 @@
                     <generateGitPropertiesFile>true</generateGitPropertiesFile>
                     <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
                     <commitIdGenerationMode>full</commitIdGenerationMode>
-                    <runOnlyOnce>true</runOnlyOnce>
+                    <runOnlyOnce>false</runOnlyOnce>
                     <skipPoms>false</skipPoms>
                 </configuration>
             </plugin>

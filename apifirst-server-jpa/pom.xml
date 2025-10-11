@@ -27,9 +27,6 @@
         <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
         
         <org.zalando.problem-spring-web.version>0.29.1</org.zalando.problem-spring-web.version>
-
-        <!--suppress UnresolvedMavenProperty -->
-        <buildNumber>${git.commit.id.abbrev}</buildNumber>
     </properties>
 
     <profiles>
@@ -392,14 +389,6 @@
                         <goals>
                             <goal>build-info</goal>
                         </goals>
-                        <configuration>
-                            <additionalProperties>
-                                <mavenUser>${user.name}</mavenUser>
-                                <javaVersion>${java.version}</javaVersion>
-                                <javaVendor>${java.vendor}</javaVendor>
-                                <commit-id>${buildNumber}</commit-id>
-                            </additionalProperties>
-                        </configuration>
                     </execution>
 
                     <execution>
