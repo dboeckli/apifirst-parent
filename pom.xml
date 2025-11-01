@@ -36,8 +36,8 @@
         <repo.name>apifirst-parent</repo.name>
 
         <google.findbugs.version>3.0.2</google.findbugs.version>
-        <jackson-databind-nullable.version>0.2.7</jackson-databind-nullable.version>
-        <openapi-generator-maven-plugin.version>7.16.0</openapi-generator-maven-plugin.version>
+        <jackson-databind-nullable.version>0.2.8</jackson-databind-nullable.version>
+        <openapi-generator-maven-plugin.version>7.17.0</openapi-generator-maven-plugin.version>
         <swagger.request.validator.version>2.46.0</swagger.request.validator.version>
 
         <editorconfig-maven-plugin.version>0.1.3</editorconfig-maven-plugin.version>
@@ -57,7 +57,7 @@
         <frontend-maven-plugin.version>1.15.4</frontend-maven-plugin.version>
 
         <logbook.version>3.12.3</logbook.version>
-        <logstash-logback.version>8.1</logstash-logback.version>
+        <logstash-logback.version>9.0</logstash-logback.version>
 
         <!-- Sonar -->
         <sonar-maven-plugin.version>5.2.0.4988</sonar-maven-plugin.version>
