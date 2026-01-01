@@ -4,7 +4,6 @@ import ch.guru.springframework.apifirst.apifirstserver.server.repositories.Custo
 import ch.guru.springframework.apifirst.apifirstserver.server.repositories.OrderRepository;
 import ch.guru.springframework.apifirst.apifirstserver.server.repositories.ProductRepository;
 import ch.guru.springframework.apifirst.model.*;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.Filter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
@@ -16,9 +15,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import tools.jackson.databind.ObjectMapper;
 
 import java.net.URI;
-import java.util.Arrays;
+import java.util.Collections;
 
 import static org.hamcrest.Matchers.greaterThan;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -87,7 +87,7 @@ class OrderControllerTest {
         OrderCreateDto orderCreate = OrderCreateDto.builder()
             .customerId(testCustomer.getId())
             .selectPaymentMethodId(testCustomer.getPaymentMethods().getFirst().getId())
-            .orderLines(Arrays.asList(OrderLineCreateDto.builder()
+            .orderLines(Collections.singletonList(OrderLineCreateDto.builder()
                 .productId(testProduct.getId())
                 .orderQuantity(1)
                 .build()))

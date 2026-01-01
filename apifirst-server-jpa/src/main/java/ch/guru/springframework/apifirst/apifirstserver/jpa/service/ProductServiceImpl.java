@@ -4,6 +4,8 @@ import ch.guru.springframework.apifirst.apifirstserver.jpa.domain.Product;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.mapper.ProductMapper;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.OrderRepository;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.ProductRepository;
+import ch.guru.springframework.apifirst.apifirstserver.jpa.service.error.ConflictException;
+import ch.guru.springframework.apifirst.apifirstserver.jpa.service.error.NotFoundException;
 import ch.guru.springframework.apifirst.model.ProductCreateDto;
 import ch.guru.springframework.apifirst.model.ProductDto;
 import ch.guru.springframework.apifirst.model.ProductPatchDto;
@@ -42,29 +44,31 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDto updateProduct(UUID productId, ProductUpdateDto product) {
-        Product existingProduct = productRepository.findById(productId).orElseThrow(NotFoundException::new);
+        Product existingProduct = productRepository.findById(productId)
+            .orElseThrow(() -> new NotFoundException("Product not found: " + productId));
         productMapper.updateProduct(product, existingProduct);
-        
+
         return productMapper.productToDto(productRepository.save(existingProduct));
     }
 
     @Override
     public ProductDto patchProduct(UUID productId, ProductPatchDto product) {
-        Product existingProduct = productRepository.findById(productId).orElseThrow(NotFoundException::new);
+        Product existingProduct = productRepository.findById(productId)
+            .orElseThrow(() -> new NotFoundException("Product not found: " + productId));
         productMapper.patchProduct(product, existingProduct);
-        
+
         return productMapper.productToDto(productRepository.save(existingProduct));
     }
 
     @Override
     public void deleteProduct(UUID productId) {
         productRepository.findById(productId).ifPresentOrElse(product -> {
-            if (!orderRepository.findAllByOrderLines_Product(product).isEmpty()){
-                throw new ConflictException("Product is used in orders");
+            if (!orderRepository.findAllByOrderLines_Product(product).isEmpty()) {
+                throw new ConflictException("Product is used in orders: " + productId);
             }
             productRepository.delete(product);
         }, () -> {
-            throw new NotFoundException("Product Not Found");
+            throw new NotFoundException("Product not found: " + productId);
         });
     }
 }

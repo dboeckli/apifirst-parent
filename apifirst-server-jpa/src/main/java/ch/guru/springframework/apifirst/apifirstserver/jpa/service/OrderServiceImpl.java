@@ -3,6 +3,7 @@ package ch.guru.springframework.apifirst.apifirstserver.jpa.service;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.domain.Order;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.mapper.OrderMapper;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.OrderRepository;
+import ch.guru.springframework.apifirst.apifirstserver.jpa.service.error.NotFoundException;
 import ch.guru.springframework.apifirst.model.OrderCreateDto;
 import ch.guru.springframework.apifirst.model.OrderDto;
 import ch.guru.springframework.apifirst.model.OrderPatchDto;
@@ -42,7 +43,8 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     @Override
     public OrderDto updateOrder(UUID orderId, OrderUpdateDto orderUpdateDto) {
-        Order existingOrder = orderRepository.findById(orderId).orElseThrow(NotFoundException::new);
+        Order existingOrder = orderRepository.findById(orderId)
+            .orElseThrow(() -> new NotFoundException("Order not found: " + orderId));
         orderMapper.updateOrder(orderUpdateDto, existingOrder);
 
         Order savedOrder = orderRepository.saveAndFlush(existingOrder);
@@ -53,7 +55,8 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     @Override
     public OrderDto patchOrder(UUID orderId, OrderPatchDto orderPatchDto) {
-        Order existingOrder = orderRepository.findById(orderId).orElseThrow(NotFoundException::new);
+        Order existingOrder = orderRepository.findById(orderId)
+            .orElseThrow(() -> new NotFoundException("Order not found: " + orderId));
         orderMapper.patchOrder(orderPatchDto, existingOrder);
 
         Order savedOrder = orderRepository.saveAndFlush(existingOrder);

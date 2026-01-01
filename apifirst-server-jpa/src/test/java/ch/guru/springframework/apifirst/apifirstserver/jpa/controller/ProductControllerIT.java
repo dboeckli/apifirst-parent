@@ -6,8 +6,6 @@ import ch.guru.springframework.apifirst.apifirstserver.jpa.mapper.ProductMapper;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.CategoryRepository;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.ProductRepository;
 import ch.guru.springframework.apifirst.model.*;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.Filter;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -20,8 +18,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import org.zalando.logbook.Logbook;
-import org.zalando.logbook.servlet.LogbookFilter;
+import tools.jackson.core.StreamReadFeature;
+import tools.jackson.databind.ObjectMapper;
 
 import java.net.URI;
 import java.util.Collections;
@@ -65,11 +63,12 @@ class ProductControllerIT {
 
     @BeforeEach
     void setUp() {
-        objectMapper.configure(JsonParser.Feature.INCLUDE_SOURCE_IN_LOCATION, true);
+        objectMapper = objectMapper.rebuild()
+            .enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION)
+            .build();
 
         mockMvc = MockMvcBuilders.webAppContextSetup(wac)
             .addFilter(validationFilter)
-            .addFilter(new LogbookFilter(Logbook.create()))
             .build();
     }
 

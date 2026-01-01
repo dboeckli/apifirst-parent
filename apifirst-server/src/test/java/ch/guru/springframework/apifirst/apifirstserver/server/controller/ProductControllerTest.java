@@ -5,7 +5,6 @@ import ch.guru.springframework.apifirst.model.DimensionsDto;
 import ch.guru.springframework.apifirst.model.ImageDto;
 import ch.guru.springframework.apifirst.model.ProductCreateDto;
 import ch.guru.springframework.apifirst.model.ProductDto;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.Filter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
@@ -17,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import tools.jackson.databind.ObjectMapper;
 
 import java.net.URI;
 import java.util.Collections;
