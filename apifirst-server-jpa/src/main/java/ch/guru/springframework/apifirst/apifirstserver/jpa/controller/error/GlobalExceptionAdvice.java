@@ -2,6 +2,7 @@ package ch.guru.springframework.apifirst.apifirstserver.jpa.controller.error;
 
 import ch.guru.springframework.apifirst.apifirstserver.jpa.service.error.ConflictException;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.service.error.NotFoundException;
+import ch.guru.springframework.apifirst.model.ProblemDto;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -17,16 +18,15 @@ public class GlobalExceptionAdvice {
     private static final MediaType PROBLEM_JSON = MediaType.parseMediaType("application/problem+json");
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<Problem> handleNotFound(NotFoundException ex, HttpServletRequest request) {
+    public ResponseEntity<ProblemDto> handleNotFound(NotFoundException ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.NOT_FOUND;
 
-        Problem body = Problem.of(
-            URI.create("about:blank"),
-            status.getReasonPhrase(),
-            status.value(),
-            safeMessage(ex, "Not Found"),
-            request.getRequestURI()
-        );
+        ProblemDto body = new ProblemDto()
+            .type(URI.create("about:blank"))
+            .title(status.getReasonPhrase())
+            .status(status.value())
+            .detail(safeMessage(ex, "Not Found"))
+            .instance(request.getRequestURI());
 
         return ResponseEntity.status(status)
             .contentType(PROBLEM_JSON)
@@ -34,16 +34,15 @@ public class GlobalExceptionAdvice {
     }
 
     @ExceptionHandler(ConflictException.class)
-    public ResponseEntity<Problem> handleConflict(ConflictException ex, HttpServletRequest request) {
+    public ResponseEntity<ProblemDto> handleConflict(ConflictException ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.CONFLICT;
 
-        Problem body = Problem.of(
-            URI.create("about:blank"),
-            status.getReasonPhrase(),
-            status.value(),
-            safeMessage(ex, "Conflict"),
-            request.getRequestURI()
-        );
+        ProblemDto body = new ProblemDto()
+            .type(URI.create("about:blank"))
+            .title(status.getReasonPhrase())
+            .status(status.value())
+            .detail(safeMessage(ex, "Conflict"))
+            .instance(request.getRequestURI());
 
         return ResponseEntity.status(status)
             .contentType(PROBLEM_JSON)
@@ -51,16 +50,15 @@ public class GlobalExceptionAdvice {
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Problem> handleBadRequest(IllegalArgumentException ex, HttpServletRequest request) {
+    public ResponseEntity<ProblemDto> handleBadRequest(IllegalArgumentException ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
-        Problem body = Problem.of(
-            URI.create("about:blank"),
-            status.getReasonPhrase(),
-            status.value(),
-            safeMessage(ex, "Bad Request"),
-            request.getRequestURI()
-        );
+        ProblemDto body = new ProblemDto()
+            .type(URI.create("about:blank"))
+            .title(status.getReasonPhrase())
+            .status(status.value())
+            .detail(safeMessage(ex, "Bad Request"))
+            .instance(request.getRequestURI());
 
         return ResponseEntity.status(status)
             .contentType(PROBLEM_JSON)
@@ -68,16 +66,15 @@ public class GlobalExceptionAdvice {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Problem> handleUnexpected(Exception ex, HttpServletRequest request) {
+    public ResponseEntity<ProblemDto> handleUnexpected(Exception ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
 
-        Problem body = Problem.of(
-            URI.create("about:blank"),
-            status.getReasonPhrase(),
-            status.value(),
-            "Unexpected error",
-            request.getRequestURI()
-        );
+        ProblemDto body = new ProblemDto()
+            .type(URI.create("about:blank"))
+            .title(status.getReasonPhrase())
+            .status(status.value())
+            .detail(safeMessage(ex, "Unexpected error"))
+            .instance(request.getRequestURI());
 
         return ResponseEntity.status(status)
             .contentType(PROBLEM_JSON)

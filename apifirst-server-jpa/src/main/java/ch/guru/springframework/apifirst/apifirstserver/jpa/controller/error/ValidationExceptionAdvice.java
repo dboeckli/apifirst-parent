@@ -1,5 +1,6 @@
 package ch.guru.springframework.apifirst.apifirstserver.jpa.controller.error;
 
+import ch.guru.springframework.apifirst.model.ProblemDto;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -18,7 +19,7 @@ public class ValidationExceptionAdvice {
     private static final MediaType PROBLEM_JSON = MediaType.parseMediaType("application/problem+json");
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Problem> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest request) {
+    public ResponseEntity<ProblemDto> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
         String detail = ex.getBindingResult()
@@ -27,13 +28,12 @@ public class ValidationExceptionAdvice {
             .map(this::formatFieldError)
             .collect(Collectors.joining("; "));
 
-        Problem body = Problem.of(
-            URI.create("about:blank"),
-            status.getReasonPhrase(),
-            status.value(),
-            detail.isBlank() ? "Validation failed" : detail,
-            request.getRequestURI()
-        );
+        ProblemDto body = new ProblemDto()
+            .type(URI.create("about:blank"))
+            .title(status.getReasonPhrase())
+            .status(status.value())
+            .detail(detail.isBlank() ? "Validation failed" : detail)
+            .instance(request.getRequestURI());
 
         return ResponseEntity.status(status)
             .contentType(PROBLEM_JSON)
