@@ -1,4 +1,4 @@
-package ch.guru.springframework.apifirst.apifirstserver.jpa.service;
+package ch.guru.springframework.apifirst.apifirstserver.jpa.service.error;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

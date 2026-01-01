@@ -4,6 +4,8 @@ import ch.guru.springframework.apifirst.apifirstserver.jpa.domain.Customer;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.mapper.CustomerMapper;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.CustomerRepository;
 import ch.guru.springframework.apifirst.apifirstserver.jpa.repositories.OrderRepository;
+import ch.guru.springframework.apifirst.apifirstserver.jpa.service.error.ConflictException;
+import ch.guru.springframework.apifirst.apifirstserver.jpa.service.error.NotFoundException;
 import ch.guru.springframework.apifirst.model.CustomerDto;
 import ch.guru.springframework.apifirst.model.CustomerPatchDto;
 import jakarta.transaction.Transactional;
@@ -31,7 +33,8 @@ public class CustomerServiceImpl implements CustomerService {
     @Transactional
     @Override
     public CustomerDto updateCustomer(UUID customerId, CustomerDto customer) {
-        Customer existingCustomer = customerRepository.findById(customerId).orElseThrow(NotFoundException::new);
+        Customer existingCustomer = customerRepository.findById(customerId)
+            .orElseThrow(() -> new NotFoundException("Customer not found: " + customerId));
         customerMapper.updateCustomer(customer, existingCustomer);
 
         return customerMapper.customerToDto(customerRepository.save(existingCustomer));
@@ -40,7 +43,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     @Transactional
     public CustomerDto patchCustomer(UUID customerId, CustomerPatchDto patchCustomer) {
-        Customer existingCustomer = customerRepository.findById(customerId).orElseThrow(NotFoundException::new);
+        Customer existingCustomer = customerRepository.findById(customerId).orElseThrow(() -> new NotFoundException("Customer not found: " + customerId));
         customerMapper.patchCustomer(patchCustomer, existingCustomer);
 
         return customerMapper.customerToDto(customerRepository.save(existingCustomer));
@@ -55,7 +58,7 @@ public class CustomerServiceImpl implements CustomerService {
             }
             customerRepository.delete(customer);
         }, () -> {
-            throw new NotFoundException("Customer Not Found");
+            throw new NotFoundException("Customer Not Found: " + customerId);
         });
     }
 

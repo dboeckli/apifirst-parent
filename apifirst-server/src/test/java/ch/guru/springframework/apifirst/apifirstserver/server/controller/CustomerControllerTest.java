@@ -4,7 +4,6 @@ import ch.guru.springframework.apifirst.apifirstserver.server.repositories.Custo
 import ch.guru.springframework.apifirst.model.AddressDto;
 import ch.guru.springframework.apifirst.model.CustomerDto;
 import ch.guru.springframework.apifirst.model.NameDto;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.Filter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
@@ -17,6 +16,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import tools.jackson.databind.ObjectMapper;
 
 import java.net.URI;
 

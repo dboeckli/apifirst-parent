@@ -1,8 +1,6 @@
 package ch.guru.springframework.apifirst.apifirstserver.jpa.controller;
 
 import ch.guru.springframework.apifirst.apifirstserver.jpa.bootstrap.DataLoader;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.Filter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,8 +11,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import org.zalando.logbook.Logbook;
-import org.zalando.logbook.servlet.LogbookFilter;
+import tools.jackson.core.StreamReadFeature;
+import tools.jackson.databind.ObjectMapper;
 
 import static ch.guru.springframework.apifirst.apifirstserver.jpa.config.OpenApiValidationConfig.OPENAPI_SPECIFICATION_URL;
 import static com.atlassian.oai.validator.mockmvc.OpenApiValidationMatchers.openApi;
@@ -40,10 +38,11 @@ class CategoryControllerIT {
 
     @BeforeEach
     void setUp() {
-        objectMapper.configure(JsonParser.Feature.INCLUDE_SOURCE_IN_LOCATION, true);
+        objectMapper = objectMapper.rebuild()
+            .enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION)
+            .build();
         mockMvc = MockMvcBuilders.webAppContextSetup(wac)
             .addFilter(validationFilter)
-            .addFilter(new LogbookFilter(Logbook.create()))    
             .build();
     }
 

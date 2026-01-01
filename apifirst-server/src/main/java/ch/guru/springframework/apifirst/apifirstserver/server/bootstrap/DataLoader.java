@@ -7,6 +7,7 @@ import ch.guru.springframework.apifirst.apifirstserver.server.repositories.Produ
 import ch.guru.springframework.apifirst.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +24,7 @@ public class DataLoader implements CommandLineRunner {
     private final CategoryRepository categoryRepository;
 
     @Override
-    public void run(String... args) {
+    public void run(String @NonNull ... args) {
         // Create customers
         AddressDto address1 = AddressDto.builder()
             .addressLine1("1234 W Some Street")
@@ -181,7 +182,7 @@ public class DataLoader implements CommandLineRunner {
                 .billToAddress(savedCustomer2.getBillToAddress())
                 .shipToAddress(savedCustomer2.getShipToAddress())
                 .phone(savedCustomer2.getPhone())
-                .selectedPaymentMethod(savedCustomer2.getPaymentMethods().get(0))
+                .selectedPaymentMethod(savedCustomer2.getPaymentMethods().getFirst())
                 .build())
             .orderStatus(OrderDto.OrderStatusEnum.NEW)
             .shipmentInfo("shipment info #2")
