@@ -161,6 +161,22 @@
                             </resources>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>attach-openapi-yaml</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attach-artifact</goal>
+                        </goals>
+                        <configuration>
+                            <artifacts>
+                                <artifact>
+                                    <file>${project.build.directory}/openapi/openapi.yaml</file>
+                                    <type>yaml</type>
+                                    <classifier>yaml</classifier>
+                                </artifact>
+                            </artifacts>
+                        </configuration>
+                    </execution>
                     <!-- we need a port to be able to start the local profile -->
                     <execution>
                         <id>reserve-tomcat-port</id>
