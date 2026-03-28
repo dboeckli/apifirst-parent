@@ -16,9 +16,15 @@
     <description>apifirst-api</description>
 
     <dependencies>
+        <!--
         <dependency>
             <groupId>org.openapitools</groupId>
             <artifactId>jackson-databind-nullable</artifactId>
+        </dependency>-->
+        <!-- Source: https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
         </dependency>
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
