@@ -2,6 +2,9 @@ name: Maven Build
 run-name: >
   ${{ github.workflow }}: ${{ github.event_name }} for ${{ github.ref_name }} by @${{ github.actor }}
 
+env:
+  JAVA_VERSION: 25
+
 on:
   push:
     branches: [ "main", "master", "feature/**", "dependabot/**", "release/**" ]
@@ -37,11 +40,11 @@ jobs:
           registry-url: 'https://npm.pkg.github.com'
           scope: '@dboeckli'
 
-      - name: Set up java 21
+      - name: Set up java
         uses: actions/setup-java@v5
         with:
-          java-version: 21
-          distribution: 'temurin'
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'liberica'
           cache: 'maven'
           server-id: github # Value of the distributionManagement/repository/id field of the pom.xml.
           settings-path: ${{ github.workspace }} # location for the settings.xml file
@@ -149,11 +152,11 @@ jobs:
           registry-url: 'https://npm.pkg.github.com'
           scope: '@dboeckli'
 
-      - name: Set up java 21
+      - name: Set up java
         uses: actions/setup-java@v5
         with:
-          java-version: 21
-          distribution: 'temurin'
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'liberica'
           cache: 'maven'
           server-id: github # Value of the distributionManagement/repository/id field of the pom.xml.
           settings-path: ${{ github.workspace }} # location for the settings.xml file
@@ -291,11 +294,11 @@ jobs:
           registry-url: 'https://npm.pkg.github.com'
           scope: '@dboeckli'
           
-      - name: Set up java 21
+      - name: Set up java
         uses: actions/setup-java@v5
         with:
-          java-version: 21
-          distribution: 'temurin'
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'liberica'
           cache: 'maven'
           server-id: github # Value of the distributionManagement/repository/id field of the pom.xml.
           settings-path: ${{ github.workspace }} # location for the settings.xml file
