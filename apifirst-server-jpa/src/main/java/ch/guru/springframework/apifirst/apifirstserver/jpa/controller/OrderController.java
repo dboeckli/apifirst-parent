@@ -8,8 +8,7 @@ import ch.guru.springframework.apifirst.model.OrderUpdateDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
@@ -35,10 +34,12 @@ public class OrderController {
 
         // we are returning the location in the header location field of the HTTP
         // response.
-        UriComponents uriComponents = UriComponentsBuilder.fromPath(ORDER_BASE_URL + "/{order_id}")
-            .buildAndExpand(savedOrder.getId());
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+            .path("/{orderId}")
+            .buildAndExpand(savedOrder.getId())
+            .toUri();
 
-        return ResponseEntity.created(URI.create(uriComponents.getPath())).build();
+        return ResponseEntity.created(location).build();
     }
 
     @PutMapping("/{orderId}")

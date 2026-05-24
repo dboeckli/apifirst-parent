@@ -85,6 +85,12 @@
       <artifactId>logstash-logback-encoder</artifactId>
       <version>${logstash-logback.version}</version>
     </dependency>
+    <dependency>
+      <groupId>co.elastic.logging</groupId>
+      <artifactId>logback-ecs-encoder</artifactId>
+      <version>${logback-ecs-encoder.version}</version>
+      <scope>compile</scope>
+    </dependency>
 
     <dependency>
       <groupId>org.projectlombok</groupId>
@@ -142,7 +148,7 @@
 
     <dependency>
       <groupId>com.atlassian.oai</groupId>
-      <artifactId>swagger-request-validator-mockmvc</artifactId>
+      <artifactId>openapi-request-validator-mockmvc</artifactId>
       <version>${swagger.request.validator.version}</version>
       <scope>test</scope>
       <exclusions>
@@ -155,7 +161,7 @@
 
     <dependency>
       <groupId>com.atlassian.oai</groupId>
-      <artifactId>swagger-request-validator-spring-webmvc</artifactId>
+      <artifactId>openapi-request-validator-spring-webmvc</artifactId>
       <version>${swagger.request.validator.version}</version>
       <scope>test</scope>
       <exclusions>

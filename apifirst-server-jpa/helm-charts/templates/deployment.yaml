@@ -22,6 +22,8 @@ spec:
           env:
             - name: JAVA_TIMEZONE
               value: "{{ .Values.global.timezone }}"
+            - name: LOGGING_CONFIG
+              value: classpath:logback-kube.xml
           ports:
             - name: http
               containerPort: {{ .Values.service.targetPort }}

@@ -52,7 +52,7 @@
     <google.findbugs.version>3.0.2</google.findbugs.version>
     <jackson-databind-nullable.version>0.2.10</jackson-databind-nullable.version>
     <openapi-generator-maven-plugin.version>7.22.0</openapi-generator-maven-plugin.version>
-    <swagger.request.validator.version>2.46.1</swagger.request.validator.version>
+    <swagger.request.validator.version>3.0.0</swagger.request.validator.version>
 
     <spring-javaformat-maven-plugin.version>0.0.47</spring-javaformat-maven-plugin.version>
     <spotless-maven-plugin.version>3.4.0</spotless-maven-plugin.version>
@@ -73,6 +73,7 @@
     <frontend-maven-plugin.version>2.0.0</frontend-maven-plugin.version>
 
     <logstash-logback.version>9.0</logstash-logback.version>
+    <logback-ecs-encoder.version>1.8.0</logback-ecs-encoder.version>
 
     <!-- Sonar -->
     <sonar-maven-plugin.version>5.6.0.6792</sonar-maven-plugin.version>
@@ -183,6 +184,7 @@
               <include>pom.xml</include>
             </includes>
             <excludes>
+              <exclude>**/target/**</exclude>
               <exclude>target/**</exclude>
               <exclude>**/node_modules/**</exclude>
             </excludes>
@@ -193,6 +195,7 @@
               <include>**/*.md</include>
             </includes>
             <excludes>
+              <exclude>**/target/**</exclude>
               <exclude>target/**</exclude>
               <exclude>**/node_modules/**</exclude>
             </excludes>
@@ -204,6 +207,7 @@
             </includes>
             <excludes>
               <exclude>**/target/**</exclude>
+              <exclude>target/**</exclude>
               <exclude>**/node_modules/**</exclude>
               <exclude>.github/**</exclude>
               <exclude>.idea/**</exclude>
@@ -222,6 +226,7 @@
               <include>**/*.sh</include>
             </includes>
             <excludes>
+              <exclude>**/target/**</exclude>
               <exclude>target/**</exclude>
               <exclude>**/node_modules/**</exclude>
             </excludes>
