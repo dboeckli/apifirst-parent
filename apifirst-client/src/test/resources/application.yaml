@@ -3,6 +3,12 @@ spring:
     name: apifirst-client
   docker:
     compose:
+      readiness:
+        wait: always
+        timeout: 5m       # default ist 2m
+        tcp:
+          connect-timeout: 5s
+          read-timeout: 5s
       file: compose.yaml
       enabled: true
       stop:
