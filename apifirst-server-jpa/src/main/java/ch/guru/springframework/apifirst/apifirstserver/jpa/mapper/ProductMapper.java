@@ -10,6 +10,7 @@ import org.mapstruct.*;
 @Mapper
 @DecoratedWith(ProductMapperDecorator.class)
 public interface ProductMapper {
+
     @Mapping(target = "categories", ignore = true)
     ProductPatchDto productToPatchDto(Product product);
 
@@ -18,9 +19,8 @@ public interface ProductMapper {
     @Mapping(target = "dateUpdated", ignore = true)
     @Mapping(target = "categories", ignore = true)
     @Mapping(target = "images", ignore = true)
-    @BeanMapping(
-        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-        nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+            nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     void patchProduct(ProductPatchDto productPatchDto, @MappingTarget Product target);
 
     @Mapping(target = "categories", ignore = true)
@@ -49,4 +49,5 @@ public interface ProductMapper {
     Product dtoToProduct(ProductCreateDto productCreateDto);
 
     ProductDto productToDto(Product product);
+
 }

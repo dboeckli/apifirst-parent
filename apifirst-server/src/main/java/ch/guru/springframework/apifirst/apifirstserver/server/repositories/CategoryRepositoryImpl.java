@@ -24,8 +24,7 @@ public class CategoryRepositoryImpl implements CategoryRepository {
 
         builder1.id(id);
 
-        CategoryDto category = builder1
-            .category(entity.getCategory())
+        CategoryDto category = builder1.category(entity.getCategory())
             .categoryCode(entity.getCategoryCode())
             .description(entity.getDescription())
             .dateCreated(OffsetDateTime.now())
@@ -39,9 +38,7 @@ public class CategoryRepositoryImpl implements CategoryRepository {
 
     @Override
     public <S extends CategoryDto> Iterable<S> saveAll(Iterable<S> entities) {
-        return StreamSupport.stream(entities.spliterator(), false)
-            .map(this::save)
-            .collect(Collectors.toList());
+        return StreamSupport.stream(entities.spliterator(), false).map(this::save).collect(Collectors.toList());
     }
 
     @Override
@@ -100,8 +97,10 @@ public class CategoryRepositoryImpl implements CategoryRepository {
 
     @Override
     public Optional<CategoryDto> findByCategoryCode(String categoryCode) {
-        return entityMap.values().stream()
+        return entityMap.values()
+            .stream()
             .filter(category -> category.getCategoryCode().equals(categoryCode))
             .findFirst();
     }
+
 }

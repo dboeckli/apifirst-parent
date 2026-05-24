@@ -16,7 +16,7 @@ import java.util.stream.StreamSupport;
 
 @Repository
 public class ProductRepositoryImpl implements ProductRepository {
-    
+
     private final Map<UUID, ProductDto> entityMap = new HashMap<>();
 
     @Override
@@ -32,32 +32,28 @@ public class ProductRepositoryImpl implements ProductRepository {
             .dateUpdated(OffsetDateTime.now());
 
         if (entity.getCategories() != null) {
-            builder.categories(entity.getCategories().stream()
-                .map(category -> {
-                    return CategoryDto.builder()
-                        .id(UUID.randomUUID())
-                        .category(category.getCategory())
-                        .categoryCode(category.getCategoryCode())
-                        .description(category.getDescription())
-                        .dateCreated(OffsetDateTime.now())
-                        .dateUpdated(OffsetDateTime.now())
-                        .build();
-                })
-                .collect(Collectors.toList()));
+            builder.categories(entity.getCategories().stream().map(category -> {
+                return CategoryDto.builder()
+                    .id(UUID.randomUUID())
+                    .category(category.getCategory())
+                    .categoryCode(category.getCategoryCode())
+                    .description(category.getDescription())
+                    .dateCreated(OffsetDateTime.now())
+                    .dateUpdated(OffsetDateTime.now())
+                    .build();
+            }).collect(Collectors.toList()));
         }
 
         if (entity.getImages() != null) {
-            builder.images(entity.getImages().stream()
-                .map(image -> {
-                    return ImageDto.builder()
-                        .id(UUID.randomUUID())
-                        .url(image.getUrl())
-                        .altText(image.getAltText())
-                        .dateCreated(OffsetDateTime.now())
-                        .dateUpdated(OffsetDateTime.now())
-                        .build();
-                })
-                .collect(Collectors.toList()));
+            builder.images(entity.getImages().stream().map(image -> {
+                return ImageDto.builder()
+                    .id(UUID.randomUUID())
+                    .url(image.getUrl())
+                    .altText(image.getAltText())
+                    .dateCreated(OffsetDateTime.now())
+                    .dateUpdated(OffsetDateTime.now())
+                    .build();
+            }).collect(Collectors.toList()));
         }
 
         if (entity.getDimensions() != null) {
@@ -76,9 +72,7 @@ public class ProductRepositoryImpl implements ProductRepository {
 
     @Override
     public <S extends ProductDto> Iterable<S> saveAll(Iterable<S> entities) {
-        return StreamSupport.stream(entities.spliterator(), false)
-            .map(this::save)
-            .collect(Collectors.toList());
+        return StreamSupport.stream(entities.spliterator(), false).map(this::save).collect(Collectors.toList());
     }
 
     @Override
@@ -134,4 +128,5 @@ public class ProductRepositoryImpl implements ProductRepository {
     public void deleteAll() {
         entityMap.clear();
     }
+
 }

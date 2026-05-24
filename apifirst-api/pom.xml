@@ -1,169 +1,169 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>ch.guru.springframework.apifirst</groupId>
-        <artifactId>apifirst-parent</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
-    </parent>
+  <parent>
+    <groupId>ch.guru.springframework.apifirst</groupId>
+    <artifactId>apifirst-parent</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
 
-    <artifactId>apifirst-api</artifactId>
+  <artifactId>apifirst-api</artifactId>
 
-    <name>apifirst-api</name>
-    <description>apifirst-api</description>
+  <name>apifirst-api</name>
+  <description>apifirst-api</description>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>jsr305</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate.validator</groupId>
-            <artifactId>hibernate-validator</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>jakarta.annotation</groupId>
-            <artifactId>jakarta.annotation-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>
+  <dependencies>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>jsr305</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate.validator</groupId>
+      <artifactId>hibernate-validator</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.annotation</groupId>
+      <artifactId>jakarta.annotation-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                    <annotationProcessorPaths>
-                        <path>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                        </path>
-                    </annotationProcessorPaths>
-                </configuration>
-            </plugin>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok</artifactId>
+            </path>
+          </annotationProcessorPaths>
+        </configuration>
+      </plugin>
 
-            <plugin>
-                <groupId>com.github.eirslett</groupId>
-                <artifactId>frontend-maven-plugin</artifactId>
-                <version>${frontend-maven-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>install node and npm</id>
-                        <phase>generate-sources</phase> <!-- default: generate-resources -->
-                        <goals>
-                            <goal>install-node-and-npm</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>npm install</id>
-                        <goals>
-                            <goal>npm</goal>
-                        </goals>
-                        <phase>generate-sources</phase> <!-- default: generate-resources -->
-                        <configuration>
-                            <arguments>install</arguments>
-                            <environmentVariables>
-                                <NPM_CONFIG_REGISTRY>https://registry.npmjs.org/</NPM_CONFIG_REGISTRY>
-                                <NPM_CONFIG_SCOPED__REGISTRY key="@dboeckli:registry">https://npm.pkg.github.com/</NPM_CONFIG_SCOPED__REGISTRY>
-                            </environmentVariables>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>npm build</id>
-                        <goals>
-                            <goal>npm</goal>
-                        </goals>
-                        <phase>generate-sources</phase>
-                        <configuration>
-                            <arguments>run build</arguments>
-                            <environmentVariables>
-                                <NPM_CONFIG_REGISTRY>https://registry.npmjs.org/</NPM_CONFIG_REGISTRY>
-                                <NPM_CONFIG_SCOPED__REGISTRY key="@dboeckli:registry">https://npm.pkg.github.com/</NPM_CONFIG_SCOPED__REGISTRY>
-                            </environmentVariables>
-                        </configuration>
-                    </execution>
-                </executions>
-                <configuration>
-                    <nodeVersion>v23.6.0</nodeVersion>
-                    <npmVersion>11.0.0</npmVersion>
-                    <installDirectory>target</installDirectory>
-                    <workingDirectory>api-def</workingDirectory>
-                </configuration>
-            </plugin>
+      <plugin>
+        <groupId>com.github.eirslett</groupId>
+        <artifactId>frontend-maven-plugin</artifactId>
+        <version>${frontend-maven-plugin.version}</version>
+        <configuration>
+          <nodeVersion>v23.6.0</nodeVersion>
+          <npmVersion>11.0.0</npmVersion>
+          <installDirectory>target</installDirectory>
+          <workingDirectory>api-def</workingDirectory>
+        </configuration>
+        <executions>
+          <execution>
+            <id>install node and npm</id>
+            <!-- default: generate-resources -->
+            <goals>
+              <goal>install-node-and-npm</goal>
+            </goals>
+            <phase>generate-sources</phase>
+          </execution>
+          <execution>
+            <id>npm install</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <phase>generate-sources</phase>
+            <!-- default: generate-resources -->
+            <configuration>
+              <arguments>install</arguments>
+              <environmentVariables>
+                <NPM_CONFIG_REGISTRY>https://registry.npmjs.org/</NPM_CONFIG_REGISTRY>
+                <NPM_CONFIG_SCOPED__REGISTRY key="@dboeckli:registry">https://npm.pkg.github.com/</NPM_CONFIG_SCOPED__REGISTRY>
+              </environmentVariables>
+            </configuration>
+          </execution>
+          <execution>
+            <id>npm build</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <phase>generate-sources</phase>
+            <configuration>
+              <arguments>run build</arguments>
+              <environmentVariables>
+                <NPM_CONFIG_REGISTRY>https://registry.npmjs.org/</NPM_CONFIG_REGISTRY>
+                <NPM_CONFIG_SCOPED__REGISTRY key="@dboeckli:registry">https://npm.pkg.github.com/</NPM_CONFIG_SCOPED__REGISTRY>
+              </environmentVariables>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
 
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>attach-artifacts</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>attach-artifact</goal>
-                        </goals>
-                        <configuration>
-                            <artifacts>
-                                <artifact>
-                                    <file>${project.basedir}/api-def/dist/bundle.yaml</file>
-                                    <type>yaml</type>
-                                    <classifier>openapi</classifier>
-                                </artifact>
-                            </artifacts>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            
-            <plugin>
-                <groupId>org.openapitools</groupId>
-                <artifactId>openapi-generator-maven-plugin</artifactId>
-                <version>${openapi-generator-maven-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <configuration>
-                            <inputSpec>${project.parent.basedir}/apifirst-api/api-def/dist/bundle.yaml</inputSpec>
-                            <generatorName>${openapi.generatorName}</generatorName>
-                            <library>${openapi.library}</library>
-                            
-                            <generateApiDocumentation>false</generateApiDocumentation>
-                            <generateModelDocumentation>false</generateModelDocumentation>
-                            <generateApiTests>false</generateApiTests>
-                            <generateSupportingFiles>false</generateSupportingFiles>
-                            <generateModelTests>false</generateModelTests>
-                            <generateAliasAsModel>false</generateAliasAsModel>
-                            <generateApis>false</generateApis>
-                            
-                            <modelPackage>${openapi.modelPackage}</modelPackage>
-                            <modelNameSuffix>${openapi.modelNameSuffix}</modelNameSuffix>
-                            <configOptions>
-                                <sourceFolder>src/gen/java/main</sourceFolder>
-                                <useJakartaEe>true</useJakartaEe>
-                                <useBeanValidation>true</useBeanValidation>
-                                <openApiNullable>false</openApiNullable>
-                                <additionalModelTypeAnnotations>@lombok.Builder @lombok.AllArgsConstructor</additionalModelTypeAnnotations>
-                            </configOptions>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-artifacts</id>
+            <goals>
+              <goal>attach-artifact</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <artifacts>
+                <artifact>
+                  <file>${project.basedir}/api-def/dist/bundle.yaml</file>
+                  <type>yaml</type>
+                  <classifier>openapi</classifier>
+                </artifact>
+              </artifacts>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.openapitools</groupId>
+        <artifactId>openapi-generator-maven-plugin</artifactId>
+        <version>${openapi-generator-maven-plugin.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>${project.parent.basedir}/apifirst-api/api-def/dist/bundle.yaml</inputSpec>
+              <generatorName>${openapi.generatorName}</generatorName>
+              <library>${openapi.library}</library>
+
+              <generateApiDocumentation>false</generateApiDocumentation>
+              <generateModelDocumentation>false</generateModelDocumentation>
+              <generateApiTests>false</generateApiTests>
+              <generateSupportingFiles>false</generateSupportingFiles>
+              <generateModelTests>false</generateModelTests>
+              <generateAliasAsModel>false</generateAliasAsModel>
+              <generateApis>false</generateApis>
+
+              <modelPackage>${openapi.modelPackage}</modelPackage>
+              <modelNameSuffix>${openapi.modelNameSuffix}</modelNameSuffix>
+              <configOptions>
+                <sourceFolder>src/gen/java/main</sourceFolder>
+                <useJakartaEe>true</useJakartaEe>
+                <useBeanValidation>true</useBeanValidation>
+                <openApiNullable>false</openApiNullable>
+                <additionalModelTypeAnnotations>@lombok.Builder @lombok.AllArgsConstructor</additionalModelTypeAnnotations>
+              </configOptions>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>

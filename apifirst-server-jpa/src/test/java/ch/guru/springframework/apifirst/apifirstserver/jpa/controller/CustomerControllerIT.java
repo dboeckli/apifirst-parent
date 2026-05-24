@@ -59,19 +59,14 @@ class CustomerControllerIT {
 
     @BeforeEach
     void setUp() {
-        objectMapper = objectMapper.rebuild()
-            .enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION)
-            .build();
-        mockMvc = MockMvcBuilders.webAppContextSetup(wac)
-            .addFilter(validationFilter)
-            .build();
+        objectMapper = objectMapper.rebuild().enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION).build();
+        mockMvc = MockMvcBuilders.webAppContextSetup(wac).addFilter(validationFilter).build();
     }
 
     @Test
     @Order(1)
     void testListCustomers() throws Exception {
-        mockMvc.perform(get(CustomerController.CUSTOMER_BASE_URL)
-                .accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(CustomerController.CUSTOMER_BASE_URL).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.length()", greaterThan(0)))
             .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL));
@@ -82,7 +77,8 @@ class CustomerControllerIT {
     void testGetCustomerById() throws Exception {
         Customer testCustomer = customerRepository.findAll().getFirst();
 
-        mockMvc.perform(get(CustomerController.CUSTOMER_BASE_URL + "/{customerId}", testCustomer.getId())
+        mockMvc
+            .perform(get(CustomerController.CUSTOMER_BASE_URL + "/{customerId}", testCustomer.getId())
                 .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id").value(testCustomer.getId().toString()))
@@ -92,7 +88,8 @@ class CustomerControllerIT {
     @Test
     @Order(2)
     void testGetCustomerByIdNotFound() throws Exception {
-        mockMvc.perform(get(CustomerController.CUSTOMER_BASE_URL + "/{customerId}", UUID.randomUUID())
+        mockMvc
+            .perform(get(CustomerController.CUSTOMER_BASE_URL + "/{customerId}", UUID.randomUUID())
                 .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNotFound())
             .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL));
@@ -109,17 +106,15 @@ class CustomerControllerIT {
             .build();
 
         CustomerDto newCustomer = CustomerDto.builder()
-            .name(NameDto.builder()
-                .firstName("New Customer Firstname")
-                .lastName("New Customer Lastname")
-                .build())
+            .name(NameDto.builder().firstName("New Customer Firstname").lastName("New Customer Lastname").build())
             .email("newcustomer@example.com")
             .phone("1234567890")
             .billToAddress(address)
             .shipToAddress(address)
             .build();
 
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post(CustomerController.CUSTOMER_BASE_URL)
+        MvcResult result = mockMvc
+            .perform(MockMvcRequestBuilders.post(CustomerController.CUSTOMER_BASE_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(newCustomer)))
             .andExpect(status().isCreated())
@@ -137,8 +132,7 @@ class CustomerControllerIT {
         log.info("Extracted path: {}", path);
 
         // Perform GET request using the extracted path
-        mockMvc.perform(get(path)
-                .accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(path).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.email").value("newcustomer@example.com"))
             .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL));
@@ -153,7 +147,8 @@ class CustomerControllerIT {
         customer.getName().setLastName("Updated2");
         customer.getPaymentMethods().getFirst().setDisplayName("NEW NAME");
 
-        mockMvc.perform(put(CustomerController.CUSTOMER_BASE_URL + "/{customerId}", customer.getId())
+        mockMvc
+            .perform(put(CustomerController.CUSTOMER_BASE_URL + "/{customerId}", customer.getId())
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(customerMapper.customerToDto(customer))))
@@ -173,7 +168,8 @@ class CustomerControllerIT {
         customer.getName().setLastName("Updated2");
         customer.getPaymentMethods().getFirst().setDisplayName("NEW NAME");
 
-        mockMvc.perform(put(CustomerController.CUSTOMER_BASE_URL + "/{customerId}", UUID.randomUUID())
+        mockMvc
+            .perform(put(CustomerController.CUSTOMER_BASE_URL + "/{customerId}", UUID.randomUUID())
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(customerMapper.customerToDto(customer))))
@@ -187,17 +183,15 @@ class CustomerControllerIT {
         Customer customer = customerRepository.findAll().getFirst();
 
         CustomerPatchDto customerPatch = CustomerPatchDto.builder()
-            .name(CustomerNamePatchDto.builder()
-                .firstName("Updated")
-                .lastName("Updated2")
-                .build())
+            .name(CustomerNamePatchDto.builder().firstName("Updated").lastName("Updated2").build())
             .paymentMethods(Collections.singletonList(CustomerPaymentMethodPatchDto.builder()
                 .id(customer.getPaymentMethods().getFirst().getId())
                 .displayName("NEW NAME")
                 .build()))
             .build();
 
-        mockMvc.perform(patch(CustomerController.CUSTOMER_BASE_URL + "/{customerId}", customer.getId())
+        mockMvc
+            .perform(patch(CustomerController.CUSTOMER_BASE_URL + "/{customerId}", customer.getId())
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(customerPatch)))
@@ -214,17 +208,15 @@ class CustomerControllerIT {
         Customer customer = customerRepository.findAll().getFirst();
 
         CustomerPatchDto customerPatch = CustomerPatchDto.builder()
-            .name(CustomerNamePatchDto.builder()
-                .firstName("Updated")
-                .lastName("Updated2")
-                .build())
+            .name(CustomerNamePatchDto.builder().firstName("Updated").lastName("Updated2").build())
             .paymentMethods(Collections.singletonList(CustomerPaymentMethodPatchDto.builder()
                 .id(customer.getPaymentMethods().getFirst().getId())
                 .displayName("NEW NAME")
                 .build()))
             .build();
 
-        mockMvc.perform(patch(CustomerController.CUSTOMER_BASE_URL + "/{customerId}", UUID.randomUUID())
+        mockMvc
+            .perform(patch(CustomerController.CUSTOMER_BASE_URL + "/{customerId}", UUID.randomUUID())
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(customerPatch)))
@@ -262,24 +254,14 @@ class CustomerControllerIT {
 
     private CustomerDto buildTestCustomerDto() {
         return CustomerDto.builder()
-            .name(NameDto.builder()
-                .lastName("Doe")
-                .firstName("John")
-                .build())
+            .name(NameDto.builder().lastName("Doe").firstName("John").build())
             .phone("555-555-5555")
             .email("john@example.com")
-            .shipToAddress(AddressDto.builder()
-                .addressLine1("123 Main St")
-                .city("Denver")
-                .state("CO")
-                .zip("80216")
-                .build())
-            .billToAddress(AddressDto.builder()
-                .addressLine1("123 Main St")
-                .city("Denver")
-                .state("CO")
-                .zip("80216")
-                .build())
+            .shipToAddress(
+                    AddressDto.builder().addressLine1("123 Main St").city("Denver").state("CO").zip("80216").build())
+            .billToAddress(
+                    AddressDto.builder().addressLine1("123 Main St").city("Denver").state("CO").zip("80216").build())
             .build();
     }
+
 }

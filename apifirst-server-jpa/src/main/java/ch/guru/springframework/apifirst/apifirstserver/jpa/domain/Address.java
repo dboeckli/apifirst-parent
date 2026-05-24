@@ -27,23 +27,23 @@ public class Address {
     @Column(length = 36, columnDefinition = "char(36)", updatable = false, nullable = false)
     private UUID id;
 
-    @NotNull 
-    @Size(min = 3,max = 100)
-    private String addressLine1;
-    
-    @Size(min = 3,max = 100)
-    private String addressLine2;
-    
-    @NotNull 
-    @Size(min = 1,max = 100)
-    private String city;
-    
     @NotNull
-    @Size(min = 2,max = 2)  
+    @Size(min = 3, max = 100)
+    private String addressLine1;
+
+    @Size(min = 3, max = 100)
+    private String addressLine2;
+
+    @NotNull
+    @Size(min = 1, max = 100)
+    private String city;
+
+    @NotNull
+    @Size(min = 2, max = 2)
     private String state;
-    
-    @NotNull 
-    @Size(min = 4,max = 10)
+
+    @NotNull
+    @Size(min = 4, max = 10)
     private String zip;
 
     @CreationTimestamp
@@ -51,4 +51,5 @@ public class Address {
 
     @UpdateTimestamp
     private OffsetDateTime dateUpdated;
+
 }

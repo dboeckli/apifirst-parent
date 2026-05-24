@@ -28,9 +28,10 @@ public class Image {
     private UUID id;
 
     @NotNull
-    @Size(min = 5,max = 500)
+    @Size(min = 5, max = 500)
     private String url;
-    @Size(min = 3,max = 255)
+
+    @Size(min = 3, max = 255)
     private String altText;
 
     @ManyToOne
@@ -41,4 +42,5 @@ public class Image {
 
     @UpdateTimestamp
     private OffsetDateTime dateUpdated;
+
 }

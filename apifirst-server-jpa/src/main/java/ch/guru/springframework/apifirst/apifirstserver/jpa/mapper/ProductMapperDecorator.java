@@ -41,7 +41,8 @@ public abstract class ProductMapperDecorator implements ProductMapper {
             productUpdateDto.setCategories(categoryCodes);
 
             return productUpdateDto;
-        } else if (product != null) {
+        }
+        else if (product != null) {
             return productMapperDelegate.productToUpdateDto(product);
         }
         return null;
@@ -91,7 +92,8 @@ public abstract class ProductMapperDecorator implements ProductMapper {
                     });
                 }
             });
-        } else {
+        }
+        else {
             target.setImages(new ArrayList<>());
         }
 
@@ -124,10 +126,13 @@ public abstract class ProductMapperDecorator implements ProductMapper {
 
         if (productPatchDto.getImages() != null) {
             productPatchDto.getImages().forEach(imageDto -> {
-                target.getImages().stream().filter(image -> image.getId().equals(imageDto.getId()))
-                        .findFirst().ifPresent(image -> {
-                            imageMapper.patchImage(imageDto, image);
-                        });
+                target.getImages()
+                    .stream()
+                    .filter(image -> image.getId().equals(imageDto.getId()))
+                    .findFirst()
+                    .ifPresent(image -> {
+                        imageMapper.patchImage(imageDto, image);
+                    });
             });
         }
         if (productPatchDto.getCategories() != null) {
@@ -136,11 +141,11 @@ public abstract class ProductMapperDecorator implements ProductMapper {
         }
     }
 
-
-    //list of string to list of category
+    // list of string to list of category
     private List<Category> categoryCodesToCategories(List<String> categoryCodes) {
         List<Category> categories = new ArrayList<>();
-        categoryCodes.forEach(categoryCode -> categoryRepository.findByCategoryCode(categoryCode).ifPresent(categories::add));
+        categoryCodes
+            .forEach(categoryCode -> categoryRepository.findByCategoryCode(categoryCode).ifPresent(categories::add));
         return categories;
     }
 
@@ -157,7 +162,9 @@ public abstract class ProductMapperDecorator implements ProductMapper {
             if (productCreateDto.getCategories() != null) {
                 List<Category> categories = new ArrayList<>();
 
-                productCreateDto.getCategories().forEach(categoryCode -> categoryRepository.findByCategoryCode(categoryCode).ifPresent(categories::add));
+                productCreateDto.getCategories()
+                    .forEach(categoryCode -> categoryRepository.findByCategoryCode(categoryCode)
+                        .ifPresent(categories::add));
                 product.setCategories(categories);
 
                 return product;
@@ -170,4 +177,5 @@ public abstract class ProductMapperDecorator implements ProductMapper {
     public ProductDto productToDto(Product product) {
         return productMapperDelegate.productToDto(product);
     }
-}    
+
+}

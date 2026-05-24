@@ -37,7 +37,7 @@ public interface OrderMapper {
     @Mapping(target = "orderLines", ignore = true)
     @Mapping(target = "customerId", source = "customer.id")
     OrderUpdateDto orderToUpdateDto(Order order);
-    
+
     @Mapping(target = "shipmentInfo", ignore = true)
     @Mapping(target = "selectedPaymentMethod", ignore = true)
     @Mapping(target = "orderStatus", ignore = true)
@@ -53,8 +53,5 @@ public interface OrderMapper {
     Order dtoToOrder(OrderDto orderDto);
 
     OrderDto orderToDto(Order order);
-    
-    
-    
-    
-}    
+
+}

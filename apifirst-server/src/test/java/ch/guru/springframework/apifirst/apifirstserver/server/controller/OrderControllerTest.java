@@ -53,16 +53,13 @@ class OrderControllerTest {
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(wac)
-            .addFilter(validationFilter)
-            .build();
+        mockMvc = MockMvcBuilders.webAppContextSetup(wac).addFilter(validationFilter).build();
     }
 
     @Test
     @Order(1)
     void testListOrders() throws Exception {
-        mockMvc.perform(get(OrderController.ORDER_BASE_URL)
-                .accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(OrderController.ORDER_BASE_URL).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.length()", greaterThan(0)));
     }
@@ -72,7 +69,8 @@ class OrderControllerTest {
     void testGetOrderById() throws Exception {
         OrderDto testOrder = orderRepository.findAll().iterator().next();
 
-        mockMvc.perform(get(OrderController.ORDER_BASE_URL + "/{orderId}", testOrder.getId())
+        mockMvc
+            .perform(get(OrderController.ORDER_BASE_URL + "/{orderId}", testOrder.getId())
                 .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id").value(testOrder.getId().toString()));
@@ -87,16 +85,14 @@ class OrderControllerTest {
         OrderCreateDto orderCreate = OrderCreateDto.builder()
             .customerId(testCustomer.getId())
             .selectPaymentMethodId(testCustomer.getPaymentMethods().getFirst().getId())
-            .orderLines(Collections.singletonList(OrderLineCreateDto.builder()
-                .productId(testProduct.getId())
-                .orderQuantity(1)
-                .build()))
+            .orderLines(Collections
+                .singletonList(OrderLineCreateDto.builder().productId(testProduct.getId()).orderQuantity(1).build()))
             .build();
 
         log.info("created order: {}", objectMapper.writeValueAsString(orderCreate));
 
-        MvcResult result = mockMvc.perform(post(OrderController.ORDER_BASE_URL)
-                .contentType(MediaType.APPLICATION_JSON)
+        MvcResult result = mockMvc
+            .perform(post(OrderController.ORDER_BASE_URL).contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(orderCreate)))
             .andExpect(status().isCreated())
             .andExpect(header().exists("Location"))
@@ -111,9 +107,7 @@ class OrderControllerTest {
         log.info("Extracted path: {}", path);
 
         // Perform GET request using the extracted path
-        mockMvc.perform(get(path)
-                .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
+        mockMvc.perform(get(path).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
     }
 
 }

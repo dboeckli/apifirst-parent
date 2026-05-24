@@ -14,7 +14,7 @@ import java.util.stream.StreamSupport;
 public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
-    
+
     @Override
     public List<CustomerDto> listCustomers() {
         return StreamSupport.stream(customerRepository.findAll().spliterator(), false).toList();
@@ -29,4 +29,5 @@ public class CustomerServiceImpl implements CustomerService {
     public CustomerDto saveNewCustomer(CustomerDto customer) {
         return customerRepository.save(customer);
     }
+
 }

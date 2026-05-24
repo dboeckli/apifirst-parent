@@ -7,6 +7,7 @@ import org.mapstruct.*;
 
 @Mapper
 public interface PaymentMethodMapper {
+
     PaymentMethodDto paymentMethodToDto(PaymentMethod paymentMethod);
 
     @Mapping(target = "dateUpdated", ignore = true)
@@ -15,5 +16,6 @@ public interface PaymentMethodMapper {
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
             nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     void updatePaymentMethod(CustomerPaymentMethodPatchDto customerPaymentMethodPatchDto,
-                             @MappingTarget PaymentMethod paymentMethod);
+            @MappingTarget PaymentMethod paymentMethod);
+
 }

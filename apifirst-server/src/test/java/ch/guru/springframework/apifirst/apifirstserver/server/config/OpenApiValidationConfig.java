@@ -20,16 +20,16 @@ public class OpenApiValidationConfig {
     static {
         try {
             OPENAPI_SPECIFICATION_URL = new ClassPathResource("openapi.yaml").getFile().toURI().toString();
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
-    
+
     @Bean
     public Filter validationFilter() {
-        return new OpenApiValidationFilter(
-            true, // enable request validation
-            true  // enable response validation
+        return new OpenApiValidationFilter(true, // enable request validation
+                true // enable response validation
         );
     }
 
@@ -47,5 +47,5 @@ public class OpenApiValidationConfig {
             }
         };
     }
-    
+
 }

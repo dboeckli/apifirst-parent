@@ -14,12 +14,13 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping(CategoryController.CATEGORY_BASE_URL)
 public class CategoryController {
+
     public static final String CATEGORY_BASE_URL = "/v1/categories";
 
     private final CategoryService categoryService;
 
     @GetMapping
-    public ResponseEntity<List<CategoryDto>> listCategories(){
+    public ResponseEntity<List<CategoryDto>> listCategories() {
         return ResponseEntity.ok(categoryService.listCategories());
     }
 

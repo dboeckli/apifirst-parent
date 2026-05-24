@@ -18,16 +18,16 @@ class ApifirstServerApplicationTest {
 
     @Autowired
     private ApplicationContext applicationContext;
-    
+
     @Autowired
     CustomerRepository customerRepository;
-    
+
     @Autowired
     ProductRepository productRepository;
 
     @Autowired
     OrderRepository orderRepository;
-    
+
     @Autowired
     CategoryRepository categoryRepository;
 
@@ -39,12 +39,9 @@ class ApifirstServerApplicationTest {
 
     @Test
     void testDataLoad() {
-        assertAll("Data should be empty at start",
-            () -> assertEquals(2, customerRepository.count()),
-            () -> assertEquals(2, productRepository.count()),
-            () -> assertEquals(2, orderRepository.count()),
-            () -> assertEquals(3, categoryRepository.count())
-        );
+        assertAll("Data should be empty at start", () -> assertEquals(2, customerRepository.count()),
+                () -> assertEquals(2, productRepository.count()), () -> assertEquals(2, orderRepository.count()),
+                () -> assertEquals(3, categoryRepository.count()));
     }
 
 }

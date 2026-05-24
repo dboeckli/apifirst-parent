@@ -21,7 +21,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "Orders") // Order is a reserved keyword in SQL. Therefore, we've changed the table name to 'Orders'
+@Table(name = "Orders") // Order is a reserved keyword in SQL. Therefore, we've changed
+                        // the table name to 'Orders'
 public class Order {
 
     @Id
@@ -42,7 +43,7 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private OrderStatusEnum orderStatus = OrderStatusEnum.NEW;
 
-    @Size(min = 1,max = 255)
+    @Size(min = 1, max = 255)
     private String shipmentInfo;
 
     @Builder.Default
@@ -56,4 +57,5 @@ public class Order {
 
     @UpdateTimestamp
     private OffsetDateTime dateUpdated;
+
 }

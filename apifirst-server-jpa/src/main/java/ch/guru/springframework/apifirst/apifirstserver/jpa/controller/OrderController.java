@@ -8,8 +8,7 @@ import ch.guru.springframework.apifirst.model.OrderUpdateDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
@@ -30,26 +29,29 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> saveNewOrder(@RequestBody OrderCreateDto orderCreate){
+    public ResponseEntity<Void> saveNewOrder(@RequestBody OrderCreateDto orderCreate) {
         OrderDto savedOrder = orderService.saveNewOrder(orderCreate);
 
-        // we are returning the location in the header location field of the HTTP response.
-        UriComponents uriComponents = UriComponentsBuilder.fromPath(ORDER_BASE_URL + "/{order_id}")
-            .buildAndExpand(savedOrder.getId());
+        // we are returning the location in the header location field of the HTTP
+        // response.
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+            .path("/{orderId}")
+            .buildAndExpand(savedOrder.getId())
+            .toUri();
 
-        return ResponseEntity.created(URI.create(uriComponents.getPath())).build();
+        return ResponseEntity.created(location).build();
     }
-    
+
     @PutMapping("/{orderId}")
-    public ResponseEntity<OrderDto> updateOrder(@PathVariable("orderId") UUID orderId, 
-                                                @RequestBody OrderUpdateDto orderUpdate) {
+    public ResponseEntity<OrderDto> updateOrder(@PathVariable("orderId") UUID orderId,
+            @RequestBody OrderUpdateDto orderUpdate) {
         OrderDto updatedOrder = orderService.updateOrder(orderId, orderUpdate);
         return ResponseEntity.ok(updatedOrder);
     }
 
     @PatchMapping("/{orderId}")
     public ResponseEntity<OrderDto> patchOrder(@PathVariable("orderId") UUID orderId,
-                                                @RequestBody OrderPatchDto orderPatch) {
+            @RequestBody OrderPatchDto orderPatch) {
         OrderDto patchedOrder = orderService.patchOrder(orderId, orderPatch);
         return ResponseEntity.ok(patchedOrder);
     }
@@ -64,5 +66,5 @@ public class OrderController {
     public ResponseEntity<OrderDto> getOrderById(@PathVariable("orderId") UUID orderId) {
         return ResponseEntity.ok(orderService.getOrderById(orderId));
     }
-    
+
 }

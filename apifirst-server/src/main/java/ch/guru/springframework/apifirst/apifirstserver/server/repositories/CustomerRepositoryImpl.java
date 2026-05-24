@@ -26,7 +26,7 @@ public class CustomerRepositoryImpl implements CustomerRepository {
 
         builder1.id(id);
 
-        if (entity.getBillToAddress() != null){
+        if (entity.getBillToAddress() != null) {
             builder1.billToAddress(AddressDto.builder()
                 .id(UUID.randomUUID())
                 .addressLine1(entity.getBillToAddress().getAddressLine1())
@@ -82,9 +82,7 @@ public class CustomerRepositoryImpl implements CustomerRepository {
 
     @Override
     public <S extends CustomerDto> Iterable<S> saveAll(Iterable<S> entities) {
-        return StreamSupport.stream(entities.spliterator(), false)
-            .map(this::save)
-            .collect(Collectors.toList());
+        return StreamSupport.stream(entities.spliterator(), false).map(this::save).collect(Collectors.toList());
     }
 
     @Override
@@ -140,4 +138,5 @@ public class CustomerRepositoryImpl implements CustomerRepository {
     public void deleteAll() {
         entityMap.clear();
     }
+
 }

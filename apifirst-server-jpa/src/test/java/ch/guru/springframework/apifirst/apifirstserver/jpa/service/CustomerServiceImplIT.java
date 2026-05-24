@@ -24,7 +24,7 @@ class CustomerServiceImplIT {
 
     @Autowired
     CustomerRepository customerRepository;
-    
+
     @Test
     @Transactional
     void testSaveNewCustomer() {
@@ -32,21 +32,19 @@ class CustomerServiceImplIT {
         CustomerDto savedCustomer = customerService.saveNewCustomer(customerDto);
         Customer customer = customerRepository.findById(savedCustomer.getId()).orElseThrow();
         customerRepository.flush();
-        
-        assertAll(
-            () -> assertNotNull(savedCustomer),
-            () -> assertNotNull(savedCustomer.getId()),
-            
-            () -> assertNotNull(customer.getPaymentMethods()),
-            () -> assertEquals(1, customer.getPaymentMethods().size()),
-            () -> assertNotNull(customer.getPaymentMethods().getFirst().getId()),
-            () -> assertEquals(savedCustomer.getId(), customer.getPaymentMethods().getFirst().getCustomer().getId()),
-            
-            () -> assertNotNull(customer.getShipToAddress().getId()),
-            () -> assertNotNull(customer.getBillToAddress().getId()),
-            
-            () -> assertEquals(customerDto.getName().getFirstName(), customer.getName().getFirstName())
-        );
+
+        assertAll(() -> assertNotNull(savedCustomer), () -> assertNotNull(savedCustomer.getId()),
+
+                () -> assertNotNull(customer.getPaymentMethods()),
+                () -> assertEquals(1, customer.getPaymentMethods().size()),
+                () -> assertNotNull(customer.getPaymentMethods().getFirst().getId()),
+                () -> assertEquals(savedCustomer.getId(),
+                        customer.getPaymentMethods().getFirst().getCustomer().getId()),
+
+                () -> assertNotNull(customer.getShipToAddress().getId()),
+                () -> assertNotNull(customer.getBillToAddress().getId()),
+
+                () -> assertEquals(customerDto.getName().getFirstName(), customer.getName().getFirstName()));
     }
 
     @Test
@@ -54,18 +52,12 @@ class CustomerServiceImplIT {
     void testListCustomers() {
         List<CustomerDto> customerDtoList = customerService.listCustomers();
 
-        assertAll(
-            () -> assertNotNull(customerDtoList),
-            () -> assertEquals(2, customerDtoList.size())
-        );
+        assertAll(() -> assertNotNull(customerDtoList), () -> assertEquals(2, customerDtoList.size()));
     }
 
     private CustomerDto createCustomerDTO() {
         return CustomerDto.builder()
-            .name(NameDto.builder()
-                .firstName("Fridolin")
-                .lastName("Galaxus")
-                .build())
+            .name(NameDto.builder().firstName("Fridolin").lastName("Galaxus").build())
             .billToAddress(AddressDto.builder()
                 .addressLine1("1234 Main Street")
                 .city("San Diego")
@@ -85,7 +77,8 @@ class CustomerServiceImplIT {
                 .cardNumber(1234123412)
                 .expiryMonth(12)
                 .expiryYear(2020)
-                .cvv(123).build()))
+                .cvv(123)
+                .build()))
             .build();
     }
 

@@ -14,6 +14,7 @@ import java.util.stream.StreamSupport;
 
 @Repository
 public class OrderRepositoryImpl implements OrderRepository {
+
     private final Map<UUID, OrderDto> entityMap = new HashMap<>();
 
     @Override
@@ -30,19 +31,17 @@ public class OrderRepositoryImpl implements OrderRepository {
             builder.customer(entity.getCustomer());
         }
 
-        if (entity.getOrderLines() != null){
-            builder.orderLines(entity.getOrderLines().stream()
-                .map(orderLine -> {
-                    return OrderLineDto.builder()
-                        .id(UUID.randomUUID())
-                        .product(orderLine.getProduct()) //might cause NPE
-                        .orderQuantity(orderLine.getOrderQuantity())
-                        .shipQuantity(orderLine.getShipQuantity())
-                        .dateCreated(OffsetDateTime.now())
-                        .dateUpdated(OffsetDateTime.now())
-                        .build();
-                })
-                .collect(Collectors.toList()));
+        if (entity.getOrderLines() != null) {
+            builder.orderLines(entity.getOrderLines().stream().map(orderLine -> {
+                return OrderLineDto.builder()
+                    .id(UUID.randomUUID())
+                    .product(orderLine.getProduct()) // might cause NPE
+                    .orderQuantity(orderLine.getOrderQuantity())
+                    .shipQuantity(orderLine.getShipQuantity())
+                    .dateCreated(OffsetDateTime.now())
+                    .dateUpdated(OffsetDateTime.now())
+                    .build();
+            }).collect(Collectors.toList()));
         }
 
         OrderDto savedEntity = builder.build();
@@ -52,9 +51,7 @@ public class OrderRepositoryImpl implements OrderRepository {
 
     @Override
     public <S extends OrderDto> Iterable<S> saveAll(Iterable<S> entities) {
-        return StreamSupport.stream(entities.spliterator(), false)
-            .map(this::save)
-            .collect(Collectors.toList());
+        return StreamSupport.stream(entities.spliterator(), false).map(this::save).collect(Collectors.toList());
     }
 
     @Override
@@ -110,4 +107,5 @@ public class OrderRepositoryImpl implements OrderRepository {
     public void deleteAll() {
         entityMap.clear();
     }
+
 }

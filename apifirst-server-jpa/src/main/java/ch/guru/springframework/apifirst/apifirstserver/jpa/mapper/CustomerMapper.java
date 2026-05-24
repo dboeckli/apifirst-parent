@@ -18,7 +18,7 @@ public interface CustomerMapper {
     @Mapping(target = "billToAddress.id", ignore = true)
     @Mapping(target = "paymentMethods", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-        nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+            nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     void patchCustomer(CustomerPatchDto customerPatchDto, @MappingTarget Customer target);
 
     CustomerDto customerToDto(Customer customer);
@@ -31,4 +31,5 @@ public interface CustomerMapper {
     @Mapping(target = "dateCreated", ignore = true)
     @Mapping(target = "dateUpdated", ignore = true)
     void updateCustomer(CustomerDto customer, @MappingTarget Customer target);
+
 }

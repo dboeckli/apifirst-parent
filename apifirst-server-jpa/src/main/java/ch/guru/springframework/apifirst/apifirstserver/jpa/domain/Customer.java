@@ -33,11 +33,11 @@ public class Customer {
     @NotNull
     private Name name;
 
-    @Size(min = 5,max = 255)
+    @Size(min = 5, max = 255)
     private String email;
 
-    @Pattern(regexp = "^[+]?[(]?[0-9]{3}[)]?[-\\s.]?[0-9]{3}[-\\s.]?[0-9]{4,6}$") 
-    @Size(min = 7,max = 255)
+    @Pattern(regexp = "^[+]?[(]?[0-9]{3}[)]?[-\\s.]?[0-9]{3}[-\\s.]?[0-9]{4,6}$")
+    @Size(min = 7, max = 255)
     private String phone;
 
     @NotNull
@@ -64,4 +64,5 @@ public class Customer {
 
     @UpdateTimestamp
     private OffsetDateTime dateUpdated;
+
 }
