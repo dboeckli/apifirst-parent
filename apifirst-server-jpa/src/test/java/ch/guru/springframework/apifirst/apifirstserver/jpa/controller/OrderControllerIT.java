@@ -71,20 +71,15 @@ class OrderControllerIT {
 
     @BeforeEach
     void setUp() {
-        objectMapper = objectMapper.rebuild()
-            .enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION)
-            .build();
+        objectMapper = objectMapper.rebuild().enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION).build();
 
-        mockMvc = MockMvcBuilders.webAppContextSetup(wac)
-            .addFilter(validationFilter)
-            .build();
+        mockMvc = MockMvcBuilders.webAppContextSetup(wac).addFilter(validationFilter).build();
     }
 
     @Test
     @org.junit.jupiter.api.Order(1)
     void testListOrders() throws Exception {
-        mockMvc.perform(get(OrderController.ORDER_BASE_URL)
-                .accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(OrderController.ORDER_BASE_URL).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.length()", greaterThan(0)))
             .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL));
@@ -93,9 +88,11 @@ class OrderControllerIT {
     @Test
     @org.junit.jupiter.api.Order(2)
     void testGetOrderById() throws Exception {
-        ch.guru.springframework.apifirst.apifirstserver.jpa.domain.Order testOrder = orderRepository.findAll().getFirst();
+        ch.guru.springframework.apifirst.apifirstserver.jpa.domain.Order testOrder = orderRepository.findAll()
+            .getFirst();
 
-        mockMvc.perform(get(OrderController.ORDER_BASE_URL + "/{orderId}", testOrder.getId())
+        mockMvc
+            .perform(get(OrderController.ORDER_BASE_URL + "/{orderId}", testOrder.getId())
                 .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id").value(testOrder.getId().toString()))
@@ -105,7 +102,8 @@ class OrderControllerIT {
     @Test
     @org.junit.jupiter.api.Order(2)
     void testGetOrderByIdNotFound() throws Exception {
-        mockMvc.perform(get(OrderController.ORDER_BASE_URL + "/{orderId}", UUID.randomUUID())
+        mockMvc
+            .perform(get(OrderController.ORDER_BASE_URL + "/{orderId}", UUID.randomUUID())
                 .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNotFound())
             .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL));
@@ -121,16 +119,14 @@ class OrderControllerIT {
         OrderCreateDto orderCreate = OrderCreateDto.builder()
             .customerId(testCustomer.getId())
             .selectPaymentMethodId(testCustomer.getPaymentMethods().getFirst().getId())
-            .orderLines(Collections.singletonList(OrderLineCreateDto.builder()
-                .productId(testProduct.getId())
-                .orderQuantity(1)
-                .build()))
+            .orderLines(Collections
+                .singletonList(OrderLineCreateDto.builder().productId(testProduct.getId()).orderQuantity(1).build()))
             .build();
 
         log.info("created order: {}", objectMapper.writeValueAsString(orderCreate));
 
-        MvcResult result = mockMvc.perform(post(OrderController.ORDER_BASE_URL)
-                .contentType(MediaType.APPLICATION_JSON)
+        MvcResult result = mockMvc
+            .perform(post(OrderController.ORDER_BASE_URL).contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(orderCreate)))
             .andExpect(status().isCreated())
             .andExpect(header().exists("Location"))
@@ -147,8 +143,7 @@ class OrderControllerIT {
         log.info("Extracted path: {}", path);
 
         // Perform GET request using the extracted path
-        mockMvc.perform(get(path)
-                .accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(path).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL));
     }
@@ -163,7 +158,8 @@ class OrderControllerIT {
 
         OrderUpdateDto orderUpdate = orderMapper.orderToUpdateDto(order);
 
-        mockMvc.perform(put(OrderController.ORDER_BASE_URL + "/{orderId}", order.getId())
+        mockMvc
+            .perform(put(OrderController.ORDER_BASE_URL + "/{orderId}", order.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(orderUpdate))
                 .accept(MediaType.APPLICATION_JSON))
@@ -183,8 +179,8 @@ class OrderControllerIT {
 
         OrderUpdateDto orderUpdate = orderMapper.orderToUpdateDto(order);
 
-
-        mockMvc.perform(put(OrderController.ORDER_BASE_URL + "/{orderId}", UUID.randomUUID())
+        mockMvc
+            .perform(put(OrderController.ORDER_BASE_URL + "/{orderId}", UUID.randomUUID())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(orderUpdate))
                 .accept(MediaType.APPLICATION_JSON))
@@ -206,7 +202,8 @@ class OrderControllerIT {
                 .build()))
             .build();
 
-        mockMvc.perform(patch(OrderController.ORDER_BASE_URL + "/{orderId}", order.getId())
+        mockMvc
+            .perform(patch(OrderController.ORDER_BASE_URL + "/{orderId}", order.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(orderPatch))
                 .accept(MediaType.APPLICATION_JSON))
@@ -230,7 +227,8 @@ class OrderControllerIT {
                 .build()))
             .build();
 
-        mockMvc.perform(patch(OrderController.ORDER_BASE_URL + "/{orderId}", UUID.randomUUID())
+        mockMvc
+            .perform(patch(OrderController.ORDER_BASE_URL + "/{orderId}", UUID.randomUUID())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(orderPatch))
                 .accept(MediaType.APPLICATION_JSON))
@@ -264,10 +262,8 @@ class OrderControllerIT {
         return OrderCreateDto.builder()
             .customerId(testCustomer.getId())
             .selectPaymentMethodId(testCustomer.getPaymentMethods().getFirst().getId())
-            .orderLines(Collections.singletonList(OrderLineCreateDto.builder()
-                .productId(testProduct.getId())
-                .orderQuantity(1)
-                .build()))
+            .orderLines(Collections
+                .singletonList(OrderLineCreateDto.builder().productId(testProduct.getId()).orderQuantity(1).build()))
             .build();
     }
 

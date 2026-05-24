@@ -21,15 +21,14 @@ import java.util.UUID;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
+
     private final OrderRepository orderRepository;
 
     private final ProductMapper productMapper;
 
     @Override
     public List<ProductDto> listProducts() {
-        return productRepository.findAll().stream()
-            .map(productMapper::productToDto)
-            .toList();
+        return productRepository.findAll().stream().map(productMapper::productToDto).toList();
     }
 
     @Override
@@ -71,4 +70,5 @@ public class ProductServiceImpl implements ProductService {
             throw new NotFoundException("Product not found: " + productId);
         });
     }
+
 }

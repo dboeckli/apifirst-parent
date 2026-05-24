@@ -17,11 +17,11 @@ import java.util.stream.StreamSupport;
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
-    
+
     private final ProductRepository productRepository;
-    
+
     private final CategoryRepository categoryRepository;
-    
+
     @Override
     public List<ProductDto> listProducts() {
         return StreamSupport.stream(productRepository.findAll().spliterator(), false).toList();
@@ -34,10 +34,11 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDto saveNewProduct(ProductCreateDto productCreateDto) {
-        CategoryDto categoryDto = categoryRepository.findByCategoryCode(productCreateDto.getCategories().getFirst()).orElseThrow();
-        List<CategoryDto> categories =new ArrayList<>();
+        CategoryDto categoryDto = categoryRepository.findByCategoryCode(productCreateDto.getCategories().getFirst())
+            .orElseThrow();
+        List<CategoryDto> categories = new ArrayList<>();
         categories.add(categoryDto);
-                
+
         ProductDto product = ProductDto.builder()
             .description(productCreateDto.getDescription())
             .price(productCreateDto.getPrice())
@@ -49,15 +50,13 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.save(product);
     }
 
-
     private List<CategoryDto> mapCategories(List<String> categoryNames) {
         if (categoryNames == null) {
             return new ArrayList<>();
         }
         return categoryNames.stream()
-            .map(name -> CategoryDto.builder()
-                .category(name)
-                .build())
+            .map(name -> CategoryDto.builder().category(name).build())
             .collect(Collectors.toList());
     }
+
 }

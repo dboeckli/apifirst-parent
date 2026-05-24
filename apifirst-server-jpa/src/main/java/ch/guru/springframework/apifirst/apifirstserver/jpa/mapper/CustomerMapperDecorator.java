@@ -25,11 +25,12 @@ public abstract class CustomerMapperDecorator implements CustomerMapper {
         delegate.patchCustomer(customerPatchDto, target);
 
         if (customerPatchDto.getPaymentMethods() != null) {
-            customerPatchDto.getPaymentMethods().forEach(paymentMethodPatchDto -> target.getPaymentMethods().forEach(paymentMethod -> {
-                if (paymentMethod.getId().equals(paymentMethodPatchDto.getId())) {
-                    paymentMethodMapper.updatePaymentMethod(paymentMethodPatchDto, paymentMethod);
-                }
-            }));
+            customerPatchDto.getPaymentMethods()
+                .forEach(paymentMethodPatchDto -> target.getPaymentMethods().forEach(paymentMethod -> {
+                    if (paymentMethod.getId().equals(paymentMethodPatchDto.getId())) {
+                        paymentMethodMapper.updatePaymentMethod(paymentMethodPatchDto, paymentMethod);
+                    }
+                }));
         }
     }
 
@@ -47,4 +48,5 @@ public abstract class CustomerMapperDecorator implements CustomerMapper {
     public void updateCustomer(CustomerDto customerDto, Customer customer) {
         delegate.updateCustomer(customerDto, customer);
     }
+
 }

@@ -9,23 +9,20 @@ Dieses Projekt demonstriert die API-First-Entwicklung unter Verwendung von OpenA
 Das Projekt besteht aus drei Hauptkomponenten:
 
 1. `apifirst-api`: Generiert mit der OpenAPI-Spezifikation die Modelklassen
-    - Diese Komponente ist verantwortlich für die Erstellung der Modelklassen basierend auf der OpenAPI-Spezifikation.
-    - Die generierten Modelklassen werden von den anderen Komponenten verwendet.
-
+   - Diese Komponente ist verantwortlich für die Erstellung der Modelklassen basierend auf der OpenAPI-Spezifikation.
+   - Die generierten Modelklassen werden von den anderen Komponenten verwendet.
 2. `apifirst-server`: Implementierung des Servers basierend auf der API-Spezifikation
-    - Verwendet eine In-Memory-HashMap zur Datenspeicherung
-    - Nutzt die von `apifirst-api` generierten Modelklassen
-    - erreichbar über port 8081/30081
-
+   - Verwendet eine In-Memory-HashMap zur Datenspeicherung
+   - Nutzt die von `apifirst-api` generierten Modelklassen
+   - erreichbar über port 8081/30081
 3. `apifirst-server-jpa`: Erweiterung des Servers mit JPA-Integration
-    - Persistiert Daten in einer H2-Datenbank
-    - Nutzt ebenfalls die von `apifirst-api` generierten Modelklassen
-    - erreichbar über port 8082/30082
-
+   - Persistiert Daten in einer H2-Datenbank
+   - Nutzt ebenfalls die von `apifirst-api` generierten Modelklassen
+   - erreichbar über port 8082/30082
 4. `apifirst-client`: Client-Implementierung für die API
-    - Enthält die generierte Clientschnittstelle
-    - Nutzt die von `apifirst-api` generierten Modelklassen und API-Interfaces
-    - Ermöglicht das Testen und die Demonstration der API-Funktionalität
+   - Enthält die generierte Clientschnittstelle
+   - Nutzt die von `apifirst-api` generierten Modelklassen und API-Interfaces
+   - Ermöglicht das Testen und die Demonstration der API-Funktionalität
 
 Beide Server-Implementierungen (`apifirst-server` und `apifirst-server-jpa`) implementieren die gleiche Schnittstelle, verwenden aber unterschiedliche Datenspeicherungsmechanismen.
 
@@ -56,15 +53,19 @@ Diese generierten Dateien werden automatisch in den Klassenpfad des Projekts auf
 ## Deployment with Kubernetes
 
 first which projects you want to deploy
+
 ```bash
 cd apifirst-server
 ```
+
 or
+
 ```bash
 cd apifirst-server-jpa
 ```
 
 To run maven filtering for destination target/k8s
+
 ```bash
 mvn clean install -DskipTests 
 ```
@@ -72,16 +73,19 @@ mvn clean install -DskipTests
 Deployment goes into the default namespace.
 
 To deploy all resources:
+
 ```bash
 kubectl apply -f target/k8s/
 ```
 
 To remove all resources:
+
 ```bash
 kubectl delete -f target/k8s/
 ```
 
 Check
+
 ```bash
 kubectl get deployments -o wide
 kubectl get pods -o wide
@@ -94,63 +98,77 @@ You can use the actuator rest call to verify via port 30081/30082
 Be aware that we are using a different namespace here (not default).
 
 To run maven filtering for destination target/helm
+
 ```bash
 mvn clean install -DskipTests 
 ```
 
 first which projects you want to deploy
+
 ```bash
 cd apifirst-server
 $namespace = "apifirst-server"
 ```
+
 or
+
 ```bash
 cd apifirst-server-jpa
 $namespace = "apifirst-server-jpa"
 ```
 
 Go to the directory where the tgz file has been created after 'mvn install'
+
 ```powershell
 cd target/helm/repo
 ```
 
 unpack
+
 ```powershell
 $file = Get-ChildItem -Filter *.tgz | Select-Object -First 1
 tar -xvf $file.Name
 ```
 
 install
+
 ```powershell
 $APPLICATION_NAME = Get-ChildItem -Directory | Where-Object { $_.LastWriteTime -ge $file.LastWriteTime } | Select-Object -ExpandProperty Name
 helm upgrade --install $APPLICATION_NAME ./$APPLICATION_NAME --namespace $namespace --create-namespace --wait --timeout 5m --debug
 ```
 
 show logs
+
 ```powershell
 kubectl get pods -l app.kubernetes.io/name=$APPLICATION_NAME -n $namespace
 ```
+
 replace $POD with pods from the command above
+
 ```powershell
 kubectl logs $POD -n $namespace --all-containers
 ```
 
 test
+
 ```powershell
 helm test $APPLICATION_NAME --namespace workflow-hello-world --logs
 ```
 
 uninstall
+
 ```powershell
 helm uninstall $APPLICATION_NAME --namespace $namespace
 ```
 
 delete all
+
 ```powershell
 kubectl delete all --all -n $namespace
 ```
 
 create busybox sidecar
+
 ```powershell
 kubectl run busybox-test --rm -it --image=busybox:1.36 --namespace=$namespace --command -- sh
 ```

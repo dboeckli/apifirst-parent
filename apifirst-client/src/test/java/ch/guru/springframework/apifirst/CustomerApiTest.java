@@ -17,7 +17,7 @@ class CustomerApiTest {
     CustomerApi customerApiJpa;
 
     CustomerApi customerApiServer;
-    
+
     @BeforeEach
     void setup() {
         ApiClient apiClientJpa = new ApiClient(new RestTemplate());
@@ -27,8 +27,8 @@ class CustomerApiTest {
 
         apiClientJpa.setBasePath("http://localhost:" + 8082);
         customerApiServer = new CustomerApi(apiClientJpa);
-    }  
-    
+    }
+
     @Test
     void testListCustomersInJpaModule() {
         List<CustomerDto> customers = customerApiJpa.listCustomers();
@@ -40,4 +40,5 @@ class CustomerApiTest {
         List<CustomerDto> customers = customerApiJpa.listCustomers();
         assertThat(customers).isNotEmpty();
     }
+
 }

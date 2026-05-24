@@ -25,11 +25,9 @@ class ProductRepositoryIT {
         log.info("Testing image persistence...");
         Product product = productRepository.findAll().getFirst();
 
-        assertAll("Product Image Persistence",
-            () -> assertNotNull(product),
-            () -> assertNotNull(product.getImages()),
-            () -> assertFalse(product.getImages().isEmpty())
-        );
+        assertAll("Product Image Persistence", () -> assertNotNull(product), () -> assertNotNull(product.getImages()),
+                () -> assertFalse(product.getImages().isEmpty()));
 
     }
+
 }

@@ -53,6 +53,7 @@ public class Product {
 
     @Pattern(regexp = "^-?(?:0|[1-9]\\d{0,2}(?:,?\\d{3})*)(?:\\.\\d+)?$")
     private String price;
+
     @Pattern(regexp = "^-?(?:0|[1-9]\\d{0,2}(?:,?\\d{3})*)(?:\\.\\d+)?$")
     private String cost;
 
@@ -61,5 +62,5 @@ public class Product {
 
     @UpdateTimestamp
     private OffsetDateTime dateUpdated;
-    
+
 }

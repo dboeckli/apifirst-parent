@@ -18,15 +18,14 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
-    
+
     private final OrderRepository orderRepository;
+
     private final OrderMapper orderMapper;
-    
+
     @Override
     public List<OrderDto> listOrders() {
-        return orderRepository.findAll().stream()
-            .map(orderMapper::orderToDto)
-            .toList();
+        return orderRepository.findAll().stream().map(orderMapper::orderToDto).toList();
     }
 
     @Override
@@ -71,4 +70,5 @@ public class OrderServiceImpl implements OrderService {
             throw new NotFoundException("Order not found: " + orderId);
         });
     }
+
 }

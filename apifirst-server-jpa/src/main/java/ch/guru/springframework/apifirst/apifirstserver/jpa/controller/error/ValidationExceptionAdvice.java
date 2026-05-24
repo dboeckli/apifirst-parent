@@ -28,20 +28,18 @@ public class ValidationExceptionAdvice {
             .map(this::formatFieldError)
             .collect(Collectors.joining("; "));
 
-        ProblemDto body = new ProblemDto()
-            .type(URI.create("about:blank"))
+        ProblemDto body = new ProblemDto().type(URI.create("about:blank"))
             .title(status.getReasonPhrase())
             .status(status.value())
             .detail(detail.isBlank() ? "Validation failed" : detail)
             .instance(request.getRequestURI());
 
-        return ResponseEntity.status(status)
-            .contentType(PROBLEM_JSON)
-            .body(body);
+        return ResponseEntity.status(status).contentType(PROBLEM_JSON).body(body);
     }
 
     private String formatFieldError(FieldError fe) {
         String defaultMessage = fe.getDefaultMessage();
         return fe.getField() + ": " + (defaultMessage == null ? "invalid" : defaultMessage);
     }
+
 }

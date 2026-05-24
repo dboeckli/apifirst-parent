@@ -31,7 +31,7 @@ public class PaymentMethod {
     private Customer customer;
 
     @NotNull
-    @Size(min = 1,max = 100)
+    @Size(min = 1, max = 100)
     private String displayName;
 
     @NotNull
@@ -45,10 +45,11 @@ public class PaymentMethod {
 
     @NotNull
     private Integer cvv;
-    
+
     @CreationTimestamp
     private OffsetDateTime dateCreated;
-    
+
     @UpdateTimestamp
     private OffsetDateTime dateUpdated;
+
 }

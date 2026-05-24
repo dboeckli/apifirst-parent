@@ -17,21 +17,22 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @RequestMapping(CustomerController.CUSTOMER_BASE_URL)
 public class CustomerController {
-    
+
     public static final String CUSTOMER_BASE_URL = "/v1/customers";
-    
+
     private final CustomerService customerService;
-    
+
     @GetMapping
     public ResponseEntity<List<CustomerDto>> listCustomers() {
         return ResponseEntity.ok(customerService.listCustomers());
     }
 
     @PostMapping
-    public ResponseEntity<Void> saveNewCustomer(@RequestBody CustomerDto customer){
+    public ResponseEntity<Void> saveNewCustomer(@RequestBody CustomerDto customer) {
         CustomerDto savedCustomer = customerService.saveNewCustomer(customer);
 
-        // we are returning the location in the header location field of the HTTP response.
+        // we are returning the location in the header location field of the HTTP
+        // response.
         UriComponents uriComponents = UriComponentsBuilder.fromPath(CUSTOMER_BASE_URL + "/{customer_id}")
             .buildAndExpand(savedCustomer.getId());
 
@@ -39,28 +40,28 @@ public class CustomerController {
     }
 
     @PutMapping("/{customerId}")
-    public ResponseEntity<CustomerDto> updateCustomer(@PathVariable("customerId") UUID customerId, 
-                                                     @RequestBody CustomerDto updateCustomer) {
+    public ResponseEntity<CustomerDto> updateCustomer(@PathVariable("customerId") UUID customerId,
+            @RequestBody CustomerDto updateCustomer) {
         CustomerDto updatedCustomer = customerService.updateCustomer(customerId, updateCustomer);
         return ResponseEntity.ok(updatedCustomer);
     }
 
     @PatchMapping("/{customerId}")
     public ResponseEntity<CustomerDto> patchCustomer(@PathVariable("customerId") UUID customerId,
-                                                     @RequestBody CustomerPatchDto patchCustomer) {
+            @RequestBody CustomerPatchDto patchCustomer) {
         CustomerDto patchedCustomer = customerService.patchCustomer(customerId, patchCustomer);
         return ResponseEntity.ok(patchedCustomer);
     }
-    
+
     @DeleteMapping("/{customerId}")
     public ResponseEntity<Void> deleteCustomer(@PathVariable("customerId") UUID customerId) {
         customerService.deleteCustomer(customerId);
         return ResponseEntity.noContent().build();
     }
-    
+
     @GetMapping("/{customerId}")
     public ResponseEntity<CustomerDto> getCustomerById(@PathVariable("customerId") UUID customerId) {
         return ResponseEntity.ok(customerService.getCustomerById(customerId));
     }
-    
+
 }

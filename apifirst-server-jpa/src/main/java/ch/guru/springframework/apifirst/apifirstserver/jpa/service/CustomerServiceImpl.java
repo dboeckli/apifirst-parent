@@ -20,8 +20,9 @@ import java.util.UUID;
 public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
+
     private final OrderRepository orderRepository;
-    
+
     private final CustomerMapper customerMapper;
 
     @Transactional
@@ -43,7 +44,8 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     @Transactional
     public CustomerDto patchCustomer(UUID customerId, CustomerPatchDto patchCustomer) {
-        Customer existingCustomer = customerRepository.findById(customerId).orElseThrow(() -> new NotFoundException("Customer not found: " + customerId));
+        Customer existingCustomer = customerRepository.findById(customerId)
+            .orElseThrow(() -> new NotFoundException("Customer not found: " + customerId));
         customerMapper.patchCustomer(patchCustomer, existingCustomer);
 
         return customerMapper.customerToDto(customerRepository.save(existingCustomer));
@@ -64,14 +66,13 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public List<CustomerDto> listCustomers() {
-        return customerRepository.findAll().stream()
-            .map(customerMapper::customerToDto)
-            .toList();
+        return customerRepository.findAll().stream().map(customerMapper::customerToDto).toList();
     }
 
     @Override
     public CustomerDto getCustomerById(UUID customerId) {
-        return customerMapper.customerToDto(customerRepository.findById(customerId).orElseThrow(NotFoundException::new));
+        return customerMapper
+            .customerToDto(customerRepository.findById(customerId).orElseThrow(NotFoundException::new));
     }
-    
+
 }

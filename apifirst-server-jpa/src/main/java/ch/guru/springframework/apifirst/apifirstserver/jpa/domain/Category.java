@@ -19,6 +19,7 @@ import java.util.UUID;
 @Builder
 @Entity
 public class Category {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @JdbcTypeCode(SqlTypes.CHAR)
@@ -26,15 +27,15 @@ public class Category {
     private UUID id;
 
     @NotNull
-    @Size(min = 3,max = 25)
+    @Size(min = 3, max = 25)
     private String category;
-    
-    @NotNull 
-    @Size(min = 3,max = 255)
+
+    @NotNull
+    @Size(min = 3, max = 255)
     private String description;
-    
-    @NotNull 
-    @Size(min = 3,max = 25)
+
+    @NotNull
+    @Size(min = 3, max = 25)
     private String categoryCode;
 
     @ManyToMany(mappedBy = "categories")
@@ -42,5 +43,7 @@ public class Category {
     private List<Product> products;
 
     private OffsetDateTime dateCreated;
+
     private OffsetDateTime dateUpdated;
+
 }

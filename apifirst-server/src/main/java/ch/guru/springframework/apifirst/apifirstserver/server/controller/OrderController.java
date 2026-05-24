@@ -28,10 +28,11 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> saveNewOrder(@RequestBody OrderCreateDto orderCreate){
+    public ResponseEntity<Void> saveNewOrder(@RequestBody OrderCreateDto orderCreate) {
         OrderDto savedOrder = orderService.saveNewOrder(orderCreate);
 
-        // we are returning the location in the header location field of the HTTP response.
+        // we are returning the location in the header location field of the HTTP
+        // response.
         UriComponents uriComponents = UriComponentsBuilder.fromPath(ORDER_BASE_URL + "/{order_id}")
             .buildAndExpand(savedOrder.getId());
 
@@ -42,5 +43,5 @@ public class OrderController {
     public ResponseEntity<OrderDto> getOrderById(@PathVariable("orderId") UUID orderId) {
         return ResponseEntity.ok(orderService.getOrderById(orderId));
     }
-    
+
 }

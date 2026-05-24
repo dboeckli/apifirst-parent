@@ -63,20 +63,15 @@ class ProductControllerIT {
 
     @BeforeEach
     void setUp() {
-        objectMapper = objectMapper.rebuild()
-            .enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION)
-            .build();
+        objectMapper = objectMapper.rebuild().enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION).build();
 
-        mockMvc = MockMvcBuilders.webAppContextSetup(wac)
-            .addFilter(validationFilter)
-            .build();
+        mockMvc = MockMvcBuilders.webAppContextSetup(wac).addFilter(validationFilter).build();
     }
 
     @Test
     @Order(1)
     void testListProducts() throws Exception {
-        mockMvc.perform(get(ProductController.PRODUCT_BASE_URL)
-                .accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(ProductController.PRODUCT_BASE_URL).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.length()", greaterThan(0)))
             .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL));
@@ -87,7 +82,8 @@ class ProductControllerIT {
     void testGetProductById() throws Exception {
         Product testProduct = productRepository.findAll().getFirst();
 
-        mockMvc.perform(get(ProductController.PRODUCT_BASE_URL + "/{prodcutId}", testProduct.getId())
+        mockMvc
+            .perform(get(ProductController.PRODUCT_BASE_URL + "/{prodcutId}", testProduct.getId())
                 .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id").value(testProduct.getId().toString()))
@@ -97,7 +93,8 @@ class ProductControllerIT {
     @Test
     @org.junit.jupiter.api.Order(2)
     void testGetProductByIdNotFound() throws Exception {
-        mockMvc.perform(get(ProductController.PRODUCT_BASE_URL + "/{prodcutId}", UUID.randomUUID())
+        mockMvc
+            .perform(get(ProductController.PRODUCT_BASE_URL + "/{prodcutId}", UUID.randomUUID())
                 .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNotFound())
             .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL));
@@ -113,19 +110,13 @@ class ProductControllerIT {
             .cost("5.00")
             .price("8.95")
             .categories(List.of(categoryName))
-            .images(Collections.singletonList(ImageDto.builder()
-                .url("http://example.com/image.jpg")
-                .altText("Image Alt Text")
-                .build()))
-            .dimensions(DimensionsDto.builder()
-                .length(10)
-                .width(10)
-                .height(10)
-                .build())
+            .images(Collections.singletonList(
+                    ImageDto.builder().url("http://example.com/image.jpg").altText("Image Alt Text").build()))
+            .dimensions(DimensionsDto.builder().length(10).width(10).height(10).build())
             .build();
 
-        MvcResult result = mockMvc.perform(post(ProductController.PRODUCT_BASE_URL)
-                .contentType(MediaType.APPLICATION_JSON)
+        MvcResult result = mockMvc
+            .perform(post(ProductController.PRODUCT_BASE_URL).contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(newProduct)))
             .andExpect(status().isCreated())
             .andExpect(header().exists("Location"))
@@ -142,8 +133,7 @@ class ProductControllerIT {
         log.info("Extracted path: {}", path);
 
         // Perform GET request using the extracted path
-        mockMvc.perform(get(path)
-                .accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(path).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.description").value("New Product"))
             .andExpect(jsonPath("$.cost").value("5.00"))
@@ -160,7 +150,8 @@ class ProductControllerIT {
         ProductUpdateDto productUpdateDto = productMapper.productToUpdateDto(product);
         productUpdateDto.setDescription("Updated Description");
 
-        mockMvc.perform(put(ProductController.PRODUCT_BASE_URL + "/{productId}", product.getId())
+        mockMvc
+            .perform(put(ProductController.PRODUCT_BASE_URL + "/{productId}", product.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(productUpdateDto)))
             .andExpect(status().isOk())
@@ -176,7 +167,8 @@ class ProductControllerIT {
         ProductUpdateDto productUpdateDto = productMapper.productToUpdateDto(product);
         productUpdateDto.setDescription("Updated Description");
 
-        mockMvc.perform(put(ProductController.PRODUCT_BASE_URL + "/{productId}", UUID.randomUUID())
+        mockMvc
+            .perform(put(ProductController.PRODUCT_BASE_URL + "/{productId}", UUID.randomUUID())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(productUpdateDto)))
             .andExpect(status().isNotFound())
@@ -193,7 +185,8 @@ class ProductControllerIT {
 
         productPatchDto.setDescription("Updated Description");
 
-        mockMvc.perform(patch(ProductController.PRODUCT_BASE_URL + "/{productId}", product.getId())
+        mockMvc
+            .perform(patch(ProductController.PRODUCT_BASE_URL + "/{productId}", product.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(productPatchDto)))
             .andExpect(status().isOk())
@@ -211,7 +204,8 @@ class ProductControllerIT {
 
         productPatchDto.setDescription("Updated Description");
 
-        mockMvc.perform(patch(ProductController.PRODUCT_BASE_URL + "/{productId}", UUID.randomUUID())
+        mockMvc
+            .perform(patch(ProductController.PRODUCT_BASE_URL + "/{productId}", UUID.randomUUID())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(productPatchDto)))
             .andExpect(status().isNotFound())
@@ -252,15 +246,9 @@ class ProductControllerIT {
             .cost("5.00")
             .price("8.95")
             .categories(List.of("ELECTRONICS"))
-            .images(Collections.singletonList(ImageDto.builder()
-                .url("http://example.com/image.jpg")
-                .altText("Image Alt Text")
-                .build()))
-            .dimensions(DimensionsDto.builder()
-                .length(10)
-                .width(10)
-                .height(10)
-                .build())
+            .images(Collections.singletonList(
+                    ImageDto.builder().url("http://example.com/image.jpg").altText("Image Alt Text").build()))
+            .dimensions(DimensionsDto.builder().length(10).width(10).height(10).build())
             .build();
     }
 

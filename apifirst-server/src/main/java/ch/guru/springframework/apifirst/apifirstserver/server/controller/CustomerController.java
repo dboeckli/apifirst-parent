@@ -16,21 +16,22 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @RequestMapping(CustomerController.CUSTOMER_BASE_URL)
 public class CustomerController {
-    
+
     public static final String CUSTOMER_BASE_URL = "/v1/customers";
-    
+
     private final CustomerService customerService;
-    
+
     @GetMapping
     public ResponseEntity<List<CustomerDto>> listCustomers() {
         return ResponseEntity.ok(customerService.listCustomers());
     }
 
     @PostMapping
-    public ResponseEntity<Void> saveNewCustomer(@RequestBody CustomerDto customer){
+    public ResponseEntity<Void> saveNewCustomer(@RequestBody CustomerDto customer) {
         CustomerDto savedCustomer = customerService.saveNewCustomer(customer);
 
-        // we are returning the location in the header location field of the HTTP response.
+        // we are returning the location in the header location field of the HTTP
+        // response.
         UriComponents uriComponents = UriComponentsBuilder.fromPath(CUSTOMER_BASE_URL + "/{customer_id}")
             .buildAndExpand(savedCustomer.getId());
 
@@ -41,5 +42,5 @@ public class CustomerController {
     public ResponseEntity<CustomerDto> getCustomerById(@PathVariable("customerId") UUID customerId) {
         return ResponseEntity.ok(customerService.getCustomerById(customerId));
     }
-    
+
 }

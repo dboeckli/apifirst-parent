@@ -7,9 +7,10 @@ import org.mapstruct.Mapping;
 
 @Mapper
 public interface CategoryMapper {
-    
+
     CategoryDto categoryToCategoryDto(Category category);
 
     @Mapping(target = "products", ignore = true)
     Category categoryDtoToCategory(CategoryDto categoryDto);
+
 }

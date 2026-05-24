@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface CustomerService {
+
     List<CustomerDto> listCustomers();
 
     CustomerDto getCustomerById(UUID customerId);
@@ -18,4 +19,5 @@ public interface CustomerService {
     CustomerDto patchCustomer(UUID customerId, CustomerPatchDto patchCustomer);
 
     void deleteCustomer(UUID customerId);
+
 }

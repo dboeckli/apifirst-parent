@@ -38,20 +38,16 @@ class CategoryControllerIT {
 
     @BeforeEach
     void setUp() {
-        objectMapper = objectMapper.rebuild()
-            .enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION)
-            .build();
-        mockMvc = MockMvcBuilders.webAppContextSetup(wac)
-            .addFilter(validationFilter)
-            .build();
+        objectMapper = objectMapper.rebuild().enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION).build();
+        mockMvc = MockMvcBuilders.webAppContextSetup(wac).addFilter(validationFilter).build();
     }
 
     @Test
     void testListCategories() throws Exception {
-        mockMvc.perform(get(CategoryController.CATEGORY_BASE_URL)
-                .accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(CategoryController.CATEGORY_BASE_URL).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.length()", greaterThan(2)))
             .andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL));
     }
+
 }

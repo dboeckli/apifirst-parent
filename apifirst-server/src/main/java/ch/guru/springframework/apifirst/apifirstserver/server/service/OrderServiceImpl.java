@@ -15,13 +15,13 @@ import java.util.stream.StreamSupport;
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
-    
+
     private final OrderRepository orderRepository;
-    
+
     private final CustomerRepository customerRepository;
-    
+
     private final ProductRepository productRepository;
-    
+
     @Override
     public List<OrderDto> listOrders() {
         return StreamSupport.stream(orderRepository.findAll().spliterator(), false).toList();
@@ -44,30 +44,31 @@ public class OrderServiceImpl implements OrderService {
                 .billToAddress(orderCustomer.getBillToAddress())
                 .shipToAddress(orderCustomer.getShipToAddress())
                 .phone(orderCustomer.getPhone())
-                .selectedPaymentMethod(orderCustomer.getPaymentMethods().stream()
-                    .filter(paymentMethod -> paymentMethod.getId()
-                        .equals(orderCreate.getSelectPaymentMethodId()))
-                    .findFirst().orElseThrow())
+                .selectedPaymentMethod(orderCustomer.getPaymentMethods()
+                    .stream()
+                    .filter(paymentMethod -> paymentMethod.getId().equals(orderCreate.getSelectPaymentMethodId()))
+                    .findFirst()
+                    .orElseThrow())
                 .build())
             .orderStatus(OrderDto.OrderStatusEnum.NEW);
 
         List<OrderLineDto> orderLines = new ArrayList<>();
 
-        orderCreate.getOrderLines()
-            .forEach(orderLineCreate -> {
-                ProductDto product = productRepository.findById(orderLineCreate.getProductId()).orElseThrow();
+        orderCreate.getOrderLines().forEach(orderLineCreate -> {
+            ProductDto product = productRepository.findById(orderLineCreate.getProductId()).orElseThrow();
 
-                orderLines.add(OrderLineDto.builder()
-                    .product(OrderProductDto.builder()
-                        .id(product.getId())
-                        .description(product.getDescription())
-                        .price(product.getPrice())
-                        .build())
-                    .orderQuantity(orderLineCreate.getOrderQuantity())
-                    .shipQuantity(orderLineCreate.getOrderQuantity())
-                    .build());
-            });
+            orderLines.add(OrderLineDto.builder()
+                .product(OrderProductDto.builder()
+                    .id(product.getId())
+                    .description(product.getDescription())
+                    .price(product.getPrice())
+                    .build())
+                .orderQuantity(orderLineCreate.getOrderQuantity())
+                .shipQuantity(orderLineCreate.getOrderQuantity())
+                .build());
+        });
 
         return orderRepository.save(orderBuilder.orderLines(orderLines).build());
     }
+
 }

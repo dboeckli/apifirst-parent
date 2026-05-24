@@ -11,16 +11,19 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class Name {
-    @Size(min = 0,max = 25)
+
+    @Size(min = 0, max = 25)
     private String prefix;
 
     @NotNull
-    @Size(min = 1,max = 100)
+    @Size(min = 1, max = 100)
     private String firstName;
 
-    @NotNull @Size(min = 1,max = 100)
+    @NotNull
+    @Size(min = 1, max = 100)
     private String lastName;
 
-    @Size(min = 0,max = 25)
+    @Size(min = 0, max = 25)
     private String suffix;
+
 }

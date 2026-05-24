@@ -35,7 +35,7 @@ class CustomerControllerTest {
 
     @Autowired
     WebApplicationContext wac;
-    
+
     @Autowired
     Filter validationFilter;
 
@@ -46,16 +46,13 @@ class CustomerControllerTest {
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(wac)
-                .addFilter(validationFilter)
-                .build();
+        mockMvc = MockMvcBuilders.webAppContextSetup(wac).addFilter(validationFilter).build();
     }
 
     @Test
     @Order(1)
     void testListCustomers() throws Exception {
-        mockMvc.perform(get(CustomerController.CUSTOMER_BASE_URL)
-                .accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(CustomerController.CUSTOMER_BASE_URL).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.length()", greaterThan(0)));
     }
@@ -65,7 +62,8 @@ class CustomerControllerTest {
     void testGetCustomerById() throws Exception {
         CustomerDto testCustomer = customerRepository.findAll().iterator().next();
 
-        mockMvc.perform(get(CustomerController.CUSTOMER_BASE_URL + "/{customerId}", testCustomer.getId())
+        mockMvc
+            .perform(get(CustomerController.CUSTOMER_BASE_URL + "/{customerId}", testCustomer.getId())
                 .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id").value(testCustomer.getId().toString()));
@@ -80,19 +78,17 @@ class CustomerControllerTest {
             .state("ZH")
             .city("New Customer City")
             .build();
-        
+
         CustomerDto newCustomer = CustomerDto.builder()
-            .name(NameDto.builder()
-                .firstName("New Customer Firstname")
-                .lastName("New Customer Lastname")
-                .build())
+            .name(NameDto.builder().firstName("New Customer Firstname").lastName("New Customer Lastname").build())
             .email("newcustomer@example.com")
             .phone("1234567890")
             .billToAddress(address)
             .shipToAddress(address)
             .build();
 
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post(CustomerController.CUSTOMER_BASE_URL)
+        MvcResult result = mockMvc
+            .perform(MockMvcRequestBuilders.post(CustomerController.CUSTOMER_BASE_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(newCustomer)))
             .andExpect(status().isCreated())
@@ -108,9 +104,9 @@ class CustomerControllerTest {
         log.info("Extracted path: {}", path);
 
         // Perform GET request using the extracted path
-        mockMvc.perform(get(path)
-                .accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(path).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.email").value("newcustomer@example.com"));
     }
+
 }

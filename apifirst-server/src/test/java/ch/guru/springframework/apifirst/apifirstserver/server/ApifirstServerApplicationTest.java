@@ -18,10 +18,10 @@ class ApifirstServerApplicationTest {
 
     @Autowired
     private ApplicationContext applicationContext;
-    
+
     @Autowired
     CustomerRepository customerRepository;
-    
+
     @Autowired
     ProductRepository productRepository;
 

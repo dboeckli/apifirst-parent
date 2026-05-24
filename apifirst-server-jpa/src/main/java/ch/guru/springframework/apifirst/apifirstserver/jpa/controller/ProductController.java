@@ -30,25 +30,26 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> saveNewProduct(@RequestBody ProductCreateDto product){
+    public ResponseEntity<Void> saveNewProduct(@RequestBody ProductCreateDto product) {
         ProductDto savedProduct = productService.saveNewProduct(product);
 
-        // we are returning the location in the header location field of the HTTP response.
+        // we are returning the location in the header location field of the HTTP
+        // response.
         UriComponents uriComponents = UriComponentsBuilder.fromPath(PRODUCT_BASE_URL + "/{product_id}")
-                .buildAndExpand(savedProduct.getId());
+            .buildAndExpand(savedProduct.getId());
 
         return ResponseEntity.created(URI.create(uriComponents.getPath())).build();
     }
-    
+
     @PutMapping("/{productId}")
-    public ResponseEntity<ProductDto> updateProduct(@PathVariable("productId") UUID productId, 
-                                                    @RequestBody ProductUpdateDto updatedProduct) {
+    public ResponseEntity<ProductDto> updateProduct(@PathVariable("productId") UUID productId,
+            @RequestBody ProductUpdateDto updatedProduct) {
         return ResponseEntity.ok(productService.updateProduct(productId, updatedProduct));
     }
 
     @PatchMapping("/{productId}")
     public ResponseEntity<ProductDto> patchProduct(@PathVariable("productId") UUID productId,
-                                                   @RequestBody ProductPatchDto product){
+            @RequestBody ProductPatchDto product) {
         ProductDto savedProduct = productService.patchProduct(productId, product);
         return ResponseEntity.ok(savedProduct);
     }
@@ -58,13 +59,10 @@ public class ProductController {
         productService.deleteProduct(productId);
         return ResponseEntity.noContent().build();
     }
-    
 
     @GetMapping("/{productId}")
     public ResponseEntity<ProductDto> geProductById(@PathVariable("productId") UUID productId) {
         return ResponseEntity.ok(productService.getProductById(productId));
     }
-    
-    
-    
+
 }

@@ -4,13 +4,13 @@ server:
 spring:
   application:
     name: apifirst-server
-    
+
   docker:
     compose:
       enabled: false
       stop:
-        command: down  
-        
+        command: down
+
 management:
   health:
     readinessstate:

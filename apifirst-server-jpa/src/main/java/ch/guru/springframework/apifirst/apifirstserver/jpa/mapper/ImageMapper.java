@@ -21,5 +21,5 @@ public interface ImageMapper {
     @Mapping(target = "dateUpdated", ignore = true)
     @Mapping(target = "dateCreated", ignore = true)
     void updateImage(ProductImageUpdateDto imageUpdateDto, @MappingTarget Image productImage);
-    
+
 }

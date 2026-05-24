@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class OrderMapperDecorator implements OrderMapper {
-    
+
     @Autowired
     @Qualifier("delegate")
     private OrderMapper delegate;
@@ -34,18 +34,21 @@ public abstract class OrderMapperDecorator implements OrderMapper {
             target.setCustomer(customer);
         }
         if (orderPatchDto.getSelectPaymentMethodId() != null) {
-            PaymentMethod selectedPaymentMethod = target.getCustomer().getPaymentMethods().stream()
-                    .filter(pm -> pm.getId().equals(orderPatchDto.getSelectPaymentMethodId()))
-                    .findFirst()
-                    .orElseThrow();
+            PaymentMethod selectedPaymentMethod = target.getCustomer()
+                .getPaymentMethods()
+                .stream()
+                .filter(pm -> pm.getId().equals(orderPatchDto.getSelectPaymentMethodId()))
+                .findFirst()
+                .orElseThrow();
             target.setSelectedPaymentMethod(selectedPaymentMethod);
         }
         if (orderPatchDto.getOrderLines() != null && !orderPatchDto.getOrderLines().isEmpty()) {
             orderPatchDto.getOrderLines().forEach(orderLinePatchDto -> {
-                OrderLine existingOrderLine = target.getOrderLines().stream()
-                        .filter(ol -> ol.getId().equals(orderLinePatchDto.getId()))
-                        .findFirst()
-                        .orElseThrow();
+                OrderLine existingOrderLine = target.getOrderLines()
+                    .stream()
+                    .filter(ol -> ol.getId().equals(orderLinePatchDto.getId()))
+                    .findFirst()
+                    .orElseThrow();
 
                 if (orderLinePatchDto.getProductId() != null) {
                     Product product = productRepository.findById(orderLinePatchDto.getProductId()).orElseThrow();
@@ -67,18 +70,22 @@ public abstract class OrderMapperDecorator implements OrderMapper {
 
         order.setCustomer(orderCustomer);
 
-        PaymentMethod selectedPaymentMethod = order.getCustomer().getPaymentMethods().stream()
-                .filter(pm -> pm.getId().equals(orderDto.getSelectPaymentMethodId()))
-                .findFirst()
-                .orElseThrow();
+        PaymentMethod selectedPaymentMethod = order.getCustomer()
+            .getPaymentMethods()
+            .stream()
+            .filter(pm -> pm.getId().equals(orderDto.getSelectPaymentMethodId()))
+            .findFirst()
+            .orElseThrow();
 
         order.setSelectedPaymentMethod(selectedPaymentMethod);
 
         if (orderDto.getOrderLines() != null && !orderDto.getOrderLines().isEmpty()) {
             orderDto.getOrderLines().forEach(orderLineDto -> {
-                OrderLine existingOrderLine = order.getOrderLines().stream()
-                        .filter(ol -> ol.getId().equals(orderLineDto.getId()))
-                        .findFirst().orElseThrow();
+                OrderLine existingOrderLine = order.getOrderLines()
+                    .stream()
+                    .filter(ol -> ol.getId().equals(orderLineDto.getId()))
+                    .findFirst()
+                    .orElseThrow();
 
                 Product product = productRepository.findById(orderLineDto.getProductId()).orElseThrow();
 
@@ -96,10 +103,10 @@ public abstract class OrderMapperDecorator implements OrderMapper {
 
         order.getOrderLines().forEach(orderLine -> {
             OrderLineUpdateDto orderLineDto = OrderLineUpdateDto.builder()
-                    .id(orderLine.getId())
-                    .orderQuantity(orderLine.getOrderQuantity())
-                    .productId(orderLine.getProduct().getId())
-                    .build();
+                .id(orderLine.getId())
+                .orderQuantity(orderLine.getOrderQuantity())
+                .productId(orderLine.getProduct().getId())
+                .build();
             updatedOrderLines.add(orderLineDto);
         });
         orderUpdateDto.setOrderLines(updatedOrderLines);
@@ -110,27 +117,25 @@ public abstract class OrderMapperDecorator implements OrderMapper {
     public Order dtoToOrder(OrderCreateDto orderCreate) {
         Customer orderCustomer = customerRepository.findById(orderCreate.getCustomerId()).orElseThrow();
 
-        PaymentMethod selectedPaymentMethod = orderCustomer.getPaymentMethods().stream()
-                .filter(pm -> pm.getId().equals(orderCreate.getSelectPaymentMethodId()))
-                .findFirst()
-                .orElseThrow();
+        PaymentMethod selectedPaymentMethod = orderCustomer.getPaymentMethods()
+            .stream()
+            .filter(pm -> pm.getId().equals(orderCreate.getSelectPaymentMethodId()))
+            .findFirst()
+            .orElseThrow();
 
         Order.OrderBuilder builder = Order.builder()
-                .customer(orderCustomer)
-                .selectedPaymentMethod(selectedPaymentMethod)
-                .orderStatus(OrderStatusEnum.NEW);
+            .customer(orderCustomer)
+            .selectedPaymentMethod(selectedPaymentMethod)
+            .orderStatus(OrderStatusEnum.NEW);
 
         List<OrderLine> orderLines = new ArrayList<>();
 
-        orderCreate.getOrderLines()
-                .forEach(orderLineCreate -> {
-                    Product product = productRepository.findById(orderLineCreate.getProductId()).orElseThrow();
+        orderCreate.getOrderLines().forEach(orderLineCreate -> {
+            Product product = productRepository.findById(orderLineCreate.getProductId()).orElseThrow();
 
-                    orderLines.add(OrderLine.builder()
-                            .product(product)
-                            .orderQuantity(orderLineCreate.getOrderQuantity())
-                            .build());
-                });
+            orderLines
+                .add(OrderLine.builder().product(product).orderQuantity(orderLineCreate.getOrderQuantity()).build());
+        });
 
         Order order = builder.orderLines(orderLines).build();
         orderLines.forEach(orderLine -> orderLine.setOrder(order));
@@ -146,8 +151,9 @@ public abstract class OrderMapperDecorator implements OrderMapper {
     public OrderDto orderToDto(Order order) {
         OrderDto orderDto = delegate.orderToDto(order);
         orderDto.getCustomer()
-                .selectedPaymentMethod(paymentMethodMapper.paymentMethodToDto(order.getSelectedPaymentMethod()));
+            .selectedPaymentMethod(paymentMethodMapper.paymentMethodToDto(order.getSelectedPaymentMethod()));
 
         return orderDto;
     }
+
 }

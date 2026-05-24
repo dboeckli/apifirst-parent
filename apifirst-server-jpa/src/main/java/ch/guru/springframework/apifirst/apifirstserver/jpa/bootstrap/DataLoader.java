@@ -18,13 +18,16 @@ import java.util.List;
 public class DataLoader implements CommandLineRunner {
 
     private final CustomerRepository customerRepository;
+
     private final ProductRepository productRepository;
+
     private final OrderRepository orderRepository;
+
     private final CategoryRepository categoryRepository;
 
     @Override
     public void run(String... args) {
-        
+
         log.info("Loading initial data...");
 
         Category electronics = categoryRepository.save(Category.builder()
@@ -33,17 +36,11 @@ public class DataLoader implements CommandLineRunner {
             .categoryCode("ELECTRONICS")
             .build());
 
-        categoryRepository.save(Category.builder()
-            .category("Clothing")
-            .description("Clothing")
-            .categoryCode("CLOTHING")
-            .build());
+        categoryRepository
+            .save(Category.builder().category("Clothing").description("Clothing").categoryCode("CLOTHING").build());
 
-        Category dryGoods = categoryRepository.save(Category.builder()
-            .category("Dry Goods")
-            .description("Dry Goods")
-            .categoryCode("DRYGOODS")
-            .build());
+        Category dryGoods = categoryRepository
+            .save(Category.builder().category("Dry Goods").description("Dry Goods").categoryCode("DRYGOODS").build());
 
         Address address1 = Address.builder()
             .addressLine1("1234 W Some Street")
@@ -53,10 +50,7 @@ public class DataLoader implements CommandLineRunner {
             .build();
 
         Customer customer1 = Customer.builder()
-            .name(Name.builder()
-                .firstName("John")
-                .lastName("Thompson")
-                .build())
+            .name(Name.builder().firstName("John").lastName("Thompson").build())
             .billToAddress(address1)
             .shipToAddress(address1)
             .email("john@springframework.guru")
@@ -78,10 +72,7 @@ public class DataLoader implements CommandLineRunner {
             .build();
 
         Customer customer2 = Customer.builder()
-            .name(Name.builder()
-                .firstName("Jim")
-                .lastName("Smith")
-                .build())
+            .name(Name.builder().firstName("Jim").lastName("Smith").build())
             .billToAddress(address2)
             .shipToAddress(address2)
             .email("jim@springframework.guru")
@@ -103,15 +94,8 @@ public class DataLoader implements CommandLineRunner {
             .categories(List.of(dryGoods))
             .cost("12.99")
             .price("14.99")
-            .dimensions(Dimension.builder()
-                .height(1)
-                .length(2)
-                .width(3)
-                .build())
-            .images(List.of(Image.builder()
-                .url("http://example.com/image1")
-                .altText("Image 1")
-                .build()))
+            .dimensions(Dimension.builder().height(1).length(2).width(3).build())
+            .images(List.of(Image.builder().url("http://example.com/image1").altText("Image 1").build()))
             .build();
 
         Product product2 = Product.builder()
@@ -119,15 +103,8 @@ public class DataLoader implements CommandLineRunner {
             .categories(List.of(electronics))
             .cost("12.99")
             .price("14.99")
-            .dimensions(Dimension.builder()
-                .height(1)
-                .length(2)
-                .width(3)
-                .build())
-            .images(List.of(Image.builder()
-                .url("http://example.com/image2")
-                .altText("Image 2")
-                .build()))
+            .dimensions(Dimension.builder().height(1).length(2).width(3).build())
+            .images(List.of(Image.builder().url("http://example.com/image2").altText("Image 2").build()))
             .build();
 
         Product savedProduct1 = productRepository.save(product1);
@@ -138,16 +115,8 @@ public class DataLoader implements CommandLineRunner {
             .selectedPaymentMethod(savedCustomer1.getPaymentMethods().getFirst())
             .orderStatus(OrderStatusEnum.NEW)
             .shipmentInfo("shipment info")
-            .orderLines(List.of(OrderLine.builder()
-                    .product(product1)
-                    .orderQuantity(1)
-                    .shipQuantity(1)
-                    .build(),
-                OrderLine.builder()
-                    .product(savedProduct1)
-                    .orderQuantity(1)
-                    .shipQuantity(1)
-                    .build()))
+            .orderLines(List.of(OrderLine.builder().product(product1).orderQuantity(1).shipQuantity(1).build(),
+                    OrderLine.builder().product(savedProduct1).orderQuantity(1).shipQuantity(1).build()))
             .build();
         order1.getOrderLines().forEach(orderLine -> orderLine.setOrder(order1));
 
@@ -156,16 +125,8 @@ public class DataLoader implements CommandLineRunner {
             .selectedPaymentMethod(savedCustomer2.getPaymentMethods().getFirst())
             .orderStatus(OrderStatusEnum.NEW)
             .shipmentInfo("shipment info #2")
-            .orderLines(List.of(OrderLine.builder()
-                    .product(savedProduct2)
-                    .orderQuantity(1)
-                    .shipQuantity(1)
-                    .build(),
-                OrderLine.builder()
-                    .product(product2)
-                    .orderQuantity(1)
-                    .shipQuantity(1)
-                    .build()))
+            .orderLines(List.of(OrderLine.builder().product(savedProduct2).orderQuantity(1).shipQuantity(1).build(),
+                    OrderLine.builder().product(product2).orderQuantity(1).shipQuantity(1).build()))
             .build();
         order2.getOrderLines().forEach(orderLine -> orderLine.setOrder(order2));
 
@@ -174,4 +135,5 @@ public class DataLoader implements CommandLineRunner {
 
         log.info("Loading initial data done");
     }
+
 }

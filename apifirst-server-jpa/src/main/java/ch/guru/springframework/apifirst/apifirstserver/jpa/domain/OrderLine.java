@@ -37,10 +37,12 @@ public class OrderLine {
     private Product product;
 
     @NotNull
-    @Min(1L) @Max(10000L)
+    @Min(1L)
+    @Max(10000L)
     private Integer orderQuantity;
 
-    @Min(1L) @Max(10000L)
+    @Min(1L)
+    @Max(10000L)
     private Integer shipQuantity;
 
     @CreationTimestamp
@@ -48,4 +50,5 @@ public class OrderLine {
 
     @UpdateTimestamp
     private OffsetDateTime dateUpdated;
+
 }
