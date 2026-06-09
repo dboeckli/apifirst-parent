@@ -52,7 +52,7 @@ Diese generierten Dateien werden automatisch in den Klassenpfad des Projekts auf
 
 ## Deployment with Kubernetes
 
-first which projects you want to deploy
+first which projects you want to deploy.
 
 ```bash
 cd apifirst-server
