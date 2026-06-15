@@ -5,6 +5,10 @@ spring:
   application:
     name: apifirst-server
 
+  threads:
+    virtual:
+      enabled: true
+
   docker:
     compose:
       enabled: false
@@ -59,3 +63,7 @@ management:
       client:
         requests:
           name: http-client-requests
+
+logging:
+  level:
+    org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG

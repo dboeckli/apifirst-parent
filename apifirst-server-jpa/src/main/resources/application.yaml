@@ -5,6 +5,10 @@ spring:
   application:
     name: apifirst-server-jpa
 
+  threads:
+    virtual:
+      enabled: true
+
   datasource:
     hikari:
       jdbc-url: jdbc:h2:mem:db-for-apifirst-server-jpa;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
@@ -79,3 +83,7 @@ management:
       client:
         requests:
           name: http-client-requests
+
+logging:
+  level:
+    org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG
