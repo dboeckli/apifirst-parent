@@ -185,6 +185,7 @@
             </includes>
             <excludes>
               <exclude>target/**</exclude>
+              <exclude>**/target/**</exclude>
               <exclude>**/node_modules/**</exclude>
             </excludes>
             <sortPom>
@@ -198,6 +199,7 @@
             </includes>
             <excludes>
               <exclude>target/**</exclude>
+              <exclude>**/target/**</exclude>
               <exclude>**/node_modules/**</exclude>
             </excludes>
             <flexmark />
@@ -208,6 +210,7 @@
             </includes>
             <excludes>
               <exclude>target/**</exclude>
+              <exclude>**/target/**</exclude>
               <exclude>**/node_modules/**</exclude>
               <exclude>.github/**</exclude>
               <exclude>.idea/**</exclude>
@@ -227,6 +230,7 @@
             </includes>
             <excludes>
               <exclude>target/**</exclude>
+              <exclude>**/target/**</exclude>
               <exclude>**/node_modules/**</exclude>
             </excludes>
             <shfmt>
