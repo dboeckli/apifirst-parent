@@ -5,6 +5,10 @@ spring:
   application:
     name: apifirst-server
 
+  threads:
+    virtual:
+      enabled: true
+
   docker:
     compose:
       enabled: false
@@ -59,3 +63,28 @@ management:
       client:
         requests:
           name: http-client-requests
+
+  otlp:
+    metrics:
+      export:
+        enabled: false
+  tracing:
+    export:
+      otlp:
+        enabled: false
+    sampling:
+      probability: 1.0
+
+  logging:
+    export:
+      enabled: false
+      otlp:
+        enabled: false
+  simple:
+    metrics:
+      export:
+        enabled: false
+
+logging:
+  level:
+    org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG
