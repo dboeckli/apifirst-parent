@@ -50,7 +50,7 @@
     <repo.name>apifirst-parent</repo.name>
 
     <google.findbugs.version>3.0.2</google.findbugs.version>
-    <jackson-databind-nullable.version>0.2.10</jackson-databind-nullable.version>
+    <jackson-databind-nullable.version>0.2.11</jackson-databind-nullable.version>
     <openapi-generator-maven-plugin.version>7.24.0</openapi-generator-maven-plugin.version>
     <swagger.request.validator.version>3.0.0</swagger.request.validator.version>
 
