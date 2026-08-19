@@ -418,4 +418,34 @@
     </plugins>
   </build>
 
+  <profiles>
+    <profile>
+      <id>main-branch</id>
+      <activation>
+        <property>
+          <name>env.GITHUB_REF</name>
+          <value>refs/heads/main</value>
+        </property>
+      </activation>
+      <properties>
+        <docker.image.tag>snapshot</docker.image.tag>
+        <helm.snapshot.suffix>snapshot</helm.snapshot.suffix>
+      </properties>
+    </profile>
+
+    <profile>
+      <id>master-branch</id>
+      <activation>
+        <property>
+          <name>env.GITHUB_REF</name>
+          <value>refs/heads/master</value>
+        </property>
+      </activation>
+      <properties>
+        <docker.image.tag>snapshot</docker.image.tag>
+        <helm.snapshot.suffix>snapshot</helm.snapshot.suffix>
+      </properties>
+    </profile>
+  </profiles>
+
 </project>
