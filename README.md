@@ -191,19 +191,19 @@ sbx settings set kit.allowedSources --% "[\"docker.io/\",\"github.com/dboeckli/\
 Start a new sandbox:
 
 ```powershell
-sbx run opencode --name apifirst-parent --kit "git+https://github.com/dboeckli/opencode-sandbox-kit.git" "C:\development\projects\apifirst-parent"
+sbx run opencode --name apifirst-parent --kit "git+https://github.com/dboeckli/opencode-sandbox-kit.git#dir=opencode-agent" "C:\development\projects\apifirst-parent"
 ```
 
 Start the sandbox with Kubernetes support:
 
 ```powershell
-sbx run opencode --name apifirst-parent --kit "git+https://github.com/dboeckli/opencode-sandbox-kit.git" "C:\development\projects\apifirst-parent" "$env:USERPROFILE\.kube:ro"
+sbx run opencode --name apifirst-parent --kit "git+https://github.com/dboeckli/opencode-sandbox-kit.git#dir=opencode-agent" "C:\development\projects\apifirst-parent" "$env:USERPROFILE\.kube:ro"
 ```
 
 Apply the kit to an existing sandbox (restarts the sandbox, VM state is kept):
 
 ```powershell
-sbx kit add apifirst-parent "git+https://github.com/dboeckli/opencode-sandbox-kit.git"
+sbx kit add apifirst-parent "git+https://github.com/dboeckli/opencode-sandbox-kit.git#dir=opencode-agent"
 ```
 
 ### Start the app
