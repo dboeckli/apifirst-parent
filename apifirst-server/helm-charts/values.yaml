@@ -1,3 +1,6 @@
+nameOverride: "apifirst-server"
+fullnameOverride: "apifirst-server"
+
 global:
   timezone: Europe/Zurich
   timezonePath: /etc/localtime

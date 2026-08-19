@@ -44,7 +44,7 @@ jobs:
 
       - uses: mfinelli/setup-shfmt@v4
         with:
-          shfmt-version: 3.13.0
+          shfmt-version: 3.13.1
 
       - name: Use Node.js
         uses: actions/setup-node@v7
@@ -79,7 +79,7 @@ jobs:
 
       - uses: mfinelli/setup-shfmt@v4
         with:
-          shfmt-version: 3.13.0
+          shfmt-version: 3.13.1
 
       - name: Use Node.js
         uses: actions/setup-node@v7

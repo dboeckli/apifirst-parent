@@ -174,3 +174,44 @@ kubectl run busybox-test --rm -it --image=busybox:1.36 --namespace=$namespace --
 ```
 
 You can use the actuator rest call to verify via port 30081/30082
+
+## Sandbox (local dev environment)
+
+### Start the sandbox (opencode-sandbox-kit)
+
+The sandbox is provisioned by the opencode-sandbox-kit and runs as a Docker container. It mounts this
+repo, starts opencode, and connects the IntelliJ MCP server.
+
+Allow the kit source (GitHub without cloning):
+
+```powershell
+sbx settings set kit.allowedSources --% "[\"docker.io/\",\"github.com/dboeckli/\"]"
+```
+
+Start a new sandbox:
+
+```powershell
+sbx run opencode --name apifirst-parent --kit "git+https://github.com/dboeckli/opencode-sandbox-kit.git" "C:\development\projects\apifirst-parent"
+```
+
+Start the sandbox with Kubernetes support:
+
+```powershell
+sbx run opencode --name apifirst-parent --kit "git+https://github.com/dboeckli/opencode-sandbox-kit.git" "C:\development\projects\apifirst-parent" "$env:USERPROFILE\.kube:ro"
+```
+
+Apply the kit to an existing sandbox (restarts the sandbox, VM state is kept):
+
+```powershell
+sbx kit add apifirst-parent "git+https://github.com/dboeckli/opencode-sandbox-kit.git"
+```
+
+### Start the app
+
+Start one of the servers via the IntelliJ run configurations (`ApifirstServerApplication` for
+`apifirst-server`, `ApifirstServerApplication JPA` for `apifirst-server-jpa`) or via
+`./mvnw spring-boot:run` in the module directory.
+
+`apifirst-client` optionally uses `apifirst-client/compose.yaml` (busybox) when the
+`spring-boot-docker-compose` starter is active; the servers need no external services (in-memory /
+H2).
