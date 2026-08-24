@@ -72,6 +72,16 @@
             "enabled": false
         },
         {
+            "description": "Ignore inter-module Maven dependencies",
+            "matchDatasources": [
+                "maven"
+            ],
+            "matchPackageNames": [
+                "ch.guru.springframework.apifirst:*"
+            ],
+            "enabled": false
+        },
+        {
             "matchCategories": [
                 "docker"
             ],
