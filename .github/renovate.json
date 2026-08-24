@@ -25,6 +25,7 @@
         }
     },
     "enabledManagers": [
+        "maven",
         "maven-wrapper",
         "docker-compose",
         "kubernetes",
@@ -60,6 +61,26 @@
         ]
     },
     "packageRules": [
+        {
+            "description": "Ignore Maven APIs/SPIs",
+            "matchDatasources": [
+                "maven"
+            ],
+            "matchPackageNames": [
+                "org.apache.maven:*"
+            ],
+            "enabled": false
+        },
+        {
+            "description": "Ignore inter-module Maven dependencies",
+            "matchDatasources": [
+                "maven"
+            ],
+            "matchPackageNames": [
+                "ch.guru.springframework.apifirst:*"
+            ],
+            "enabled": false
+        },
         {
             "matchCategories": [
                 "docker"
