@@ -45,7 +45,7 @@ jobs:
           scope: '@dboeckli'
 
       - name: Set up java
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: 'liberica'
@@ -161,7 +161,7 @@ jobs:
           scope: '@dboeckli'
 
       - name: Set up java
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: 'liberica'
@@ -268,7 +268,7 @@ jobs:
           scope: '@dboeckli'
           
       - name: Set up java
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: 'liberica'
