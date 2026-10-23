@@ -2,7 +2,7 @@
 # Requires the JPA profile (local-with-jpa / k8s-wiht-jpa): PATCH and DELETE are not implemented in apifirst-server.
 
 ### 1) create a product (sets {{productId}} from the Location header)
-< ../../scripts/traceparent.js
+< ../scripts/traceparent.js
 POST http://localhost:{{application-port}}/v1/products
 Accept: application/json
 Content-Type: application/json
@@ -35,7 +35,7 @@ traceparent: 00-{{traceId}}-{{spanId}}-03
 %}
 
 ### 2) get product by id
-< ../../scripts/traceparent.js
+< ../scripts/traceparent.js
 GET http://localhost:{{application-port}}/v1/products/{{productId}}
 Accept: application/json
 Content-Type: application/json
@@ -51,7 +51,7 @@ traceparent: 00-{{traceId}}-{{spanId}}-03
 %}
 
 ### 3) patch only the description (other fields stay untouched)
-< ../../scripts/traceparent.js
+< ../scripts/traceparent.js
 PATCH http://localhost:{{application-port}}/v1/products/{{productId}}
 Accept: application/json
 Content-Type: application/json
@@ -74,7 +74,7 @@ traceparent: 00-{{traceId}}-{{spanId}}-03
 %}
 
 ### 4) delete the product by id (fresh product is not used in any order)
-< ../../scripts/traceparent.js
+< ../scripts/traceparent.js
 DELETE http://localhost:{{application-port}}/v1/products/{{productId}}
 Accept: application/json
 Content-Type: application/json
@@ -87,7 +87,7 @@ traceparent: 00-{{traceId}}-{{spanId}}-03
 %}
 
 ### 5) verify the product is gone
-< ../../scripts/traceparent.js
+< ../scripts/traceparent.js
 GET http://localhost:{{application-port}}/v1/products/{{productId}}
 Accept: application/json
 Content-Type: application/json

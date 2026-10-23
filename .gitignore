@@ -38,3 +38,5 @@ build/
 
 ### Local review diffs ###
 .review/
+
+/restRequest/bruno/tools/node_modules/

@@ -2,7 +2,7 @@
 # Requires the JPA profile (local-with-jpa / k8s-wiht-jpa): PATCH is not implemented in apifirst-server.
 
 ### 1) list customers and pick the first one (sets {{customerId}} and {{originalFirstName}})
-< ../../scripts/traceparent.js
+< ../scripts/traceparent.js
 GET http://localhost:{{application-port}}/v1/customers
 Accept: application/json
 Content-Type: application/json
@@ -100,7 +100,7 @@ traceparent: 00-{{traceId}}-{{spanId}}-03
 %}
 
 ### 4) restore the original firstName
-< ../../scripts/traceparent.js
+< ../scripts/traceparent.js
 PATCH http://localhost:{{application-port}}/v1/customers/{{customerId}}
 Accept: application/json
 Content-Type: application/json
