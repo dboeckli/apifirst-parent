@@ -1,0 +1,80 @@
+# Flow: createProduct -> getProductById -> listProducts — see restRequest/product-flow-create-get-list/product-flow-create-get-list.md
+
+### 1) create a product (sets {{productId}} from the Location header)
+< ../../scripts/traceparent.js
+POST http://localhost:{{application-port}}/v1/products
+Accept: application/json
+Content-Type: application/json
+traceparent: 00-{{traceId}}-{{spanId}}-03
+
+{
+  "description": "flow product",
+  "cost": "5.00",
+  "price": "8.95",
+  "categories": ["{{product-category-code}}"],
+  "dimensions": {
+    "length": 10,
+    "width": 10,
+    "height": 10
+  },
+  "images": [
+    {
+      "url": "http://example.com/flow-product.jpg",
+      "altText": "Flow product"
+    }
+  ]
+}
+
+> {%
+    const location = response.headers.valueOf("Location");
+    client.global.set("productId", location ? location.split("/").pop() : null);
+    client.log("Created product id: " + client.global.get("productId"));
+
+    client.test("createProduct returns 201", function () {
+        client.assert(response.status === 201, "expected 201 but got " + response.status);
+    });
+    client.test("createProduct returns a Location header", function () {
+        client.assert(!!location, "Location header missing");
+        client.assert(!!client.global.get("productId"), "productId missing in Location header");
+    });
+%}
+
+### 2) get product by id
+< ../../scripts/traceparent.js
+GET http://localhost:{{application-port}}/v1/products/{{productId}}
+Accept: application/json
+Content-Type: application/json
+traceparent: 00-{{traceId}}-{{spanId}}-03
+
+> {%
+    client.test("getProductById returns 200", function () {
+        client.assert(response.status === 200, "expected 200 but got " + response.status);
+    });
+    client.test("returned product id matches", function () {
+        client.assert(response.body.id === client.global.get("productId"), "productId mismatch");
+    });
+    client.test("returned product matches the payload", function () {
+        client.assert(response.body.description === "flow product", "unexpected description");
+        client.assert(response.body.price === "8.95", "unexpected price");
+    });
+%}
+
+### 3) list products and check the created product is included
+< ../../scripts/traceparent.js
+GET http://localhost:{{application-port}}/v1/products
+Accept: application/json
+Content-Type: application/json
+traceparent: 00-{{traceId}}-{{spanId}}-03
+
+> {%
+    const productId = client.global.get("productId");
+    client.test("listProducts returns 200", function () {
+        client.assert(response.status === 200, "expected 200 but got " + response.status);
+    });
+    client.test("listProducts contains the created product", function () {
+        client.assert(
+            response.body.some((product) => product.id === productId),
+            "product " + productId + " missing in list"
+        );
+    });
+%}

@@ -1,0 +1,125 @@
+# Flow: listCustomers -> getCustomerById -> patchCustomerById -> patchCustomerById (restore) — see restRequest/customer-flow-list-get-patch/customer-flow-list-get-patch.md
+# Requires the JPA profile (local-with-jpa / k8s-wiht-jpa): PATCH is not implemented in apifirst-server.
+
+### 1) list customers and pick the first one (sets {{customerId}} and {{originalFirstName}})
+< ../../scripts/traceparent.js
+GET http://localhost:{{application-port}}/v1/customers
+Accept: application/json
+Content-Type: application/json
+traceparent: 00-{{traceId}}-{{spanId}}-03
+
+> {%
+    const customers = response.body || [];
+    const customer = customers[0];
+
+    client.global.set("customerId", customer ? customer.id : null);
+    client.global.set("originalFirstName", customer ? customer.name.firstName : null);
+    client.log("Picked customer id: " + client.global.get("customerId"));
+
+    client.test("listCustomers returns 200", function () {
+        client.assert(response.status === 200, "expected 200 but got " + response.status);
+    });
+    client.test("listCustomers is not empty", function () {
+        client.assert(customers.length > 0, "no customers found - create one first");
+    });
+%}
+
+### 2) get the customer by id
+< {%
+    function randomHex(length) {
+        let result = "";
+        const chars = "0123456789abcdef";
+        for (let i = 0; i < length; i++) {
+            result += chars[Math.floor(Math.random() * chars.length)];
+        }
+        return result;
+    }
+    request.variables.set("traceId", randomHex(32));
+    request.variables.set("spanId", randomHex(16));
+
+    const customerId = client.global.get("customerId");
+    client.log("getCustomerById -> customerId=" + customerId);
+    if (!customerId) {
+        throw new Error("customerId is not set - run 'list customers' first");
+    }
+%}
+GET http://localhost:{{application-port}}/v1/customers/{{customerId}}
+Accept: application/json
+Content-Type: application/json
+traceparent: 00-{{traceId}}-{{spanId}}-03
+
+> {%
+    client.test("getCustomerById returns 200", function () {
+        client.assert(response.status === 200, "expected 200 but got " + response.status);
+    });
+    client.test("returned customer id matches", function () {
+        client.assert(response.body.id === client.global.get("customerId"), "customerId mismatch");
+    });
+%}
+
+### 3) patch only firstName (lastName stays untouched)
+< {%
+    function randomHex(length) {
+        let result = "";
+        const chars = "0123456789abcdef";
+        for (let i = 0; i < length; i++) {
+            result += chars[Math.floor(Math.random() * chars.length)];
+        }
+        return result;
+    }
+    request.variables.set("traceId", randomHex(32));
+    request.variables.set("spanId", randomHex(16));
+
+    const customerId = client.global.get("customerId");
+    client.log("patchCustomerById -> customerId=" + customerId);
+    if (!customerId) {
+        throw new Error("customerId is not set - run 'list customers' first");
+    }
+%}
+PATCH http://localhost:{{application-port}}/v1/customers/{{customerId}}
+Accept: application/json
+Content-Type: application/json
+traceparent: 00-{{traceId}}-{{spanId}}-03
+
+{
+  "name": {
+    "firstName": "patched"
+  }
+}
+
+> {%
+    client.global.set("patchedFirstName", response.body ? response.body.name.firstName : null);
+
+    client.test("patchCustomerById returns 200", function () {
+        client.assert(response.status === 200, "expected 200 but got " + response.status);
+    });
+    client.test("firstName was patched", function () {
+        client.assert(response.body.name.firstName === "patched", "firstName not patched");
+        client.assert(response.body.name.lastName, "lastName was removed by the patch");
+    });
+%}
+
+### 4) restore the original firstName
+< ../../scripts/traceparent.js
+PATCH http://localhost:{{application-port}}/v1/customers/{{customerId}}
+Accept: application/json
+Content-Type: application/json
+traceparent: 00-{{traceId}}-{{spanId}}-03
+
+{
+  "name": {
+    "firstName": "{{originalFirstName}}"
+  }
+}
+
+> {%
+    client.test("restore returns 200", function () {
+        client.assert(response.status === 200, "expected 200 but got " + response.status);
+    });
+    client.test("original firstName is restored", function () {
+        client.assert(
+            response.body.name.firstName === client.global.get("originalFirstName"),
+            "firstName was not restored"
+        );
+    });
+%}
