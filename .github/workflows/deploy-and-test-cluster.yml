@@ -1,14 +1,10 @@
 name: Deploy and Test Cluster
 run-name: >
-  ${{ github.workflow }} ${{inputs.application-name}}: ${{ github.event_name }} for ${{ github.ref_name }} by @${{ github.actor }}
+  ${{ github.workflow }} ${{ inputs.version }}: ${{ github.event_name }} for ${{ github.ref_name }} by @${{ github.actor }}
 
 on:
   workflow_dispatch:
     inputs:
-      application-name:
-        type: string
-        description: 'Application Name'
-        required: true
       version:
         type: string
         description: 'Version to deploy'
@@ -16,10 +12,6 @@ on:
       helm-chart-version:
         type: string
         description: 'Helm Chart Version'
-        required: true
-      namespace:
-        type: string
-        description: 'Namespace'
         required: true
       deployed-by-build:
         type: string
@@ -36,6 +28,15 @@ jobs:
   deploy-app-with-helm:
     runs-on: ubuntu-latest
 
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - application-name: apifirst-server
+            namespace: apifirst-server
+          - application-name: apifirst-server-jpa
+            namespace: apifirst-server-jpa
+
     permissions:
       contents: read
       checks: write
@@ -44,10 +45,10 @@ jobs:
     steps:
       - name: Show Version
         env:
-          APPLICATION_NAME: ${{ inputs.application-name }}
+          APPLICATION_NAME: ${{ matrix.application-name }}
           APP_VERSION: ${{ inputs.version }}
           HELM_CHART_VERSION: ${{ inputs.helm-chart-version }}
-          NAMESPACE: ${{ inputs.namespace }}
+          NAMESPACE: ${{ matrix.namespace }}
           DEPLOYED_BY_WORKFLOW: ${{ inputs.deployed-by-workflow }}
           DEPLOYED_BY_BUILD: ${{ inputs.deployed-by-build }}
         run: |
@@ -64,7 +65,7 @@ jobs:
         env:
           HELM_CHART_VERSION: ${{ inputs.helm-chart-version }}
           DOCKER_USER: ${{ vars.DOCKER_USER }}
-          APPLICATION_NAME: ${{ inputs.application-name }}
+          APPLICATION_NAME: ${{ matrix.application-name }}
         run: |
           echo "Pulling Helm Chart Version: $HELM_CHART_VERSION"
           helm pull oci://registry-1.docker.io/$DOCKER_USER/$APPLICATION_NAME-chart --version "$HELM_CHART_VERSION"
@@ -73,8 +74,8 @@ jobs:
       - name: Deploy application with Helm
         env:
           APP_VERSION: ${{ inputs.helm-chart-version }}
-          APPLICATION_NAME: ${{ inputs.application-name }}
-          NAMESPACE: ${{ inputs.namespace }}
+          APPLICATION_NAME: ${{ matrix.application-name }}
+          NAMESPACE: ${{ matrix.namespace }}
         run: |
           # Install/upgrade the Helm chart
           echo "Deploying Application: $APP_VERSION"
@@ -87,8 +88,8 @@ jobs:
       - name: Wait for Pods to be ready
         env:
           APP_VERSION: ${{ inputs.helm-chart-version }}
-          NAMESPACE: ${{ inputs.namespace }}
-          APPLICATION_NAME: ${{ inputs.application-name }}
+          NAMESPACE: ${{ matrix.namespace }}
+          APPLICATION_NAME: ${{ matrix.application-name }}
           DEPLOYED_BY_WORKFLOW: ${{ inputs.deployed-by-workflow }}
           DEPLOYED_BY_BUILD: ${{ inputs.deployed-by-build }}
           SERVER_URL: ${{ github.server_url }}
@@ -108,8 +109,8 @@ jobs:
       - name: Test Application
         env:
           APP_VERSION: ${{ inputs.helm-chart-version }}
-          APPLICATION_NAME: ${{ inputs.application-name }}
-          NAMESPACE: ${{ inputs.namespace }}
+          APPLICATION_NAME: ${{ matrix.application-name }}
+          NAMESPACE: ${{ matrix.namespace }}
         run: |
           echo "Testing Application $APPLICATION_NAME: $APP_VERSION"
           TEST_OUTPUT=$(helm test $APPLICATION_NAME --namespace ${NAMESPACE} --logs)
@@ -162,8 +163,8 @@ jobs:
       - name: Run Bruno flows
         working-directory: restRequest/bruno
         env:
-          APPLICATION_NAME: ${{ inputs.application-name }}
-          NAMESPACE: ${{ inputs.namespace }}
+          APPLICATION_NAME: ${{ matrix.application-name }}
+          NAMESPACE: ${{ matrix.namespace }}
         run: |
           set -o pipefail
           set -o nounset
@@ -211,7 +212,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
-          name: bruno-reports-${{ inputs.application-name }}
+          name: bruno-reports-${{ matrix.application-name }}
           path: bru-reports/
           if-no-files-found: warn
 
@@ -220,15 +221,15 @@ jobs:
         uses: EnricoMi/publish-unit-test-result-action@7622c5bf3d112a72ab4fa3951c2aa5723d8ab92d
         with:
           files: bru-reports/TEST-bruno-*.xml
-          check_name: Bruno API flows (${{ inputs.application-name }})
+          check_name: Bruno API flows (${{ matrix.application-name }})
           comment_mode: "off"
           fail_on: test failures
           action_fail: true
 
       - name: Display Deployment Information
         env:
-          NAMESPACE: ${{ inputs.namespace }}
-          APPLICATION_NAME: ${{ inputs.application-name }}
+          NAMESPACE: ${{ matrix.namespace }}
+          APPLICATION_NAME: ${{ matrix.application-name }}
         if: always()
         run: |
           echo "Deployment Information:"
@@ -276,6 +277,20 @@ jobs:
       cancel-in-progress: false
 
     steps:
+      - name: Download Bruno reports
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
+        with:
+          pattern: bruno-reports-*
+          path: _site/reports
+          merge-multiple: false
+
+      - name: Normalize report directories
+        run: |
+          shopt -s nullglob
+          for dir in _site/reports/bruno-reports-*; do
+            mv "$dir" "${dir#_site/reports/bruno-reports-}"
+          done
+
       - name: Aggregate reports and OpenAPI spec from this commit
         id: aggregate
         env:
@@ -287,88 +302,14 @@ jobs:
           set -o errexit
           set -o pipefail
 
-          workflow_file="deploy-and-test-cluster.yml"
-          artifact_prefix="bruno-reports-"
           site="_site"
-          runs_file=$(mktemp)
-          run_ids_file=$(mktemp)
-          artifacts_file=$(mktemp)
-
-          rm -rf "$site"
           mkdir -p "$site/reports"
 
-          list_runs() {
-            gh api "repos/$REPO/actions/workflows/$workflow_file/runs?head_sha=$HEAD_SHA&per_page=100" \
-              --jq '.workflow_runs'
-          }
-
-          # Both modules are dispatched as separate workflow runs for the same
-          # commit and upload their Bruno reports at the end of that job. Wait
-          # until every run's deploy job has finished so this page contains both
-          # modules. Only job conclusions are checked: this run itself is still
-          # in progress because of this publish job.
-          all_deploys_finished() {
-            local run_id conclusion
-            for run_id in $(jq -r '.[].id' "$runs_file"); do
-              conclusion=$(gh api "repos/$REPO/actions/runs/$run_id/jobs?per_page=100" \
-                --jq '[.jobs[] | select(.name == "deploy-app-with-helm")][0].conclusion // empty')
-              if [ -z "$conclusion" ]; then
-                return 1
-              fi
-            done
-            return 0
-          }
-
-          stable_checks=0
-          deadline=$((SECONDS + 600))
-          while true; do
-            list_runs > "$runs_file"
-            total_runs=$(jq 'length' < "$runs_file")
-
-            if [ "$total_runs" -gt 0 ] && all_deploys_finished; then
-              stable_checks=$((stable_checks + 1))
-              if [ "$stable_checks" -ge 3 ]; then
-                break
-              fi
-            else
-              stable_checks=0
-            fi
-
-            if [ "$SECONDS" -ge "$deadline" ]; then
-              echo "::error::Timed out waiting for the deploy jobs of $HEAD_SHA to complete"
-              jq -r '.[] | "\(.id) \(.status) \(.conclusion) \(.html_url)"' < "$runs_file"
-              exit 1
-            fi
-            sleep 10
-          done
-
-          # Newest run first; keep the first artifact per application name so
-          # re-runs do not add duplicate reports for the same module.
-          jq -r 'sort_by(.created_at) | reverse | .[].id' < "$runs_file" > "$run_ids_file"
-          : > "$artifacts_file"
-          while IFS= read -r run_id; do
-            gh api "repos/$REPO/actions/runs/$run_id/artifacts?per_page=100" \
-              | jq -r --arg run_id "$run_id" \
-                '.artifacts[]
-                 | select(.name | startswith("'"$artifact_prefix"'"))
-                 | [.name, $run_id]
-                 | @tsv' \
-              >> "$artifacts_file"
-          done < "$run_ids_file"
-
-          awk '!seen[$1]++' "$artifacts_file" > "$artifacts_file.unique"
-
           applications=""
-          while IFS=$'\t' read -r artifact_name run_id; do
-            [ -n "$artifact_name" ] || continue
-            application="${artifact_name#"$artifact_prefix"}"
-            echo "Downloading $artifact_name from run $run_id"
-            if ! gh run download "$run_id" --repo "$REPO" --name "$artifact_name" --dir "$site/reports/$application"; then
-              echo "::warning::Could not download $artifact_name from run $run_id (expired?)"
-              continue
-            fi
-            applications="$applications $application"
-          done < "$artifacts_file.unique"
+          for report_dir in "$site/reports"/*; do
+            [ -d "$report_dir" ] || continue
+            applications="$applications $(basename "$report_dir")"
+          done
 
           # The OpenAPI spec is attached to the Maven build artifact of the same
           # commit, so it does not have to be rebuilt here.
