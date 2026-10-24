@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Service
@@ -48,15 +47,6 @@ public class ProductServiceImpl implements ProductService {
             .categories(categories)
             .build();
         return productRepository.save(product);
-    }
-
-    private List<CategoryDto> mapCategories(List<String> categoryNames) {
-        if (categoryNames == null) {
-            return new ArrayList<>();
-        }
-        return categoryNames.stream()
-            .map(name -> CategoryDto.builder().category(name).build())
-            .collect(Collectors.toList());
     }
 
 }

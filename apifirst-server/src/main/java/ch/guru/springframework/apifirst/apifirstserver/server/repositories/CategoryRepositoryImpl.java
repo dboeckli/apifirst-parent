@@ -4,11 +4,11 @@ import ch.guru.springframework.apifirst.model.CategoryDto;
 import org.springframework.stereotype.Repository;
 
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Repository
@@ -27,8 +27,8 @@ public class CategoryRepositoryImpl implements CategoryRepository {
         CategoryDto category = builder1.category(entity.getCategory())
             .categoryCode(entity.getCategoryCode())
             .description(entity.getDescription())
-            .dateCreated(OffsetDateTime.now())
-            .dateUpdated(OffsetDateTime.now())
+            .dateCreated(OffsetDateTime.now(ZoneOffset.UTC))
+            .dateUpdated(OffsetDateTime.now(ZoneOffset.UTC))
             .build();
 
         entityMap.put(id, category);
@@ -38,12 +38,12 @@ public class CategoryRepositoryImpl implements CategoryRepository {
 
     @Override
     public <S extends CategoryDto> Iterable<S> saveAll(Iterable<S> entities) {
-        return StreamSupport.stream(entities.spliterator(), false).map(this::save).collect(Collectors.toList());
+        return StreamSupport.stream(entities.spliterator(), false).map(this::save).toList();
     }
 
     @Override
     public Optional<CategoryDto> findById(UUID uuid) {
-        return Optional.of(entityMap.get(uuid));
+        return Optional.ofNullable(entityMap.get(uuid));
     }
 
     @Override
@@ -62,7 +62,7 @@ public class CategoryRepositoryImpl implements CategoryRepository {
             .map(this::findById)
             .filter(Optional::isPresent)
             .map(Optional::get)
-            .collect(Collectors.toList());
+            .toList();
     }
 
     @Override

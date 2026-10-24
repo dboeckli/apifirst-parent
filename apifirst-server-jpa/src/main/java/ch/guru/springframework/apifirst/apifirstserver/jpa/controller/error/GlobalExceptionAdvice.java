@@ -17,11 +17,13 @@ public class GlobalExceptionAdvice {
 
     private static final MediaType PROBLEM_JSON = MediaType.parseMediaType("application/problem+json");
 
+    private static final URI ABOUT_BLANK = URI.create("about:blank");
+
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ProblemDto> handleNotFound(NotFoundException ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.NOT_FOUND;
 
-        ProblemDto body = new ProblemDto().type(URI.create("about:blank"))
+        ProblemDto body = new ProblemDto().type(ABOUT_BLANK)
             .title(status.getReasonPhrase())
             .status(status.value())
             .detail(safeMessage(ex, "Not Found"))
@@ -34,7 +36,7 @@ public class GlobalExceptionAdvice {
     public ResponseEntity<ProblemDto> handleConflict(ConflictException ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.CONFLICT;
 
-        ProblemDto body = new ProblemDto().type(URI.create("about:blank"))
+        ProblemDto body = new ProblemDto().type(ABOUT_BLANK)
             .title(status.getReasonPhrase())
             .status(status.value())
             .detail(safeMessage(ex, "Conflict"))
@@ -47,7 +49,7 @@ public class GlobalExceptionAdvice {
     public ResponseEntity<ProblemDto> handleBadRequest(IllegalArgumentException ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
-        ProblemDto body = new ProblemDto().type(URI.create("about:blank"))
+        ProblemDto body = new ProblemDto().type(ABOUT_BLANK)
             .title(status.getReasonPhrase())
             .status(status.value())
             .detail(safeMessage(ex, "Bad Request"))
@@ -60,7 +62,7 @@ public class GlobalExceptionAdvice {
     public ResponseEntity<ProblemDto> handleUnexpected(Exception ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
 
-        ProblemDto body = new ProblemDto().type(URI.create("about:blank"))
+        ProblemDto body = new ProblemDto().type(ABOUT_BLANK)
             .title(status.getReasonPhrase())
             .status(status.value())
             .detail(safeMessage(ex, "Unexpected error"))

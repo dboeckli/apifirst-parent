@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("java:S6813")
 public abstract class ProductMapperDecorator implements ProductMapper {
 
     @Autowired
@@ -105,17 +106,13 @@ public abstract class ProductMapperDecorator implements ProductMapper {
 
     @Override
     public ProductPatchDto productToPatchDto(Product product) {
-        if (product != null) {
-            if (product.getCategories() != null) {
-                List<String> categoryCodes = new ArrayList<>();
+        if (product != null && product.getCategories() != null) {
+            List<String> categoryCodes = new ArrayList<>();
 
-                product.getCategories().forEach(category -> {
-                    categoryCodes.add(category.getCategoryCode());
-                });
-                ProductPatchDto productPatchDto = productMapperDelegate.productToPatchDto(product);
-                productPatchDto.setCategories(categoryCodes);
-                return productPatchDto;
-            }
+            product.getCategories().forEach(category -> categoryCodes.add(category.getCategoryCode()));
+            ProductPatchDto productPatchDto = productMapperDelegate.productToPatchDto(product);
+            productPatchDto.setCategories(categoryCodes);
+            return productPatchDto;
         }
         return null;
     }

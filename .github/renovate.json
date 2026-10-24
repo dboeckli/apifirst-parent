@@ -13,7 +13,8 @@
         "**/vendor/**",
         "**/examples/**",
         "**/__tests__/**",
-        "**/__fixtures__/**"
+        "**/__fixtures__/**",
+        "**/restRequest/bruno/tools/package.json"
     ],
     "customDatasources": {
         "custom_java": {
@@ -27,12 +28,14 @@
     "enabledManagers": [
         "maven",
         "maven-wrapper",
+        "npm",
         "docker-compose",
         "kubernetes",
         "helm-values",
         "helmv3",
         "custom.regex"
     ],
+    "npmrc": "@dboeckli:registry=https://npm.pkg.github.com/",
     "maven-wrapper": {
         "managerFilePatterns": [
             "/(^|/)mvnw$/",
@@ -80,6 +83,20 @@
                 "ch.guru.springframework.apifirst:*"
             ],
             "enabled": false
+        },
+        {
+            "description": "Track @dboeckli/apifirst-sb pre-release builds within 1.x",
+            "matchDatasources": [
+                "npm"
+            ],
+            "matchPackageNames": [
+                "@dboeckli/apifirst-sb"
+            ],
+            "allowedVersions": "/^1\\./",
+            "ignoreUnstable": false,
+            "respectLatest": false,
+            "rangeStrategy": "pin",
+            "automerge": false
         },
         {
             "matchCategories": [

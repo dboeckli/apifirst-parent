@@ -23,6 +23,8 @@ import java.util.UUID;
 @Entity
 public class Product {
 
+    private static final String AMOUNT_PATTERN = "^-?(?:0|[1-9]\\d{0,2})(?:,?\\d{3})*+(?:\\.\\d++)?$";
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @JdbcTypeCode(SqlTypes.CHAR)
@@ -51,10 +53,10 @@ public class Product {
         }
     }
 
-    @Pattern(regexp = "^-?(?:0|[1-9]\\d{0,2}(?:,?\\d{3})*)(?:\\.\\d+)?$")
+    @Pattern(regexp = AMOUNT_PATTERN)
     private String price;
 
-    @Pattern(regexp = "^-?(?:0|[1-9]\\d{0,2}(?:,?\\d{3})*)(?:\\.\\d+)?$")
+    @Pattern(regexp = AMOUNT_PATTERN)
     private String cost;
 
     @CreationTimestamp

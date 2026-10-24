@@ -40,7 +40,7 @@ public class OpenApiValidationConfig {
     // See the controller tests where we
     // added the validation explicitly at the end of each test:
     // andExpect(openApi().isValid(OPENAPI_SPECIFICATION_URL))
-    public WebMvcConfigurer openAPIValidationInterceptor() throws IOException {
+    public WebMvcConfigurer openAPIValidationInterceptor() {
         OpenApiInteractionValidator validator = OpenApiInteractionValidator
             .createForSpecificationUrl(OPENAPI_SPECIFICATION_URL)
             .build();
