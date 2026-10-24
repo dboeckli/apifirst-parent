@@ -7,11 +7,11 @@ import ch.guru.springframework.apifirst.model.ProductDto;
 import org.springframework.stereotype.Repository;
 
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Repository
@@ -28,8 +28,8 @@ public class ProductRepositoryImpl implements ProductRepository {
             .description(entity.getDescription())
             .cost(entity.getCost())
             .price(entity.getPrice())
-            .dateCreated(OffsetDateTime.now())
-            .dateUpdated(OffsetDateTime.now());
+            .dateCreated(OffsetDateTime.now(ZoneOffset.UTC))
+            .dateUpdated(OffsetDateTime.now(ZoneOffset.UTC));
 
         if (entity.getCategories() != null) {
             builder.categories(entity.getCategories().stream().map(category -> {
@@ -38,10 +38,10 @@ public class ProductRepositoryImpl implements ProductRepository {
                     .category(category.getCategory())
                     .categoryCode(category.getCategoryCode())
                     .description(category.getDescription())
-                    .dateCreated(OffsetDateTime.now())
-                    .dateUpdated(OffsetDateTime.now())
+                    .dateCreated(OffsetDateTime.now(ZoneOffset.UTC))
+                    .dateUpdated(OffsetDateTime.now(ZoneOffset.UTC))
                     .build();
-            }).collect(Collectors.toList()));
+            }).toList());
         }
 
         if (entity.getImages() != null) {
@@ -50,10 +50,10 @@ public class ProductRepositoryImpl implements ProductRepository {
                     .id(UUID.randomUUID())
                     .url(image.getUrl())
                     .altText(image.getAltText())
-                    .dateCreated(OffsetDateTime.now())
-                    .dateUpdated(OffsetDateTime.now())
+                    .dateCreated(OffsetDateTime.now(ZoneOffset.UTC))
+                    .dateUpdated(OffsetDateTime.now(ZoneOffset.UTC))
                     .build();
-            }).collect(Collectors.toList()));
+            }).toList());
         }
 
         if (entity.getDimensions() != null) {
@@ -72,12 +72,12 @@ public class ProductRepositoryImpl implements ProductRepository {
 
     @Override
     public <S extends ProductDto> Iterable<S> saveAll(Iterable<S> entities) {
-        return StreamSupport.stream(entities.spliterator(), false).map(this::save).collect(Collectors.toList());
+        return StreamSupport.stream(entities.spliterator(), false).map(this::save).toList();
     }
 
     @Override
     public Optional<ProductDto> findById(UUID uuid) {
-        return Optional.of(entityMap.get(uuid));
+        return Optional.ofNullable(entityMap.get(uuid));
     }
 
     @Override
@@ -96,7 +96,7 @@ public class ProductRepositoryImpl implements ProductRepository {
             .map(this::findById)
             .filter(Optional::isPresent)
             .map(Optional::get)
-            .collect(Collectors.toList());
+            .toList();
     }
 
     @Override

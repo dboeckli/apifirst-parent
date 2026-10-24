@@ -6,11 +6,11 @@ import ch.guru.springframework.apifirst.model.PaymentMethodDto;
 import org.springframework.stereotype.Repository;
 
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Repository
@@ -26,31 +26,27 @@ public class CustomerRepositoryImpl implements CustomerRepository {
 
         builder1.id(id);
 
-        if (entity.getBillToAddress() != null) {
-            builder1.billToAddress(AddressDto.builder()
-                .id(UUID.randomUUID())
-                .addressLine1(entity.getBillToAddress().getAddressLine1())
-                .addressLine2(entity.getBillToAddress().getAddressLine2())
-                .city(entity.getBillToAddress().getCity())
-                .state(entity.getBillToAddress().getState())
-                .zip(entity.getBillToAddress().getZip())
-                .dateCreated(OffsetDateTime.now())
-                .dateUpdated(OffsetDateTime.now())
-                .build());
-        }
+        builder1.billToAddress(AddressDto.builder()
+            .id(UUID.randomUUID())
+            .addressLine1(entity.getBillToAddress().getAddressLine1())
+            .addressLine2(entity.getBillToAddress().getAddressLine2())
+            .city(entity.getBillToAddress().getCity())
+            .state(entity.getBillToAddress().getState())
+            .zip(entity.getBillToAddress().getZip())
+            .dateCreated(OffsetDateTime.now(ZoneOffset.UTC))
+            .dateUpdated(OffsetDateTime.now(ZoneOffset.UTC))
+            .build());
 
-        if (entity.getShipToAddress() != null) {
-            builder1.shipToAddress(AddressDto.builder()
-                .id(UUID.randomUUID())
-                .addressLine1(entity.getShipToAddress().getAddressLine1())
-                .addressLine2(entity.getShipToAddress().getAddressLine2())
-                .city(entity.getShipToAddress().getCity())
-                .state(entity.getShipToAddress().getState())
-                .zip(entity.getShipToAddress().getZip())
-                .dateCreated(OffsetDateTime.now())
-                .dateUpdated(OffsetDateTime.now())
-                .build());
-        }
+        builder1.shipToAddress(AddressDto.builder()
+            .id(UUID.randomUUID())
+            .addressLine1(entity.getShipToAddress().getAddressLine1())
+            .addressLine2(entity.getShipToAddress().getAddressLine2())
+            .city(entity.getShipToAddress().getCity())
+            .state(entity.getShipToAddress().getState())
+            .zip(entity.getShipToAddress().getZip())
+            .dateCreated(OffsetDateTime.now(ZoneOffset.UTC))
+            .dateUpdated(OffsetDateTime.now(ZoneOffset.UTC))
+            .build());
 
         if (entity.getPaymentMethods() != null) {
             builder1.paymentMethods(entity.getPaymentMethods()
@@ -62,17 +58,17 @@ public class CustomerRepositoryImpl implements CustomerRepository {
                     .expiryMonth(paymentMethod.getExpiryMonth())
                     .expiryYear(paymentMethod.getExpiryYear())
                     .cvv(paymentMethod.getCvv())
-                    .dateCreated(OffsetDateTime.now())
-                    .dateUpdated(OffsetDateTime.now())
+                    .dateCreated(OffsetDateTime.now(ZoneOffset.UTC))
+                    .dateUpdated(OffsetDateTime.now(ZoneOffset.UTC))
                     .build())
-                .collect(Collectors.toList()));
+                .toList());
         }
 
         CustomerDto customer = builder1.email(entity.getEmail())
             .name(entity.getName())
             .phone(entity.getPhone())
-            .dateCreated(OffsetDateTime.now())
-            .dateUpdated(OffsetDateTime.now())
+            .dateCreated(OffsetDateTime.now(ZoneOffset.UTC))
+            .dateUpdated(OffsetDateTime.now(ZoneOffset.UTC))
             .build();
 
         entityMap.put(id, customer);
@@ -82,12 +78,12 @@ public class CustomerRepositoryImpl implements CustomerRepository {
 
     @Override
     public <S extends CustomerDto> Iterable<S> saveAll(Iterable<S> entities) {
-        return StreamSupport.stream(entities.spliterator(), false).map(this::save).collect(Collectors.toList());
+        return StreamSupport.stream(entities.spliterator(), false).map(this::save).toList();
     }
 
     @Override
     public Optional<CustomerDto> findById(UUID uuid) {
-        return Optional.of(entityMap.get(uuid));
+        return Optional.ofNullable(entityMap.get(uuid));
     }
 
     @Override
@@ -106,7 +102,7 @@ public class CustomerRepositoryImpl implements CustomerRepository {
             .map(this::findById)
             .filter(Optional::isPresent)
             .map(Optional::get)
-            .collect(Collectors.toList());
+            .toList();
     }
 
     @Override

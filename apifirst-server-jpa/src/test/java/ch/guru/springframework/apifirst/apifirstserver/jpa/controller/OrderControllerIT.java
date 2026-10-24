@@ -196,8 +196,11 @@ class OrderControllerIT {
         Order order = orderRepository.findAll().getFirst();
 
         OrderPatchDto orderPatch = OrderPatchDto.builder()
+            .customerId(order.getCustomer().getId())
+            .selectPaymentMethodId(order.getCustomer().getPaymentMethods().getFirst().getId())
             .orderLines(Collections.singletonList(OrderLinePatchDto.builder()
                 .id(order.getOrderLines().getFirst().getId())
+                .productId(order.getOrderLines().getFirst().getProduct().getId())
                 .orderQuantity(333)
                 .build()))
             .build();
@@ -221,8 +224,11 @@ class OrderControllerIT {
         Order order = orderRepository.findAll().getFirst();
 
         OrderPatchDto orderPatch = OrderPatchDto.builder()
+            .customerId(order.getCustomer().getId())
+            .selectPaymentMethodId(order.getCustomer().getPaymentMethods().getFirst().getId())
             .orderLines(Collections.singletonList(OrderLinePatchDto.builder()
                 .id(order.getOrderLines().getFirst().getId())
+                .productId(order.getOrderLines().getFirst().getProduct().getId())
                 .orderQuantity(333)
                 .build()))
             .build();

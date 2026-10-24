@@ -36,7 +36,7 @@ public class Customer {
     @Size(min = 5, max = 255)
     private String email;
 
-    @Pattern(regexp = "^[+]?[(]?[0-9]{3}[)]?[-\\s.]?[0-9]{3}[-\\s.]?[0-9]{4,6}$")
+    @Pattern(regexp = "^\\+?\\(?\\d{3}\\)?[-\\s.]?\\d{3}[-\\s.]?\\d{4,6}$")
     @Size(min = 7, max = 255)
     private String phone;
 

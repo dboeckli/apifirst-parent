@@ -6,6 +6,7 @@ import ch.guru.springframework.apifirst.model.CustomerPatchDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
+@SuppressWarnings("java:S6813")
 public abstract class CustomerMapperDecorator implements CustomerMapper {
 
     @Autowired

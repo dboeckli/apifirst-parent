@@ -37,7 +37,7 @@ class CustomerApiTest {
 
     @Test
     void testListCustomersInServerModule() {
-        List<CustomerDto> customers = customerApiJpa.listCustomers();
+        List<CustomerDto> customers = customerApiServer.listCustomers();
         assertThat(customers).isNotEmpty();
     }
 

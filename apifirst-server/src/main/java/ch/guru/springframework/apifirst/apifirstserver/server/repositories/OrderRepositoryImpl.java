@@ -5,11 +5,11 @@ import ch.guru.springframework.apifirst.model.OrderLineDto;
 import org.springframework.stereotype.Repository;
 
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Repository
@@ -24,25 +24,22 @@ public class OrderRepositoryImpl implements OrderRepository {
         builder.id(UUID.randomUUID())
             .orderStatus(entity.getOrderStatus())
             .shipmentInfo(entity.getShipmentInfo())
-            .dateCreated(OffsetDateTime.now())
-            .dateUpdated(OffsetDateTime.now());
+            .dateCreated(OffsetDateTime.now(ZoneOffset.UTC))
+            .dateUpdated(OffsetDateTime.now(ZoneOffset.UTC));
 
-        if (entity.getCustomer() != null) {
-            builder.customer(entity.getCustomer());
-        }
+        builder.customer(entity.getCustomer());
 
-        if (entity.getOrderLines() != null) {
-            builder.orderLines(entity.getOrderLines().stream().map(orderLine -> {
-                return OrderLineDto.builder()
-                    .id(UUID.randomUUID())
-                    .product(orderLine.getProduct()) // might cause NPE
-                    .orderQuantity(orderLine.getOrderQuantity())
-                    .shipQuantity(orderLine.getShipQuantity())
-                    .dateCreated(OffsetDateTime.now())
-                    .dateUpdated(OffsetDateTime.now())
-                    .build();
-            }).collect(Collectors.toList()));
-        }
+        builder.orderLines(entity.getOrderLines()
+            .stream()
+            .map(orderLine -> OrderLineDto.builder()
+                .id(UUID.randomUUID())
+                .product(orderLine.getProduct())
+                .orderQuantity(orderLine.getOrderQuantity())
+                .shipQuantity(orderLine.getShipQuantity())
+                .dateCreated(OffsetDateTime.now(ZoneOffset.UTC))
+                .dateUpdated(OffsetDateTime.now(ZoneOffset.UTC))
+                .build())
+            .toList());
 
         OrderDto savedEntity = builder.build();
         entityMap.put(savedEntity.getId(), savedEntity);
@@ -51,12 +48,12 @@ public class OrderRepositoryImpl implements OrderRepository {
 
     @Override
     public <S extends OrderDto> Iterable<S> saveAll(Iterable<S> entities) {
-        return StreamSupport.stream(entities.spliterator(), false).map(this::save).collect(Collectors.toList());
+        return StreamSupport.stream(entities.spliterator(), false).map(this::save).toList();
     }
 
     @Override
     public Optional<OrderDto> findById(UUID uuid) {
-        return Optional.of(entityMap.get(uuid));
+        return Optional.ofNullable(entityMap.get(uuid));
     }
 
     @Override
@@ -75,7 +72,7 @@ public class OrderRepositoryImpl implements OrderRepository {
             .map(this::findById)
             .filter(Optional::isPresent)
             .map(Optional::get)
-            .collect(Collectors.toList());
+            .toList();
     }
 
     @Override

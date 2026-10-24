@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("java:S6813")
 public abstract class OrderMapperDecorator implements OrderMapper {
 
     @Autowired
