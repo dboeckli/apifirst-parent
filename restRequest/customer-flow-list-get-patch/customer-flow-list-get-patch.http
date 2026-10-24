@@ -1,5 +1,6 @@
 # Flow: listCustomers -> getCustomerById -> patchCustomerById -> patchCustomerById (restore) — see restRequest/customer-flow-list-get-patch/customer-flow-list-get-patch.md
-# Requires the JPA profile (local-with-jpa / k8s-wiht-jpa): PATCH is not implemented in apifirst-server.
+# Requires the JPA profile (local-with-jpa / k8s-with-jpa): PATCH is not implemented in apifirst-server.
+# Bruno skips these requests automatically when the selected environment is not a JPA profile (scripts/jpa-only.js).
 
 ### 1) list customers and pick the first one (sets {{customerId}} and {{originalFirstName}})
 < ../scripts/traceparent.js
@@ -49,6 +50,7 @@ traceparent: 00-{{traceId}}-{{spanId}}-03
 
 ### 3) patch only firstName (lastName stays untouched)
 < ../scripts/traceparent.js
+< ../scripts/jpa-only.js
 < {%
     const customerId = client.global.get("customerId");
     client.log("patchCustomerById -> customerId=" + customerId);
@@ -81,6 +83,7 @@ traceparent: 00-{{traceId}}-{{spanId}}-03
 
 ### 4) restore the original firstName
 < ../scripts/traceparent.js
+< ../scripts/jpa-only.js
 PATCH http://localhost:{{application-port}}/v1/customers/{{customerId}}
 Accept: application/json
 Content-Type: application/json

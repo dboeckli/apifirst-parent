@@ -1,5 +1,11 @@
+name: k8s
 variables:
   - name: application-port
     value: "30081"
+    enabled: true
   - name: product-category-code
     value: Electronics
+    enabled: true
+  - name: profile
+    value: non-jpa
+    enabled: true

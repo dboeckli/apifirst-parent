@@ -1,0 +1,142 @@
+info:
+  name: List Orders
+  type: http
+  seq: 1
+  tags:
+    - Order
+
+http:
+  method: GET
+  url: "http://localhost:{{application-port}}/v1/orders"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+examples:
+  - name: 200 Response
+    description: successful operation
+    request:
+      url: "http://localhost:{{application-port}}/v1/orders"
+      method: GET
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          [
+            {
+              "id": "",
+              "customer": {
+                "id": "",
+                "name": {
+                  "prefix": "Mr.",
+                  "firstName": "John",
+                  "lastName": "Thompson",
+                  "suffix": ""
+                },
+                "shipToAddress": {
+                  "id": "",
+                  "addressLine1": "123 Main Street",
+                  "addressLine2": "",
+                  "city": "New York",
+                  "state": "NY",
+                  "zip": 10001,
+                  "dateCreated": "2022-08-22T11:43:06-07:00",
+                  "dateUpdated": "2022-08-22T11:43:06-07:00"
+                },
+                "billToAddress": {
+                  "id": "",
+                  "addressLine1": "123 Main Street",
+                  "addressLine2": "",
+                  "city": "New York",
+                  "state": "NY",
+                  "zip": 10001,
+                  "dateCreated": "2022-08-22T11:43:06-07:00",
+                  "dateUpdated": "2022-08-22T11:43:06-07:00"
+                },
+                "email": "",
+                "phone": "",
+                "selectedPaymentMethod": {
+                  "id": "",
+                  "displayName": "My Chase Card",
+                  "cardNumber": 1234567890123456,
+                  "expiryMonth": 7,
+                  "expiryYear": 2025,
+                  "cvv": 123,
+                  "dateCreated": "2022-08-22T11:43:06-07:00",
+                  "dateUpdated": "2022-08-22T11:43:06-07:00"
+                }
+              },
+              "orderStatus": "NEW",
+              "shipmentInfo": "",
+              "orderLines": [
+                {
+                  "id": "",
+                  "product": {
+                    "id": "",
+                    "description": "",
+                    "price": ""
+                  },
+                  "orderQuantity": 2,
+                  "shipQuantity": 2,
+                  "dateCreated": "2022-08-22T11:43:06-07:00",
+                  "dateUpdated": "2022-08-22T11:43:06-07:00"
+                }
+              ],
+              "dateCreated": "2022-08-22T11:43:06-07:00",
+              "dateUpdated": "2022-08-22T11:43:06-07:00"
+            }
+          ]
+  - name: 400 Response
+    description: Request was received but was invalid. Check format and content of the request.  See the problem detail for more information.
+    request:
+      url: "http://localhost:{{application-port}}/v1/orders"
+      method: GET
+    response:
+      status: 400
+      statusText: Bad Request
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "type": "",
+            "title": "",
+            "status": 0,
+            "detail": "",
+            "instance": ""
+          }
+  - name: 404 Response
+    description: The requested resource was not found.
+    request:
+      url: "http://localhost:{{application-port}}/v1/orders"
+      method: GET
+    response:
+      status: 404
+      statusText: Not Found
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "type": "",
+            "title": "",
+            "status": 0,
+            "detail": "",
+            "instance": ""
+          }
+
+docs: List Orders

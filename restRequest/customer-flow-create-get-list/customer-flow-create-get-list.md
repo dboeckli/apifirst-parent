@@ -38,10 +38,10 @@ sequenceDiagram
 
 ## Benötigte Globals
 
-|       Global        |          gesetzt von           |            genutzt von             |
-|---------------------|--------------------------------|------------------------------------|
-| `customerId`        | `createCustomer` (Location)    | `getCustomerById`, `listCustomers` |
-| `traceId`, `spanId` | `../../scripts/traceparent.js` | alle Requests                      |
+|       Global        |         gesetzt von         |            genutzt von             |
+|---------------------|-----------------------------|------------------------------------|
+| `customerId`        | `createCustomer` (Location) | `getCustomerById`, `listCustomers` |
+| `traceId`, `spanId` | `../scripts/traceparent.js` | alle Requests                      |
 
 ## Asserts
 
@@ -52,7 +52,7 @@ sequenceDiagram
 ## Hinweise
 
 - Basis-URL ist `{{application-port}}` (Profil `local` = 8081, `local-with-jpa` = 8082,
-  `k8s` = 30081, `k8s-wiht-jpa` = 30082).
+  `k8s` = 30081, `k8s-with-jpa` = 30082).
 - `createCustomer` liefert einen leeren Body; die neue ID steht nur im `Location`-Header.
 - `getCustomerById` liefert `404 Not Found`, wenn der Kunde nicht existiert.
 

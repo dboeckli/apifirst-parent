@@ -1,5 +1,6 @@
 # Flow: createProduct -> getProductById -> patchProductById -> deleteProductById — see restRequest/product-flow-create-patch-delete/product-flow-create-patch-delete.md
-# Requires the JPA profile (local-with-jpa / k8s-wiht-jpa): PATCH and DELETE are not implemented in apifirst-server.
+# Requires the JPA profile (local-with-jpa / k8s-with-jpa): PATCH and DELETE are not implemented in apifirst-server.
+# Bruno skips these requests automatically when the selected environment is not a JPA profile (scripts/jpa-only.js).
 
 ### 1) create a product (sets {{productId}} from the Location header)
 < ../scripts/traceparent.js
@@ -52,6 +53,7 @@ traceparent: 00-{{traceId}}-{{spanId}}-03
 
 ### 3) patch only the description (other fields stay untouched)
 < ../scripts/traceparent.js
+< ../scripts/jpa-only.js
 PATCH http://localhost:{{application-port}}/v1/products/{{productId}}
 Accept: application/json
 Content-Type: application/json
@@ -75,6 +77,7 @@ traceparent: 00-{{traceId}}-{{spanId}}-03
 
 ### 4) delete the product by id (fresh product is not used in any order)
 < ../scripts/traceparent.js
+< ../scripts/jpa-only.js
 DELETE http://localhost:{{application-port}}/v1/products/{{productId}}
 Accept: application/json
 Content-Type: application/json
@@ -88,6 +91,7 @@ traceparent: 00-{{traceId}}-{{spanId}}-03
 
 ### 5) verify the product is gone
 < ../scripts/traceparent.js
+< ../scripts/jpa-only.js
 GET http://localhost:{{application-port}}/v1/products/{{productId}}
 Accept: application/json
 Content-Type: application/json

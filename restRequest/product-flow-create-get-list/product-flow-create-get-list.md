@@ -37,10 +37,10 @@ sequenceDiagram
 
 ## Benötigte Globals
 
-|       Global        |          gesetzt von           |           genutzt von            |
-|---------------------|--------------------------------|----------------------------------|
-| `productId`         | `createProduct` (Location)     | `getProductById`, `listProducts` |
-| `traceId`, `spanId` | `../../scripts/traceparent.js` | alle Requests                    |
+|       Global        |         gesetzt von         |           genutzt von            |
+|---------------------|-----------------------------|----------------------------------|
+| `productId`         | `createProduct` (Location)  | `getProductById`, `listProducts` |
+| `traceId`, `spanId` | `../scripts/traceparent.js` | alle Requests                    |
 
 ## Asserts
 
@@ -52,12 +52,12 @@ sequenceDiagram
 ## Hinweise
 
 - Basis-URL ist `{{application-port}}` (Profil `local` = 8081, `local-with-jpa` = 8082,
-  `k8s` = 30081, `k8s-wiht-jpa` = 30082).
+  `k8s` = 30081, `k8s-with-jpa` = 30082).
 - `createProduct` liefert einen leeren Body; die neue ID steht nur im `Location`-Header.
 - `description` ist Pflicht (`3..255` Zeichen), `price`/`cost` sind Strings.
 - Kategorien werden über den `categoryCode` referenziert. Der Code unterscheidet sich je Profil
   (`apifirst-server`: `Electronics`/`Gifts`, `apifirst-server-jpa`: `ELECTRONICS`/`CLOTHING`/
   `DRYGOODS`) und kommt deshalb aus der Environment-Variable `{{product-category-code}}`
-  (`local`/`k8s` = `Electronics`, `local-with-jpa`/`k8s-wiht-jpa` = `ELECTRONICS`).
+  (`local`/`k8s` = `Electronics`, `local-with-jpa`/`k8s-with-jpa` = `ELECTRONICS`).
 - `getProductById` liefert `404 Not Found`, wenn das Produkt nicht existiert.
 

@@ -54,13 +54,13 @@ sequenceDiagram
 
 ## Benötigte Globals
 
-|       Global        |          gesetzt von           |                   genutzt von                    |
-|---------------------|--------------------------------|--------------------------------------------------|
-| `customerId`        | `createCustomer` (Location)    | `getCustomerById`, `createOrder`, `getOrderById` |
-| `paymentMethodId`   | `getCustomerById`              | `createOrder`                                    |
-| `productId`         | `createProduct` (Location)     | `createOrder`                                    |
-| `orderId`           | `createOrder` (Location)       | `getOrderById`, `listOrders`                     |
-| `traceId`, `spanId` | `../../scripts/traceparent.js` | alle Requests                                    |
+|       Global        |         gesetzt von         |                   genutzt von                    |
+|---------------------|-----------------------------|--------------------------------------------------|
+| `customerId`        | `createCustomer` (Location) | `getCustomerById`, `createOrder`, `getOrderById` |
+| `paymentMethodId`   | `getCustomerById`           | `createOrder`                                    |
+| `productId`         | `createProduct` (Location)  | `createOrder`                                    |
+| `orderId`           | `createOrder` (Location)    | `getOrderById`, `listOrders`                     |
+| `traceId`, `spanId` | `../scripts/traceparent.js` | alle Requests                                    |
 
 Die Kategorie des Produkts kommt aus der Environment-Variable `{{product-category-code}}`
 (`apifirst-server` = `Electronics`, `apifirst-server-jpa` = `ELECTRONICS`).

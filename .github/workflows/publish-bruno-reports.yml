@@ -1,6 +1,6 @@
-name: Publish Bruno Reports
+name: Publish API Reports
 run-name: >
-  Publish Bruno reports for ${{ github.event.workflow_run.head_sha }}
+  Publish API reports for ${{ github.event.workflow_run.head_sha }}
 
 on:
   workflow_run:
@@ -26,7 +26,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
-      - name: Aggregate Bruno reports from completed deploy runs
+      - name: Aggregate reports and OpenAPI spec from completed runs
         id: aggregate
         env:
           GH_TOKEN: ${{ github.token }}
@@ -108,20 +108,51 @@ jobs:
             applications="$applications $application"
           done < "$artifacts_file.unique"
 
+          # The OpenAPI spec is attached to the Maven build artifact of the same
+          # commit, so it does not have to be rebuilt here.
+          openapi_published=false
+          maven_run_id=$(gh api "repos/$REPO/actions/workflows/maven-build.yml/runs?head_sha=$HEAD_SHA&per_page=100" \
+            --jq '[.workflow_runs[] | select(.conclusion == "success")] | sort_by(.created_at) | reverse | .[0].id // empty')
+          if [ -n "$maven_run_id" ]; then
+            spec_dir="$site/.openapi-spec"
+            if gh run download "$maven_run_id" --repo "$REPO" --name openapi-spec --dir "$spec_dir"; then
+              spec_file=$(find "$spec_dir" -type f \( -name '*.yaml' -o -name '*.yml' \) | head -n 1)
+              if [ -n "$spec_file" ]; then
+                mkdir -p "$site/openapi"
+                cp "$spec_file" "$site/openapi/apifirst.yaml"
+                ruby -ryaml -rjson -rdate \
+                  -e 'puts JSON.pretty_generate(YAML.safe_load(File.read(ARGV[0]), permitted_classes: [Date, Time], aliases: true))' \
+                  "$spec_file" > "$site/openapi/apifirst.json"
+                openapi_published=true
+              fi
+            else
+              echo "::warning::Could not download openapi-spec from Maven build run $maven_run_id"
+            fi
+            rm -rf "$spec_dir"
+          else
+            echo "::warning::No successful Maven build run found for $HEAD_SHA - skipping OpenAPI"
+          fi
+
           report_count=$(find "$site/reports" -name '*.html' -type f | wc -l)
-          if [ "$report_count" -eq 0 ]; then
-            echo "::notice::No Bruno reports found for $HEAD_SHA - Pages is left untouched"
-            echo "has_reports=false" >> "$GITHUB_OUTPUT"
+          if [ "$report_count" -eq 0 ] && [ "$openapi_published" = false ]; then
+            echo "::notice::No reports found for $HEAD_SHA - Pages is left untouched"
+            echo "has_content=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          echo "has_reports=true" >> "$GITHUB_OUTPUT"
+          echo "has_content=true" >> "$GITHUB_OUTPUT"
 
           run_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}"
           {
-            printf '%s\n' '<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Bruno reports</title></head><body>'
-            printf '<h1>Bruno API reports</h1>\n'
+            printf '%s\n' '<!doctype html><html lang="en"><head><meta charset="utf-8"><title>API reports</title></head><body>'
+            printf '<h1>API reports</h1>\n'
             printf '<p>Commit: <code>%s</code></p>\n' "$HEAD_SHA"
             printf '<p>Deploy workflow run: <a href="%s">%s</a></p>\n' "$run_url" "$run_url"
+            if [ "$openapi_published" = true ]; then
+              printf '<h2>OpenAPI</h2>\n<ul>\n'
+              printf '  <li><a href="openapi/apifirst.yaml">apifirst.yaml</a></li>\n'
+              printf '  <li><a href="openapi/apifirst.json">apifirst.json</a></li>\n'
+              printf '</ul>\n'
+            fi
             for application in $applications; do
               [ -d "$site/reports/$application" ] || continue
               printf '<h2>%s</h2>\n<ul>\n' "$application"
@@ -136,13 +167,13 @@ jobs:
           } > "$site/index.html"
 
       - name: Configure Pages
-        if: steps.aggregate.outputs.has_reports == 'true'
+        if: steps.aggregate.outputs.has_content == 'true'
         uses: actions/configure-pages@v6
         with:
           enablement: true
 
       - name: Upload Pages artifact
-        if: steps.aggregate.outputs.has_reports == 'true'
+        if: steps.aggregate.outputs.has_content == 'true'
         uses: actions/upload-pages-artifact@v5
         with:
           path: _site
@@ -151,19 +182,19 @@ jobs:
 
       - name: Deploy to GitHub Pages
         id: deployment
-        if: steps.aggregate.outputs.has_reports == 'true'
+        if: steps.aggregate.outputs.has_content == 'true'
         uses: actions/deploy-pages@v5
         with:
           artifact_name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Add report link to summary
-        if: always() && steps.aggregate.outputs.has_reports == 'true'
+        if: always() && steps.aggregate.outputs.has_content == 'true'
         env:
           PAGE_URL: ${{ steps.deployment.outputs.page_url }}
         run: |
           if [ -n "${PAGE_URL:-}" ]; then
             {
-              echo "### Bruno reports"
+              echo "### API reports"
               echo "$PAGE_URL"
             } >> "$GITHUB_STEP_SUMMARY"
           fi

@@ -9,9 +9,12 @@ ursprünglichen Zustand wiederherstellen.
 
 ## Voraussetzung
 
-Nur mit dem JPA-Profil lauffähig (`local-with-jpa` = 8082, `k8s-wiht-jpa` = 30082):
+Nur mit dem JPA-Profil lauffähig (`local-with-jpa` = 8082, `k8s-with-jpa` = 30082):
 `PATCH /v1/customers/{customerId}` ist in `apifirst-server` nicht implementiert. Die Kundenliste muss
 mindestens einen Kunden enthalten.
+In Bruno werden nur die JPA-spezifischen Requests (PATCH/DELETE und deren Verifikation) bei einem
+non-JPA-Environment automatisch übersprungen
+(`../scripts/jpa-only.js` über die `profile`-Variable).
 
 ## Ablauf (Services)
 
@@ -47,12 +50,12 @@ sequenceDiagram
 
 ## Benötigte Globals
 
-|       Global        |          gesetzt von           |       genutzt von       |
-|---------------------|--------------------------------|-------------------------|
-| `customerId`        | `listCustomers`                | alle folgenden Requests |
-| `originalFirstName` | `listCustomers`                | Restore-PATCH           |
-| `patchedFirstName`  | `patchCustomerById`            | –                       |
-| `traceId`, `spanId` | `../../scripts/traceparent.js` | alle Requests           |
+|       Global        |         gesetzt von         |       genutzt von       |
+|---------------------|-----------------------------|-------------------------|
+| `customerId`        | `listCustomers`             | alle folgenden Requests |
+| `originalFirstName` | `listCustomers`             | Restore-PATCH           |
+| `patchedFirstName`  | `patchCustomerById`         | –                       |
+| `traceId`, `spanId` | `../scripts/traceparent.js` | alle Requests           |
 
 ## Asserts
 

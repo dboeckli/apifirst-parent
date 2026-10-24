@@ -1,0 +1,6 @@
+info:
+  name: "{productId}"
+  type: folder
+
+request:
+  auth: inherit

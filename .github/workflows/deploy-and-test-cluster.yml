@@ -161,12 +161,14 @@ jobs:
           if [[ "$APPLICATION_NAME" == *-jpa ]]; then
             PORT=8082
             ENV_NAME=k8s-with-jpa
-            FLOWS="actuator customer-flow-create-get-list customer-flow-create-get-delete customer-flow-list-get-patch order-flow-create-get-list order-flow-create-get-delete product-flow-create-get-list product-flow-create-patch-delete"
           else
             PORT=8081
             ENV_NAME=k8s
-            FLOWS="actuator customer-flow-create-get-list order-flow-create-get-list product-flow-create-get-list"
           fi
+
+          # JPA-only requests (PATCH/DELETE) skip themselves in non-JPA
+          # environments, so every flow runs for both modules.
+          FLOWS="actuator customer-flow-create-get-list customer-flow-create-get-delete customer-flow-list-get-patch order-flow-create-get-list order-flow-create-get-delete product-flow-create-get-list product-flow-create-patch-delete"
 
           kubectl port-forward svc/"$APPLICATION_NAME" "$PORT:$PORT" -n "$NAMESPACE" > /tmp/port-forward.log 2>&1 &
           PORT_FORWARD_PID=$!
