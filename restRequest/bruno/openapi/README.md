@@ -34,8 +34,8 @@ bash restRequest/bruno/tools/sync-openapi.sh target/openapi/apifirst-api-<versio
 
 ## Publikation
 
-Der `maven-build`-Workflow lädt die Spec als Artefakt `openapi-spec` hoch. Der
-Pages-Workflow (`Publish API Reports`) lädt sie für den jeweiligen Commit herunter und veröffentlicht
+Der `maven-build`-Workflow lädt die Spec als Artefakt `openapi-spec` hoch. Der Job
+`publish-reports` im Deploy-Workflow lädt sie für den jeweiligen Commit herunter und veröffentlicht
 sie unter `openapi/apifirst.yaml` und `openapi/apifirst.json` auf GitHub Pages.
 
 ## Ausführen
