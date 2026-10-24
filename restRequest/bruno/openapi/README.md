@@ -16,7 +16,7 @@ gebündelt (Maven-Goal `generate-sources`).
 ./mvnw -pl apifirst-api generate-sources
 
 # 2. Bruno-Requests neu importieren (überschreibt openapi/apifirst/)
-./restRequest/bruno/tools/sync-openapi.sh
+bash restRequest/bruno/tools/sync-openapi.sh
 ```
 
 Das Skript importiert mit `bru import openapi --group-by path` und ersetzt `{{baseUrl}}` durch
@@ -29,7 +29,7 @@ Alternativ eine bereits veröffentlichte Spec verwenden:
 ./mvnw dependency:copy \
   -Dartifact=ch.guru.springframework.apifirst:apifirst-api:<version>:yaml:openapi \
   -DoutputDirectory=target/openapi
-./restRequest/bruno/tools/sync-openapi.sh target/openapi/apifirst-api-<version>-openapi.yaml
+bash restRequest/bruno/tools/sync-openapi.sh target/openapi/apifirst-api-<version>-openapi.yaml
 ```
 
 ## Publikation
