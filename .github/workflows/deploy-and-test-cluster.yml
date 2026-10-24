@@ -36,6 +36,11 @@ jobs:
   deploy-app-with-helm:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
+
     steps:
       - name: Show Version
         run: |
@@ -114,6 +119,98 @@ jobs:
           else
             echo "All Helm tests passed successfully."
           fi
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      - name: Install Bruno tooling
+        run: |
+          cd restRequest/bruno/tools
+          npm ci
+          # The npm registry occasionally serves package metadata before the
+          # tarball is available. npm does not retry 404s, so retry the whole
+          # install instead of relying on a single attempt.
+          for attempt in 1 2 3; do
+            if npm install -g --ignore-scripts @usebruno/cli@4.2.1; then
+              echo "Bruno CLI installed (attempt $attempt)"
+              break
+            fi
+            echo "::warning::npm install failed (attempt $attempt), retrying..."
+            npm cache clean --force || true
+            sleep 15
+          done
+          bru --version
+
+      - name: Verify generated Bruno collection
+        run: |
+          cd restRequest/bruno
+          node tools/http-to-bru.mjs --source .. --check
+
+      - name: Run Bruno flows
+        working-directory: restRequest/bruno
+        env:
+          APPLICATION_NAME: ${{ inputs.application-name }}
+          NAMESPACE: ${{ inputs.namespace }}
+        run: |
+          set -o pipefail
+          set -o nounset
+          set -o errexit
+
+          if [[ "$APPLICATION_NAME" == *-jpa ]]; then
+            PORT=8082
+            ENV_NAME=k8s-with-jpa
+            FLOWS="actuator customer-flow-create-get-list customer-flow-create-get-delete customer-flow-list-get-patch order-flow-create-get-list order-flow-create-get-delete product-flow-create-get-list product-flow-create-patch-delete"
+          else
+            PORT=8081
+            ENV_NAME=k8s
+            FLOWS="actuator customer-flow-create-get-list order-flow-create-get-list product-flow-create-get-list"
+          fi
+
+          kubectl port-forward svc/"$APPLICATION_NAME" "$PORT:$PORT" -n "$NAMESPACE" > /tmp/port-forward.log 2>&1 &
+          PORT_FORWARD_PID=$!
+          trap 'kill $PORT_FORWARD_PID 2>/dev/null || true' EXIT
+
+          for attempt in $(seq 1 30); do
+            if curl -fsS "http://localhost:$PORT/actuator/health/readiness" > /dev/null; then
+              echo "Application reachable via port-forward (attempt $attempt)"
+              break
+            fi
+            if [ "$attempt" -eq 30 ]; then
+              echo "::error::Application not reachable via port-forward"
+              cat /tmp/port-forward.log
+              exit 1
+            fi
+            sleep 2
+          done
+
+          mkdir -p "$GITHUB_WORKSPACE/bru-reports"
+          for flow in $FLOWS; do
+            echo "::group::Bruno flow: $flow"
+            bru run "$flow" -r --env "$ENV_NAME" --env-var "application-port=$PORT" \
+              --reporter-junit "$GITHUB_WORKSPACE/bru-reports/TEST-bruno-$flow.xml" \
+              --reporter-html "$GITHUB_WORKSPACE/bru-reports/bru-report-$flow.html"
+            echo "::endgroup::"
+          done
+
+      - name: Upload Bruno reports
+        if: always()
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: bruno-reports-${{ inputs.application-name }}
+          path: bru-reports/
+          if-no-files-found: warn
+
+      - name: Publish Bruno test results
+        if: always()
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          files: bru-reports/TEST-bruno-*.xml
+          check_name: Bruno API flows (${{ inputs.application-name }})
+          comment_mode: "off"
+          fail_on: test failures
+          action_fail: true
 
       - name: Display Deployment Information
         env:

@@ -25,18 +25,8 @@ traceparent: 00-{{traceId}}-{{spanId}}-03
 %}
 
 ### 2) get the customer by id
+< ../scripts/traceparent.js
 < {%
-    function randomHex(length) {
-        let result = "";
-        const chars = "0123456789abcdef";
-        for (let i = 0; i < length; i++) {
-            result += chars[Math.floor(Math.random() * chars.length)];
-        }
-        return result;
-    }
-    request.variables.set("traceId", randomHex(32));
-    request.variables.set("spanId", randomHex(16));
-
     const customerId = client.global.get("customerId");
     client.log("getCustomerById -> customerId=" + customerId);
     if (!customerId) {
@@ -58,18 +48,8 @@ traceparent: 00-{{traceId}}-{{spanId}}-03
 %}
 
 ### 3) patch only firstName (lastName stays untouched)
+< ../scripts/traceparent.js
 < {%
-    function randomHex(length) {
-        let result = "";
-        const chars = "0123456789abcdef";
-        for (let i = 0; i < length; i++) {
-            result += chars[Math.floor(Math.random() * chars.length)];
-        }
-        return result;
-    }
-    request.variables.set("traceId", randomHex(32));
-    request.variables.set("spanId", randomHex(16));
-
     const customerId = client.global.get("customerId");
     client.log("patchCustomerById -> customerId=" + customerId);
     if (!customerId) {
@@ -95,7 +75,7 @@ traceparent: 00-{{traceId}}-{{spanId}}-03
     });
     client.test("firstName was patched", function () {
         client.assert(response.body.name.firstName === "patched", "firstName not patched");
-        client.assert(response.body.name.lastName, "lastName was removed by the patch");
+        client.assert(!!response.body.name.lastName, "lastName was removed by the patch");
     });
 %}
 

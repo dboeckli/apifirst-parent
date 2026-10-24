@@ -1,0 +1,5 @@
+variables:
+  - name: application-port
+    value: "8081"
+  - name: product-category-code
+    value: Electronics

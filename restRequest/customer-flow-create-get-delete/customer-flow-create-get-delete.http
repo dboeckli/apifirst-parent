@@ -44,18 +44,8 @@ traceparent: 00-{{traceId}}-{{spanId}}-03
 %}
 
 ### 2) get customer by id (logs and checks {{customerId}} before sending)
+< ../scripts/traceparent.js
 < {%
-    function randomHex(length) {
-        let result = "";
-        const chars = "0123456789abcdef";
-        for (let i = 0; i < length; i++) {
-            result += chars[Math.floor(Math.random() * chars.length)];
-        }
-        return result;
-    }
-    request.variables.set("traceId", randomHex(32));
-    request.variables.set("spanId", randomHex(16));
-
     const customerId = client.global.get("customerId");
     client.log("getCustomerById -> customerId=" + customerId);
     if (!customerId) {
@@ -77,18 +67,8 @@ traceparent: 00-{{traceId}}-{{spanId}}-03
 %}
 
 ### 3) delete the customer by id (fresh customer has no orders)
+< ../scripts/traceparent.js
 < {%
-    function randomHex(length) {
-        let result = "";
-        const chars = "0123456789abcdef";
-        for (let i = 0; i < length; i++) {
-            result += chars[Math.floor(Math.random() * chars.length)];
-        }
-        return result;
-    }
-    request.variables.set("traceId", randomHex(32));
-    request.variables.set("spanId", randomHex(16));
-
     const customerId = client.global.get("customerId");
     client.log("deleteCustomerById -> customerId=" + customerId);
     if (!customerId) {
