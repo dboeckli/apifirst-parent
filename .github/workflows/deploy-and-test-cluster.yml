@@ -391,6 +391,7 @@ jobs:
             exit 0
           fi
           echo "has_content=true" >> "$GITHUB_OUTPUT"
+          echo "has_openapi=$openapi_published" >> "$GITHUB_OUTPUT"
 
           run_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           {
@@ -400,6 +401,7 @@ jobs:
             printf '<p>Deploy workflow run: <a href="%s">%s</a></p>\n' "$run_url" "$run_url"
             if [ "$openapi_published" = true ]; then
               printf '<h2>OpenAPI</h2>\n<ul>\n'
+              printf '  <li><a href="openapi/">Swagger UI</a></li>\n'
               printf '  <li><a href="openapi/apifirst.yaml">apifirst.yaml</a></li>\n'
               printf '  <li><a href="openapi/apifirst.json">apifirst.json</a></li>\n'
               printf '</ul>\n'
@@ -416,6 +418,54 @@ jobs:
             done
             printf '%s\n' '</body></html>'
           } > "$site/index.html"
+
+      - name: Set up Node.js for Swagger UI
+        if: steps.aggregate.outputs.has_openapi == 'true'
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      - name: Build Swagger UI page
+        if: steps.aggregate.outputs.has_openapi == 'true'
+        run: |
+          set -o nounset
+          set -o errexit
+          set -o pipefail
+
+          swagger_version=5.34.0
+          install_dir=$(mktemp -d)
+          npm install --no-save --no-audit --no-fund --prefix "$install_dir" \
+            "swagger-ui-dist@$swagger_version" >/dev/null
+
+          mkdir -p _site/openapi/swagger-ui
+          cp "$install_dir/node_modules/swagger-ui-dist/swagger-ui.css" \
+            "$install_dir/node_modules/swagger-ui-dist/swagger-ui-bundle.js" \
+            _site/openapi/swagger-ui/
+
+          cat > _site/openapi/index.html <<'HTML'
+          <!doctype html>
+          <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <title>apifirst OpenAPI</title>
+            <link rel="stylesheet" href="swagger-ui/swagger-ui.css">
+          </head>
+          <body>
+            <div id="swagger-ui"></div>
+            <script src="swagger-ui/swagger-ui-bundle.js"></script>
+            <script>
+              window.ui = SwaggerUIBundle({
+                url: "apifirst.yaml",
+                dom_id: "#swagger-ui",
+                presets: [SwaggerUIBundle.presets.apis],
+                layout: "BaseLayout",
+                deepLinking: true
+              });
+            </script>
+          </body>
+          </html>
+          HTML
 
       - name: Configure Pages
         if: steps.aggregate.outputs.has_content == 'true'
