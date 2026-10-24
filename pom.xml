@@ -49,6 +49,10 @@
 
     <repo.name>apifirst-parent</repo.name>
 
+    <!-- TODO: remove this pin once https://github.com/paketo-buildpacks/builder-noble-java-tiny/issues/344 is fixed -->
+    <!-- :latest is arm64-only since 0.0.200; with Spring Boot 4.2.x switch to the new default paketobuildpacks/ubuntu-resolute-builder -->
+    <spring-boot.build-image.builder>paketobuildpacks/builder-noble-java-tiny:0.0.200</spring-boot.build-image.builder>
+
     <google.findbugs.version>3.0.2</google.findbugs.version>
     <jackson-databind-nullable.version>0.2.12</jackson-databind-nullable.version>
     <openapi-generator-maven-plugin.version>7.26.0</openapi-generator-maven-plugin.version>

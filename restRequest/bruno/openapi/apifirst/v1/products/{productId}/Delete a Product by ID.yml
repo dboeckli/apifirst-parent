@@ -1,0 +1,122 @@
+info:
+  name: Delete a Product by ID
+  type: http
+  seq: 4
+  tags:
+    - Product
+
+http:
+  method: DELETE
+  url: "http://localhost:{{application-port}}/v1/products/:productId"
+  params:
+    - name: productId
+      value: ""
+      type: path
+      description: The ID of the product to retrieve
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+examples:
+  - name: 204 Response
+    description: No Content
+    request:
+      url: "http://localhost:{{application-port}}/v1/products/:productId"
+      method: DELETE
+      params:
+        - name: productId
+          value: ""
+          type: path
+          description: The ID of the product to retrieve
+    response:
+      status: 204
+      statusText: No Content
+      body:
+        type: text
+        data: ""
+  - name: 400 Response
+    description: Request was received but was invalid. Check format and content of the request.  See the problem detail for more information.
+    request:
+      url: "http://localhost:{{application-port}}/v1/products/:productId"
+      method: DELETE
+      params:
+        - name: productId
+          value: ""
+          type: path
+          description: The ID of the product to retrieve
+    response:
+      status: 400
+      statusText: Bad Request
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "type": "",
+            "title": "",
+            "status": 0,
+            "detail": "",
+            "instance": ""
+          }
+  - name: 404 Response
+    description: The requested resource was not found.
+    request:
+      url: "http://localhost:{{application-port}}/v1/products/:productId"
+      method: DELETE
+      params:
+        - name: productId
+          value: ""
+          type: path
+          description: The ID of the product to retrieve
+    response:
+      status: 404
+      statusText: Not Found
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "type": "",
+            "title": "",
+            "status": 0,
+            "detail": "",
+            "instance": ""
+          }
+  - name: 409 Response
+    description: Unable to complete request due to a conflict with the current state of the target resource. May be due to constraint violation.
+    request:
+      url: "http://localhost:{{application-port}}/v1/products/:productId"
+      method: DELETE
+      params:
+        - name: productId
+          value: ""
+          type: path
+          description: The ID of the product to retrieve
+    response:
+      status: 409
+      statusText: Conflict
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "type": "",
+            "title": "",
+            "status": 0,
+            "detail": "",
+            "instance": ""
+          }
+
+docs: |
+  Delete a Product by ID

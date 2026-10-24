@@ -1,0 +1,91 @@
+info:
+  name: Get a list of products
+  type: http
+  seq: 1
+  tags:
+    - Product
+
+http:
+  method: GET
+  url: "http://localhost:{{application-port}}/v1/products"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+examples:
+  - name: 200 Response
+    description: Success
+    request:
+      url: "http://localhost:{{application-port}}/v1/products"
+      method: GET
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          [
+            {
+              "id": "",
+              "description": "",
+              "dimensions": {
+                "length": 10,
+                "width": 10,
+                "height": 10
+              },
+              "categories": [
+                {
+                  "id": "",
+                  "category": "Electronics",
+                  "description": "Electronics and Gadgets",
+                  "category_code": "ELECTRONICS",
+                  "dateCreated": "2022-08-22T11:43:06-07:00",
+                  "dateUpdated": "2022-08-22T11:43:06-07:00"
+                }
+              ],
+              "images": [
+                {
+                  "id": "",
+                  "url": "https://springframework.guru/wp-content/uploads/2019/08/spring-framework-guru-logo.jpg",
+                  "altText": "",
+                  "dateCreated": "2022-08-22T11:43:06-07:00",
+                  "dateUpdated": "2022-08-22T11:43:06-07:00"
+                }
+              ],
+              "price": "",
+              "cost": "",
+              "dateCreated": "2022-08-22T11:43:06-07:00",
+              "dateUpdated": "2022-08-22T11:43:06-07:00"
+            }
+          ]
+  - name: 404 Response
+    description: The requested resource was not found.
+    request:
+      url: "http://localhost:{{application-port}}/v1/products"
+      method: GET
+    response:
+      status: 404
+      statusText: Not Found
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "type": "",
+            "title": "",
+            "status": 0,
+            "detail": "",
+            "instance": ""
+          }
+
+docs: Returns a list of products

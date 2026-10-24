@@ -1,0 +1,6 @@
+info:
+  name: "{orderId}"
+  type: folder
+
+request:
+  auth: inherit

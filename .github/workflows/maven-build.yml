@@ -224,6 +224,13 @@ jobs:
            **/target/surefire-reports/TEST-*.xml
            **/target/failsafe-reports/TEST-*.xml
 
+      - name: Upload OpenAPI spec
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: openapi-spec
+          path: apifirst-api/api-def/dist/bundle.yaml
+          if-no-files-found: error
+
       - name: get helm version
         id: get_helm_version_and_namespace
         env:

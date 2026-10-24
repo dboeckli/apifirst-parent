@@ -1,7 +1,0 @@
-###
-GET http://localhost:{{application-port}}/v1/products
-Accept: application/json
-Content-Type: application/json
-
-###
-GET http://localhost:{{application-port}}/v1/products/f83c9044-be24-4f17-8466-973cdff76284

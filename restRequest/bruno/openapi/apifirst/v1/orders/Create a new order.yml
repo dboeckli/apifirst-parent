@@ -1,0 +1,93 @@
+info:
+  name: Create a new order
+  type: http
+  seq: 2
+  tags:
+    - Order
+
+http:
+  method: POST
+  url: "http://localhost:{{application-port}}/v1/orders"
+  body:
+    type: json
+    data: |-
+      {
+        "customerId": "",
+        "selectPaymentMethodId": "",
+        "orderLines": [
+          {
+            "productId": "",
+            "orderQuantity": 2
+          }
+        ]
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+examples:
+  - name: 201 Response
+    description: Created
+    request:
+      url: "http://localhost:{{application-port}}/v1/orders"
+      method: POST
+      body:
+        type: json
+        data: |-
+          {
+            "customerId": "",
+            "selectPaymentMethodId": "",
+            "orderLines": [
+              {
+                "productId": "",
+                "orderQuantity": 2
+              }
+            ]
+          }
+    response:
+      status: 201
+      statusText: Created
+      body:
+        type: text
+        data: ""
+  - name: 400 Response
+    description: Request was received but was invalid. Check format and content of the request.  See the problem detail for more information.
+    request:
+      url: "http://localhost:{{application-port}}/v1/orders"
+      method: POST
+      body:
+        type: json
+        data: |-
+          {
+            "customerId": "",
+            "selectPaymentMethodId": "",
+            "orderLines": [
+              {
+                "productId": "",
+                "orderQuantity": 2
+              }
+            ]
+          }
+    response:
+      status: 400
+      statusText: Bad Request
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "type": "",
+            "title": "",
+            "status": 0,
+            "detail": "",
+            "instance": ""
+          }
+
+docs: Create a new order.

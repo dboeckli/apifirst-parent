@@ -1,0 +1,103 @@
+# Flow: createCustomer -> getCustomerById -> deleteCustomer — see restRequest/customer-flow-create-get-delete/customer-flow-create-get-delete.md
+# Requires the JPA profile (local-with-jpa / k8s-with-jpa): DELETE is not implemented in apifirst-server.
+# Bruno skips these requests automatically when the selected environment is not a JPA profile (scripts/jpa-only.js).
+
+### 1) create a customer (sets {{customerId}} from the Location header)
+< ../scripts/traceparent.js
+POST http://localhost:{{application-port}}/v1/customers
+Accept: application/json
+Content-Type: application/json
+traceparent: 00-{{traceId}}-{{spanId}}-03
+
+{
+  "name": {
+    "firstName": "flow",
+    "lastName": "customer"
+  },
+  "shipToAddress": {
+    "addressLine1": "123 Main Street",
+    "city": "New York",
+    "state": "NY",
+    "zip": "10001"
+  },
+  "billToAddress": {
+    "addressLine1": "123 Main Street",
+    "city": "New York",
+    "state": "NY",
+    "zip": "10001"
+  },
+  "email": "flow.customer@example.com",
+  "phone": "1234567890"
+}
+
+> {%
+    const location = response.headers.valueOf("Location");
+    client.global.set("customerId", location ? location.split("/").pop() : null);
+    client.log("Created customer id: " + client.global.get("customerId"));
+
+    client.test("createCustomer returns 201", function () {
+        client.assert(response.status === 201, "expected 201 but got " + response.status);
+    });
+    client.test("createCustomer returns a Location header", function () {
+        client.assert(!!location, "Location header missing");
+        client.assert(!!client.global.get("customerId"), "customerId missing in Location header");
+    });
+%}
+
+### 2) get customer by id (logs and checks {{customerId}} before sending)
+< ../scripts/traceparent.js
+< {%
+    const customerId = client.global.get("customerId");
+    client.log("getCustomerById -> customerId=" + customerId);
+    if (!customerId) {
+        throw new Error("customerId is not set - run 'create a customer' first");
+    }
+%}
+GET http://localhost:{{application-port}}/v1/customers/{{customerId}}
+Accept: application/json
+Content-Type: application/json
+traceparent: 00-{{traceId}}-{{spanId}}-03
+
+> {%
+    client.test("getCustomerById returns 200", function () {
+        client.assert(response.status === 200, "expected 200 but got " + response.status);
+    });
+    client.test("returned customer id matches", function () {
+        client.assert(response.body.id === client.global.get("customerId"), "customerId mismatch");
+    });
+%}
+
+### 3) delete the customer by id (fresh customer has no orders)
+< ../scripts/traceparent.js
+< ../scripts/jpa-only.js
+< {%
+    const customerId = client.global.get("customerId");
+    client.log("deleteCustomerById -> customerId=" + customerId);
+    if (!customerId) {
+        throw new Error("customerId is not set - run 'create a customer' first");
+    }
+%}
+DELETE http://localhost:{{application-port}}/v1/customers/{{customerId}}
+Accept: application/json
+Content-Type: application/json
+traceparent: 00-{{traceId}}-{{spanId}}-03
+
+> {%
+    client.test("deleteCustomerById returns 204", function () {
+        client.assert(response.status === 204, "expected 204 but got " + response.status);
+    });
+%}
+
+### 4) verify the customer is gone
+< ../scripts/traceparent.js
+< ../scripts/jpa-only.js
+GET http://localhost:{{application-port}}/v1/customers/{{customerId}}
+Accept: application/json
+Content-Type: application/json
+traceparent: 00-{{traceId}}-{{spanId}}-03
+
+> {%
+    client.test("getCustomerById returns 404 after delete", function () {
+        client.assert(response.status === 404, "expected 404 but got " + response.status);
+    });
+%}
