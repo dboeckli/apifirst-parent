@@ -35,3 +35,8 @@ build/
 /apifirst-api/api-def/dist/bundle.yaml
 /apifirst-api/api-def/node_modules/
 /apifirst-api/api-def/package-lock.json
+
+### Local review diffs ###
+.review/
+
+/restRequest/bruno/tools/node_modules/

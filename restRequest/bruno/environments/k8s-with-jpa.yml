@@ -1,0 +1,11 @@
+name: k8s-with-jpa
+variables:
+  - name: application-port
+    value: "30082"
+    enabled: true
+  - name: product-category-code
+    value: ELECTRONICS
+    enabled: true
+  - name: profile
+    value: jpa
+    enabled: true

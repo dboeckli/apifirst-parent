@@ -1,0 +1,184 @@
+# Flow: createCustomer -> createProduct -> createOrder -> getOrderById -> deleteOrderById -> getOrderById (404) — see restRequest/order-flow-create-get-delete/order-flow-create-get-delete.md
+# Requires the JPA profile (local-with-jpa / k8s-with-jpa): DELETE is not implemented in apifirst-server.
+# Bruno skips these requests automatically when the selected environment is not a JPA profile (scripts/jpa-only.js).
+
+### 1) create a customer with a payment method (sets {{customerId}} from the Location header)
+< ../scripts/traceparent.js
+POST http://localhost:{{application-port}}/v1/customers
+Accept: application/json
+Content-Type: application/json
+traceparent: 00-{{traceId}}-{{spanId}}-03
+
+{
+  "name": {
+    "firstName": "flow",
+    "lastName": "order"
+  },
+  "shipToAddress": {
+    "addressLine1": "123 Main Street",
+    "city": "New York",
+    "state": "NY",
+    "zip": "10001"
+  },
+  "billToAddress": {
+    "addressLine1": "123 Main Street",
+    "city": "New York",
+    "state": "NY",
+    "zip": "10001"
+  },
+  "email": "flow.order@example.com",
+  "phone": "1234567890",
+  "paymentMethods": [
+    {
+      "displayName": "Flow Card",
+      "cardNumber": 12341234,
+      "expiryMonth": 12,
+      "expiryYear": 30,
+      "cvv": 123
+    }
+  ]
+}
+
+> {%
+    const location = response.headers.valueOf("Location");
+    client.global.set("customerId", location ? location.split("/").pop() : null);
+    client.log("Created customer id: " + client.global.get("customerId"));
+
+    client.test("createCustomer returns 201", function () {
+        client.assert(response.status === 201, "expected 201 but got " + response.status);
+    });
+    client.test("createCustomer returns a Location header", function () {
+        client.assert(!!location, "Location header missing");
+        client.assert(!!client.global.get("customerId"), "customerId missing in Location header");
+    });
+%}
+
+### 2) get the customer and remember the payment method id (sets {{paymentMethodId}})
+< ../scripts/traceparent.js
+GET http://localhost:{{application-port}}/v1/customers/{{customerId}}
+Accept: application/json
+Content-Type: application/json
+traceparent: 00-{{traceId}}-{{spanId}}-03
+
+> {%
+    const paymentMethods = response.body.paymentMethods || [];
+    const paymentMethod = paymentMethods[0];
+    client.global.set("paymentMethodId", paymentMethod ? paymentMethod.id : null);
+    client.log("Picked paymentMethodId: " + client.global.get("paymentMethodId"));
+
+    client.test("getCustomerById returns 200", function () {
+        client.assert(response.status === 200, "expected 200 but got " + response.status);
+    });
+    client.test("customer has a payment method", function () {
+        client.assert(paymentMethods.length > 0, "no payment method found");
+        client.assert(!!client.global.get("paymentMethodId"), "paymentMethodId missing");
+    });
+%}
+
+### 3) create a product (sets {{productId}} from the Location header)
+< ../scripts/traceparent.js
+POST http://localhost:{{application-port}}/v1/products
+Accept: application/json
+Content-Type: application/json
+traceparent: 00-{{traceId}}-{{spanId}}-03
+
+{
+  "description": "flow order product",
+  "cost": "5.00",
+  "price": "8.95",
+  "categories": ["{{product-category-code}}"]
+}
+
+> {%
+    const location = response.headers.valueOf("Location");
+    client.global.set("productId", location ? location.split("/").pop() : null);
+    client.log("Created product id: " + client.global.get("productId"));
+
+    client.test("createProduct returns 201", function () {
+        client.assert(response.status === 201, "expected 201 but got " + response.status);
+    });
+    client.test("createProduct returns a Location header", function () {
+        client.assert(!!location, "Location header missing");
+        client.assert(!!client.global.get("productId"), "productId missing in Location header");
+    });
+%}
+
+### 4) create an order with one order line (sets {{orderId}} from the Location header)
+< ../scripts/traceparent.js
+POST http://localhost:{{application-port}}/v1/orders
+Accept: application/json
+Content-Type: application/json
+traceparent: 00-{{traceId}}-{{spanId}}-03
+
+{
+  "customerId": "{{customerId}}",
+  "selectPaymentMethodId": "{{paymentMethodId}}",
+  "orderLines": [
+    {
+      "productId": "{{productId}}",
+      "orderQuantity": 2
+    }
+  ]
+}
+
+> {%
+    const location = response.headers.valueOf("Location");
+    client.global.set("orderId", location ? location.split("/").pop() : null);
+    client.log("Created order id: " + client.global.get("orderId"));
+
+    client.test("createOrder returns 201", function () {
+        client.assert(response.status === 201, "expected 201 but got " + response.status);
+    });
+    client.test("createOrder returns a Location header", function () {
+        client.assert(!!location, "Location header missing");
+        client.assert(!!client.global.get("orderId"), "orderId missing in Location header");
+    });
+%}
+
+### 5) get the order by id
+< ../scripts/traceparent.js
+GET http://localhost:{{application-port}}/v1/orders/{{orderId}}
+Accept: application/json
+Content-Type: application/json
+traceparent: 00-{{traceId}}-{{spanId}}-03
+
+> {%
+    client.test("getOrderById returns 200", function () {
+        client.assert(response.status === 200, "expected 200 but got " + response.status);
+    });
+    client.test("returned order id matches", function () {
+        client.assert(response.body.id === client.global.get("orderId"), "orderId mismatch");
+    });
+    client.test("returned order has the created order line", function () {
+        client.assert(response.body.orderLines.length === 1, "unexpected number of order lines");
+        client.assert(response.body.orderLines[0].orderQuantity === 2, "unexpected orderQuantity");
+    });
+%}
+
+### 6) delete the order by id
+< ../scripts/traceparent.js
+< ../scripts/jpa-only.js
+DELETE http://localhost:{{application-port}}/v1/orders/{{orderId}}
+Accept: application/json
+Content-Type: application/json
+traceparent: 00-{{traceId}}-{{spanId}}-03
+
+> {%
+    client.test("deleteOrderById returns 204", function () {
+        client.assert(response.status === 204, "expected 204 but got " + response.status);
+    });
+%}
+
+### 7) verify the order is gone
+< ../scripts/traceparent.js
+< ../scripts/jpa-only.js
+GET http://localhost:{{application-port}}/v1/orders/{{orderId}}
+Accept: application/json
+Content-Type: application/json
+traceparent: 00-{{traceId}}-{{spanId}}-03
+
+> {%
+    client.test("getOrderById returns 404 after delete", function () {
+        client.assert(response.status === 404, "expected 404 but got " + response.status);
+    });
+%}

@@ -36,6 +36,11 @@ jobs:
   deploy-app-with-helm:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
+
     steps:
       - name: Show Version
         run: |
@@ -115,6 +120,100 @@ jobs:
             echo "All Helm tests passed successfully."
           fi
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      - name: Install Bruno tooling
+        run: |
+          cd restRequest/bruno/tools
+          npm ci
+          # The npm registry occasionally serves package metadata before the
+          # tarball is available. npm does not retry 404s, so retry the whole
+          # install instead of relying on a single attempt.
+          for attempt in 1 2 3; do
+            if npm install -g --ignore-scripts @usebruno/cli@4.2.1; then
+              echo "Bruno CLI installed (attempt $attempt)"
+              break
+            fi
+            echo "::warning::npm install failed (attempt $attempt), retrying..."
+            npm cache clean --force || true
+            sleep 15
+          done
+          bru --version
+
+      - name: Verify generated Bruno collection
+        run: |
+          cd restRequest/bruno
+          node tools/http-to-bru.mjs --source .. --check
+
+      - name: Run Bruno flows
+        working-directory: restRequest/bruno
+        env:
+          APPLICATION_NAME: ${{ inputs.application-name }}
+          NAMESPACE: ${{ inputs.namespace }}
+        run: |
+          set -o pipefail
+          set -o nounset
+          set -o errexit
+
+          if [[ "$APPLICATION_NAME" == *-jpa ]]; then
+            PORT=8082
+            ENV_NAME=k8s-with-jpa
+          else
+            PORT=8081
+            ENV_NAME=k8s
+          fi
+
+          # JPA-only requests (PATCH/DELETE) skip themselves in non-JPA
+          # environments, so every flow runs for both modules.
+          FLOWS="actuator customer-flow-create-get-list customer-flow-create-get-delete customer-flow-list-get-patch order-flow-create-get-list order-flow-create-get-delete product-flow-create-get-list product-flow-create-patch-delete"
+
+          kubectl port-forward svc/"$APPLICATION_NAME" "$PORT:$PORT" -n "$NAMESPACE" > /tmp/port-forward.log 2>&1 &
+          PORT_FORWARD_PID=$!
+          trap 'kill $PORT_FORWARD_PID 2>/dev/null || true' EXIT
+
+          for attempt in $(seq 1 30); do
+            if curl -fsS "http://localhost:$PORT/actuator/health/readiness" > /dev/null; then
+              echo "Application reachable via port-forward (attempt $attempt)"
+              break
+            fi
+            if [ "$attempt" -eq 30 ]; then
+              echo "::error::Application not reachable via port-forward"
+              cat /tmp/port-forward.log
+              exit 1
+            fi
+            sleep 2
+          done
+
+          mkdir -p "$GITHUB_WORKSPACE/bru-reports"
+          for flow in $FLOWS; do
+            echo "::group::Bruno flow: $flow"
+            bru run "$flow" -r --env "$ENV_NAME" --env-var "application-port=$PORT" \
+              --reporter-junit "$GITHUB_WORKSPACE/bru-reports/TEST-bruno-$flow.xml" \
+              --reporter-html "$GITHUB_WORKSPACE/bru-reports/bru-report-$flow.html"
+            echo "::endgroup::"
+          done
+
+      - name: Upload Bruno reports
+        if: always()
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: bruno-reports-${{ inputs.application-name }}
+          path: bru-reports/
+          if-no-files-found: warn
+
+      - name: Publish Bruno test results
+        if: always()
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          files: bru-reports/TEST-bruno-*.xml
+          check_name: Bruno API flows (${{ inputs.application-name }})
+          comment_mode: "off"
+          fail_on: test failures
+          action_fail: true
+
       - name: Display Deployment Information
         env:
           NAMESPACE: ${{ inputs.namespace }}
@@ -145,3 +244,258 @@ jobs:
             echo "Listing all pods in $NAMESPACE namespace:"
             kubectl get pods -n $NAMESPACE
           fi          
+
+  publish-reports:
+    needs: deploy-app-with-helm
+    if: always()
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      actions: read
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+
+    steps:
+      - name: Aggregate reports and OpenAPI spec from this commit
+        id: aggregate
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          HEAD_SHA: ${{ github.sha }}
+        run: |
+          set -o nounset
+          set -o errexit
+          set -o pipefail
+
+          workflow_file="deploy-and-test-cluster.yml"
+          artifact_prefix="bruno-reports-"
+          site="_site"
+          runs_file=$(mktemp)
+          run_ids_file=$(mktemp)
+          artifacts_file=$(mktemp)
+
+          rm -rf "$site"
+          mkdir -p "$site/reports"
+
+          list_runs() {
+            gh api "repos/$REPO/actions/workflows/$workflow_file/runs?head_sha=$HEAD_SHA&per_page=100" \
+              --jq '.workflow_runs'
+          }
+
+          # Both modules are dispatched as separate workflow runs for the same
+          # commit and upload their Bruno reports at the end of that job. Wait
+          # until every run's deploy job has finished so this page contains both
+          # modules. Only job conclusions are checked: this run itself is still
+          # in progress because of this publish job.
+          all_deploys_finished() {
+            local run_id conclusion
+            for run_id in $(jq -r '.[].id' "$runs_file"); do
+              conclusion=$(gh api "repos/$REPO/actions/runs/$run_id/jobs?per_page=100" \
+                --jq '[.jobs[] | select(.name == "deploy-app-with-helm")][0].conclusion // empty')
+              if [ -z "$conclusion" ]; then
+                return 1
+              fi
+            done
+            return 0
+          }
+
+          stable_checks=0
+          deadline=$((SECONDS + 600))
+          while true; do
+            list_runs > "$runs_file"
+            total_runs=$(jq 'length' < "$runs_file")
+
+            if [ "$total_runs" -gt 0 ] && all_deploys_finished; then
+              stable_checks=$((stable_checks + 1))
+              if [ "$stable_checks" -ge 3 ]; then
+                break
+              fi
+            else
+              stable_checks=0
+            fi
+
+            if [ "$SECONDS" -ge "$deadline" ]; then
+              echo "::error::Timed out waiting for the deploy jobs of $HEAD_SHA to complete"
+              jq -r '.[] | "\(.id) \(.status) \(.conclusion) \(.html_url)"' < "$runs_file"
+              exit 1
+            fi
+            sleep 10
+          done
+
+          # Newest run first; keep the first artifact per application name so
+          # re-runs do not add duplicate reports for the same module.
+          jq -r 'sort_by(.created_at) | reverse | .[].id' < "$runs_file" > "$run_ids_file"
+          : > "$artifacts_file"
+          while IFS= read -r run_id; do
+            gh api "repos/$REPO/actions/runs/$run_id/artifacts?per_page=100" \
+              | jq -r --arg run_id "$run_id" \
+                '.artifacts[]
+                 | select(.name | startswith("'"$artifact_prefix"'"))
+                 | [.name, $run_id]
+                 | @tsv' \
+              >> "$artifacts_file"
+          done < "$run_ids_file"
+
+          awk '!seen[$1]++' "$artifacts_file" > "$artifacts_file.unique"
+
+          applications=""
+          while IFS=$'\t' read -r artifact_name run_id; do
+            [ -n "$artifact_name" ] || continue
+            application="${artifact_name#"$artifact_prefix"}"
+            echo "Downloading $artifact_name from run $run_id"
+            if ! gh run download "$run_id" --repo "$REPO" --name "$artifact_name" --dir "$site/reports/$application"; then
+              echo "::warning::Could not download $artifact_name from run $run_id (expired?)"
+              continue
+            fi
+            applications="$applications $application"
+          done < "$artifacts_file.unique"
+
+          # The OpenAPI spec is attached to the Maven build artifact of the same
+          # commit, so it does not have to be rebuilt here.
+          openapi_published=false
+          maven_run_id=$(gh api "repos/$REPO/actions/workflows/maven-build.yml/runs?head_sha=$HEAD_SHA&per_page=100" \
+            --jq '[.workflow_runs[] | select(.conclusion == "success")] | sort_by(.created_at) | reverse | .[0].id // empty')
+          if [ -n "$maven_run_id" ]; then
+            spec_dir="$site/.openapi-spec"
+            if gh run download "$maven_run_id" --repo "$REPO" --name openapi-spec --dir "$spec_dir"; then
+              spec_file=$(find "$spec_dir" -type f \( -name '*.yaml' -o -name '*.yml' \) | head -n 1)
+              if [ -n "$spec_file" ]; then
+                mkdir -p "$site/openapi"
+                cp "$spec_file" "$site/openapi/apifirst.yaml"
+                ruby -ryaml -rjson -rdate \
+                  -e 'puts JSON.pretty_generate(YAML.safe_load(File.read(ARGV[0]), permitted_classes: [Date, Time], aliases: true))' \
+                  "$spec_file" > "$site/openapi/apifirst.json"
+                openapi_published=true
+              fi
+            else
+              echo "::warning::Could not download openapi-spec from Maven build run $maven_run_id"
+            fi
+            rm -rf "$spec_dir"
+          else
+            echo "::warning::No successful Maven build run found for $HEAD_SHA - skipping OpenAPI"
+          fi
+
+          report_count=$(find "$site/reports" -name '*.html' -type f | wc -l)
+          if [ "$report_count" -eq 0 ] && [ "$openapi_published" = false ]; then
+            echo "::notice::No reports found for $HEAD_SHA - Pages is left untouched"
+            echo "has_content=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "has_content=true" >> "$GITHUB_OUTPUT"
+          echo "has_openapi=$openapi_published" >> "$GITHUB_OUTPUT"
+
+          run_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          {
+            printf '%s\n' '<!doctype html><html lang="en"><head><meta charset="utf-8"><title>API reports</title></head><body>'
+            printf '<h1>API reports</h1>\n'
+            printf '<p>Commit: <code>%s</code></p>\n' "$HEAD_SHA"
+            printf '<p>Deploy workflow run: <a href="%s">%s</a></p>\n' "$run_url" "$run_url"
+            if [ "$openapi_published" = true ]; then
+              printf '<h2>OpenAPI</h2>\n<ul>\n'
+              printf '  <li><a href="openapi/">Swagger UI</a></li>\n'
+              printf '  <li><a href="openapi/apifirst.yaml">apifirst.yaml</a></li>\n'
+              printf '  <li><a href="openapi/apifirst.json">apifirst.json</a></li>\n'
+              printf '</ul>\n'
+            fi
+            for application in $applications; do
+              [ -d "$site/reports/$application" ] || continue
+              printf '<h2>%s</h2>\n<ul>\n' "$application"
+              for report in "$site/reports/$application"/*.html; do
+                [ -f "$report" ] || continue
+                report_name=$(basename "$report")
+                printf '  <li><a href="reports/%s/%s">%s</a></li>\n' "$application" "$report_name" "$report_name"
+              done
+              printf '</ul>\n'
+            done
+            printf '%s\n' '</body></html>'
+          } > "$site/index.html"
+
+      - name: Set up Node.js for Swagger UI
+        if: steps.aggregate.outputs.has_openapi == 'true'
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      - name: Build Swagger UI page
+        if: steps.aggregate.outputs.has_openapi == 'true'
+        run: |
+          set -o nounset
+          set -o errexit
+          set -o pipefail
+
+          swagger_version=5.34.0
+          install_dir=$(mktemp -d)
+          npm install --no-save --no-audit --no-fund --prefix "$install_dir" \
+            "swagger-ui-dist@$swagger_version" >/dev/null
+
+          mkdir -p _site/openapi/swagger-ui
+          cp "$install_dir/node_modules/swagger-ui-dist/swagger-ui.css" \
+            "$install_dir/node_modules/swagger-ui-dist/swagger-ui-bundle.js" \
+            _site/openapi/swagger-ui/
+
+          cat > _site/openapi/index.html <<'HTML'
+          <!doctype html>
+          <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <title>apifirst OpenAPI</title>
+            <link rel="stylesheet" href="swagger-ui/swagger-ui.css">
+          </head>
+          <body>
+            <div id="swagger-ui"></div>
+            <script src="swagger-ui/swagger-ui-bundle.js"></script>
+            <script>
+              window.ui = SwaggerUIBundle({
+                url: "apifirst.yaml",
+                dom_id: "#swagger-ui",
+                presets: [SwaggerUIBundle.presets.apis],
+                layout: "BaseLayout",
+                deepLinking: true
+              });
+            </script>
+          </body>
+          </html>
+          HTML
+
+      - name: Configure Pages
+        if: steps.aggregate.outputs.has_content == 'true'
+        uses: actions/configure-pages@v6
+        with:
+          enablement: true
+
+      - name: Upload Pages artifact
+        if: steps.aggregate.outputs.has_content == 'true'
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+          # Unique per attempt: re-runs would otherwise leave a second github-pages artifact.
+          name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        if: steps.aggregate.outputs.has_content == 'true'
+        uses: actions/deploy-pages@v5
+        with:
+          artifact_name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Add report link to summary
+        if: always() && steps.aggregate.outputs.has_content == 'true'
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          if [ -n "${PAGE_URL:-}" ]; then
+            {
+              echo "### API reports"
+              echo "$PAGE_URL"
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi

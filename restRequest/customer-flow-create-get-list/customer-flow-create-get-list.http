@@ -1,0 +1,90 @@
+# Flow: createCustomer -> getCustomerById -> listCustomers — see restRequest/customer-flow-create-get-list/customer-flow-create-get-list.md
+
+### 1) create a customer (sets {{customerId}} from the Location header)
+< ../scripts/traceparent.js
+POST http://localhost:{{application-port}}/v1/customers
+Accept: application/json
+Content-Type: application/json
+traceparent: 00-{{traceId}}-{{spanId}}-03
+
+{
+  "name": {
+    "firstName": "flow",
+    "lastName": "customer"
+  },
+  "shipToAddress": {
+    "addressLine1": "123 Main Street",
+    "city": "New York",
+    "state": "NY",
+    "zip": "10001"
+  },
+  "billToAddress": {
+    "addressLine1": "123 Main Street",
+    "city": "New York",
+    "state": "NY",
+    "zip": "10001"
+  },
+  "email": "flow.customer@example.com",
+  "phone": "1234567890"
+}
+
+> {%
+    const location = response.headers.valueOf("Location");
+    client.global.set("customerId", location ? location.split("/").pop() : null);
+    client.log("Created customer id: " + client.global.get("customerId"));
+
+    client.test("createCustomer returns 201", function () {
+        client.assert(response.status === 201, "expected 201 but got " + response.status);
+    });
+    client.test("createCustomer returns a Location header", function () {
+        client.assert(!!location, "Location header missing");
+        client.assert(!!client.global.get("customerId"), "customerId missing in Location header");
+    });
+%}
+
+### 2) get customer by id (logs and checks {{customerId}} before sending)
+< ../scripts/traceparent.js
+< {%
+    const customerId = client.global.get("customerId");
+    client.log("getCustomerById -> customerId=" + customerId);
+    if (!customerId) {
+        throw new Error("customerId is not set - run 'create a customer' first");
+    }
+%}
+GET http://localhost:{{application-port}}/v1/customers/{{customerId}}
+Accept: application/json
+Content-Type: application/json
+traceparent: 00-{{traceId}}-{{spanId}}-03
+
+> {%
+    client.test("getCustomerById returns 200", function () {
+        client.assert(response.status === 200, "expected 200 but got " + response.status);
+    });
+    client.test("returned customer id matches", function () {
+        client.assert(response.body.id === client.global.get("customerId"), "customerId mismatch");
+    });
+    client.test("returned customer name matches", function () {
+        client.assert(response.body.name.firstName === "flow", "unexpected firstName");
+        client.assert(response.body.name.lastName === "customer", "unexpected lastName");
+    });
+%}
+
+### 3) list customers and check the created customer is included
+< ../scripts/traceparent.js
+GET http://localhost:{{application-port}}/v1/customers
+Accept: application/json
+Content-Type: application/json
+traceparent: 00-{{traceId}}-{{spanId}}-03
+
+> {%
+    const customerId = client.global.get("customerId");
+    client.test("listCustomers returns 200", function () {
+        client.assert(response.status === 200, "expected 200 but got " + response.status);
+    });
+    client.test("listCustomers contains the created customer", function () {
+        client.assert(
+            response.body.some((customer) => customer.id === customerId),
+            "customer " + customerId + " missing in list"
+        );
+    });
+%}

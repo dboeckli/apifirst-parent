@@ -1,0 +1,6 @@
+info:
+  name: orders
+  type: folder
+
+request:
+  auth: inherit
