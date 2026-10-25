@@ -133,8 +133,7 @@ jobs:
     if: endsWith(needs.setup.outputs.MVN_VERSION, '-SNAPSHOT')
 
     outputs:
-      HELM_CHART_VERSION: ${{ steps.get_helm_version_and_namespace.outputs.HELM_CHART_VERSION }}
-      NAMESPACE: ${{ steps.get_helm_version_and_namespace.outputs.NAMESPACE }}
+      HELM_CHART_VERSION: ${{ steps.get_helm_version.outputs.HELM_CHART_VERSION }}
 
     permissions:
       contents: read
@@ -228,9 +227,7 @@ jobs:
           if-no-files-found: error
 
       - name: get helm version
-        id: get_helm_version_and_namespace
-        env:
-          ARTIFACT_ID: ${{needs.setup.outputs.ARTIFACT_ID}}
+        id: get_helm_version
         run: |
           set -o pipefail    # don't hide errors within pipes
           set -o nounset     # abort on unbound variable
@@ -376,28 +373,16 @@ jobs:
           GH_TOKEN: ${{ secrets.TRIGGER_WORKFLOW_TOKEN }}
           BRANCH_MVN_VERSION: ${{needs.setup.outputs.BRANCH_MVN_VERSION}}
           HELM_CHART_VERSION: ${{needs.build.outputs.HELM_CHART_VERSION}}
-          NAMESPACE: ${{needs.build.outputs.NAMESPACE}}
           ARTIFACT_ID: ${{needs.setup.outputs.ARTIFACT_ID}}
         run: |
           echo "Trigger Deployment with variables"
           echo "ARTIFACT_ID: $ARTIFACT_ID"
           echo "BRANCH_MVN_VERSION: $BRANCH_MVN_VERSION"
           echo "HELM_CHART_VERSION: $HELM_CHART_VERSION"
-          echo "NAMESPACE: $NAMESPACE"
-          
+
           gh workflow run deploy-and-test-cluster.yml -R ${{ github.repository }} -r ${{ github.ref }} \
-          -f "application-name=apifirst-server" \
           -f "version=$BRANCH_MVN_VERSION" \
           -f "helm-chart-version=$HELM_CHART_VERSION" \
-          -f "namespace=apifirst-server" \
-          -f "deployed-by-build=${{ github.run_id }}" \
-          -f "deployed-by-workflow=${{ github.workflow }}"
-          
-          gh workflow run deploy-and-test-cluster.yml -R ${{ github.repository }} -r ${{ github.ref }} \
-          -f "application-name=apifirst-server-jpa" \
-          -f "version=$BRANCH_MVN_VERSION" \
-          -f "helm-chart-version=$HELM_CHART_VERSION" \
-          -f "namespace=apifirst-server-jpa" \
           -f "deployed-by-build=${{ github.run_id }}" \
           -f "deployed-by-workflow=${{ github.workflow }}"
 
