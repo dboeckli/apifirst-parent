@@ -31,21 +31,21 @@ jobs:
       ORGANIZATION: ${{ steps.set_version.outputs.ORGANIZATION }}
 
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - uses: mfinelli/setup-shfmt@a25fda4c1fe115aec0f85e04126610841bc3141d
+      - uses: mfinelli/setup-shfmt@a25fda4c1fe115aec0f85e04126610841bc3141d # v4.0.1
         with:
           shfmt-version: 3.14.1
 
       - name: Use Node.js
-        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: '20'
           registry-url: 'https://npm.pkg.github.com'
           scope: '@dboeckli'
 
       - name: Set up java
-        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: 'liberica'
@@ -144,21 +144,21 @@ jobs:
       actions: read
 
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - uses: mfinelli/setup-shfmt@a25fda4c1fe115aec0f85e04126610841bc3141d
+      - uses: mfinelli/setup-shfmt@a25fda4c1fe115aec0f85e04126610841bc3141d # v4.0.1
         with:
           shfmt-version: 3.14.1
         
       - name: Use Node.js
-        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: '20'
           registry-url: 'https://npm.pkg.github.com'
           scope: '@dboeckli'
 
       - name: Set up java
-        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: 'liberica'
@@ -167,7 +167,7 @@ jobs:
           settings-path: ${{ github.workspace }} # location for the settings.xml file
 
       - name: Create k8s Kind Cluster
-        uses: helm/kind-action@1544676c07bb3570fcb70166beaa07c4528fd4aa
+        uses: helm/kind-action@1544676c07bb3570fcb70166beaa07c4528fd4aa # v1.15.1
 
       - name: show variables
         id: show_build_variables
@@ -211,7 +211,7 @@ jobs:
           mvn -B -e deploy -s $GITHUB_WORKSPACE/settings.xml
 
       - name: Upload Test Reports
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: failure()
         with:
          name: failsafe-and-surefire-reports
@@ -220,7 +220,7 @@ jobs:
            **/target/failsafe-reports/TEST-*.xml
 
       - name: Upload OpenAPI spec
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: openapi-spec
           path: apifirst-api/api-def/dist/bundle.yaml
@@ -252,23 +252,23 @@ jobs:
       actions: read
 
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
 
-      - uses: mfinelli/setup-shfmt@a25fda4c1fe115aec0f85e04126610841bc3141d
+      - uses: mfinelli/setup-shfmt@a25fda4c1fe115aec0f85e04126610841bc3141d # v4.0.1
         with:
           shfmt-version: 3.14.1
 
       - name: Use Node.js
-        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: '20'
           registry-url: 'https://npm.pkg.github.com'
           scope: '@dboeckli'
           
       - name: Set up java
-        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: 'liberica'
@@ -277,7 +277,7 @@ jobs:
           settings-path: ${{ github.workspace }} # location for the settings.xml file
 
       - name: Create k8s Kind Cluster
-        uses: helm/kind-action@1544676c07bb3570fcb70166beaa07c4528fd4aa
+        uses: helm/kind-action@1544676c07bb3570fcb70166beaa07c4528fd4aa # v1.15.1
 
       - name: Run Maven Build
         env:
@@ -310,7 +310,7 @@ jobs:
           fi
           mvn -B -e verify -Dskip.start.stop.springboot=true -Dskip.docker.build=true -Dskip.docker.publish=true -s $GITHUB_WORKSPACE/settings.xml
       - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action@7622c5bf3d112a72ab4fa3951c2aa5723d8ab92d
+        uses: EnricoMi/publish-unit-test-result-action@7622c5bf3d112a72ab4fa3951c2aa5723d8ab92d # v2.25.0
         if: always()
         with:
           files: |
