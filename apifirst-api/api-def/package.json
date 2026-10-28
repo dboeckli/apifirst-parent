@@ -2,7 +2,7 @@
   "name": "@dboeckli/api-def",
   "version": "1.0.0",
   "dependencies": {
-    "@dboeckli/apifirst-sb": "1.1.1191-feature.3a4d47b.202610271235"
+    "@dboeckli/apifirst-sb": "1.1.1193-feature.34b938b.202610281611"
   },
   "private": false,
   "scripts": {
