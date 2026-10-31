@@ -99,6 +99,19 @@
             "automerge": false
         },
         {
+            "description": "Only update @dboeckli/apifirst-sb when the minor version changes (skip the CI build-number patch releases)",
+            "matchDatasources": [
+                "npm"
+            ],
+            "matchPackageNames": [
+                "@dboeckli/apifirst-sb"
+            ],
+            "matchUpdateTypes": [
+                "patch"
+            ],
+            "enabled": false
+        },
+        {
             "matchCategories": [
                 "docker"
             ],
